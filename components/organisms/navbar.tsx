@@ -1,32 +1,55 @@
+import { useState } from "react";
+import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
+import { AiOutlineUser } from "react-icons/ai";
+
 export default function NavBar() {
+  const [isAuthendicated, setAuthentication] = useState(false);
   return (
     <>
-      <nav className="bg-[#FFFFFF] flex items-center justify-between px-10 py-1">
+      <nav className="bg-[#FFFFFF] flex items-center justify-between px-16 py-2">
         <section>
           <div className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
-              width={73}
-              height={73}
+              width={75}
+              height={75}
             />
-            <div className="font-bold text-[#326F33] text-lg">
+            <div className="font-climate text-[#326F33] text-xl">
               <h1>TAFT</h1>
               <h1>EATS</h1>
             </div>
           </div>
         </section>
-        <section>
-          <div className="font-medium text-lg flex gap-6">
-            <button className="bg-white text-black border border-black px-4 py-1 rounded-lg">
-              Log In
-            </button>
-            <button className="bg-[#326F33] text-white px-3 py-1 rounded-lg">
-              Sign Up
-            </button>
+        <section className="font-inter text-lg">
+          <div className="flex gap-6">
+            <div className="bg-[#326F33] text-white p-2 rounded-full">
+              <IoLocationOutline size={24} />
+            </div>
+            <div className="bg-[#326F33] text-white p-2 rounded-full">
+              <IoHomeOutline size={24} />
+            </div>
+            {isAuthendicated ? (
+              <>
+                <div className="bg-[#326F33] text-white p-2 rounded-full">
+                  <AiOutlineUser size={24} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="font-medium flex gap-5">
+                  <button className="bg-white text-black border border-black px-4 py-1 rounded-lg">
+                    Log In
+                  </button>
+                  <button className="bg-[#326F33] text-white px-3 py-1 rounded-lg">
+                    Sign Up
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </section>
       </nav>
     </>
-  )
+  );
 }

@@ -1,10 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-climate: "Climate Crisis", sans-serif;
+  --font-lexend: "Lexend", sans-serif;
+  --font-inter: "Inter", sans-serif;
 }
 
 body {
-    background-image: url("/background/background.png");
+  background-image: url("/background/background.png");
 }
