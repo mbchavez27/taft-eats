@@ -9,8 +9,8 @@ export default function EstablishmentsCard({
 }) {
   return (
     <>
-      <main className="flex flex-col gap-2">
-        <section className="bg-[#FFD24D] w-44 min-h-44 rounded-md flex flex-col justify-between p-2 gap-4 drop-shadow-2xl">
+      <main className="flex flex-col items-center gap-2">
+        <section className="bg-[#FFD24D] w-36 min-h-36 md:w-44 md:min-h-44 rounded-md flex flex-col justify-between p-2 gap-4 drop-shadow-2xl">
           <div className="flex justify-center">
             <div className="bg-[#D9D9D9] w-full h-24 rounded-md px-1 py-2">
               <div className="bg-[#848484] w-7 h-7 rounded-full"></div>
