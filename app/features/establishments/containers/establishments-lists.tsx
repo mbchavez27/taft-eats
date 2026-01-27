@@ -1,7 +1,7 @@
 import EstablishmentsCard from '../components/organisms/establishment-card'
 import { ScrollArea } from '~/components/ui/scroll-area'
 
-export default function Establishments() {
+export default function EstablishmentsLists() {
   return (
     <>
       <main className="flex flex-col gap-5">
