@@ -1,17 +1,18 @@
-import { useState } from "react";
-import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
-import { AiOutlineUser } from "react-icons/ai";
-import { CiBookmark } from "react-icons/ci";
-import SearchField from "~/components/molecules/searchfield";
-import SideBar from "./sidebar.";
+import { useState } from 'react'
+import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
+import { AiOutlineUser } from 'react-icons/ai'
+import { CiBookmark } from 'react-icons/ci'
+import SearchField from '~/components/molecules/searchfield'
+import SideBar from './sidebar.'
+import { Link } from 'react-router'
 
 export default function NavBar() {
-  const [isAuthendicated, setAuthentication] = useState(true);
+  const [isAuthendicated, setAuthentication] = useState(true)
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
         <section>
-          <div className="flex items-center gap-1">
+          <Link to={'/'} className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
@@ -22,7 +23,7 @@ export default function NavBar() {
               <h1>TAFT</h1>
               <h1>EATS</h1>
             </div>
-          </div>
+          </Link>
         </section>
         <SideBar />
         <section className="hidden lg:flex font-inter text-lg items-center gap-12">
@@ -31,9 +32,9 @@ export default function NavBar() {
           </div>
           <div className="flex gap-12">
             <div className="flex gap-3">
-              <div className="bg-[#326F33] text-white p-2 rounded-full">
+              <Link to="/" className="bg-[#326F33] text-white p-2 rounded-full">
                 <IoHomeOutline size={24} />
-              </div>
+              </Link>
               <div className="bg-[#326F33] text-white p-2 rounded-full">
                 <IoLocationOutline size={24} />
               </div>
@@ -65,5 +66,5 @@ export default function NavBar() {
         </section>
       </nav>
     </>
-  );
+  )
 }
