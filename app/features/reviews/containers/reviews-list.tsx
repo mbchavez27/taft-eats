@@ -3,12 +3,19 @@ import SingleReview from '../components/organisms/single-review'
 
 export default function ReviewsList() {
   return (
-    <>
-      <ScrollArea className="w-full ">
-        <main className="bg-white rounded-lg h-full w-full p-6 flex flex-col gap-4">
+    <main className="bg-white rounded-xl w-full p-6 flex flex-col gap-4 h-125 overflow-hidden">
+      <ScrollArea className="h-full">
+        <div className="flex flex-col gap-4">
           <SingleReview />
-        </main>
+          <SingleReview />
+          <SingleReview />
+          <SingleReview />
+          <SingleReview />
+          <SingleReview />
+          <SingleReview />
+          <SingleReview />
+        </div>
       </ScrollArea>
-    </>
+    </main>
   )
 }
