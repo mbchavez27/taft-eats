@@ -4,14 +4,14 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 export default function Establishments() {
   return (
     <>
-      <div className="flex flex-col gap-6">
+      <main className="flex flex-col gap-5">
         <header>
-          <h1 className="font-climate text-2xl md:text-4xl text-white">
+          <h1 className="font-climate text-xl md:text-4xl text-white">
             ESTABLISHMENTS
           </h1>
         </header>
-        <ScrollArea className="h-175">
-          <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-12 lg:gap-8 justify-items-start ">
+        <ScrollArea className="h-120">
+          <section className="flex flex-wrap gap-6 md:gap-12 lg:gap-9 justify-start">
             <EstablishmentsCard name="La Tocaaaaaaaaaaaaaaa" rating={3} />
             <EstablishmentsCard name="La Toca" />
             <EstablishmentsCard name="La Toca" />
@@ -29,9 +29,9 @@ export default function Establishments() {
             <EstablishmentsCard name="La Toca" />
             <EstablishmentsCard name="La Toca" />
             <EstablishmentsCard name="La Toca" />
-          </main>
+          </section>
         </ScrollArea>
-      </div>
+      </main>
     </>
   )
 }
