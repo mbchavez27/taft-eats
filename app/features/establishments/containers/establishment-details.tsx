@@ -1,3 +1,4 @@
+import ReviewSorts from '~/features/reviews/containers/review-sorts'
 import ReviewsList from '~/features/reviews/containers/reviews-list'
 
 export default function EstablishmentDetails() {
@@ -11,7 +12,8 @@ export default function EstablishmentDetails() {
           945 Estrada Street, Malate, Manila - Metro Manila
         </p>
       </header>
-      <section>
+      <section className="flex flex-col gap-4">
+        <ReviewSorts />
         <ReviewsList />
       </section>
     </main>

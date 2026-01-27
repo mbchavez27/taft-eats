@@ -12,7 +12,7 @@ export default function NavBar() {
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
         <section>
-          <div className="flex items-center gap-1">
+          <Link to={'/'} className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
@@ -23,7 +23,7 @@ export default function NavBar() {
               <h1>TAFT</h1>
               <h1>EATS</h1>
             </div>
-          </div>
+          </Link>
         </section>
         <SideBar />
         <section className="hidden lg:flex font-inter text-lg items-center gap-12">
