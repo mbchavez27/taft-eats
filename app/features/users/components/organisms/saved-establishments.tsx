@@ -16,7 +16,7 @@ export default function SavedEstablishments() {
     <main className="bg-white rounded-3xl px-10 py-8 flex flex-col w-full h-full">
       <h1 className="font-bold text-xl mb-6">Saved Establishments</h1>
 
-      <div className="flex flex-row flex-wrap gap-5 flex-1 justify-start items-center">
+      <div className="flex flex-row flex-wrap gap-5 flex-1 justify-center items-center">
         {establishments.slice(0, visible).map((src, index) => (
           <Avatar key={index} className="w-16 h-16">
             <AvatarImage src={src} />

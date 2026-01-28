@@ -2,6 +2,7 @@ import UserDetails from "~/features/users/containers/user-details";
 import type { Route } from "../+types/user-page/index";
 import UserStatistics from "~/features/users/components/organisms/user-statistics";
 import SavedEstablishments from "~/features/users/components/organisms/saved-establishments";
+import UserReviews from "~/features/reviews/containers/user-reviews";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -28,6 +29,9 @@ export default function UserPage() {
             <div className="flex-1">
               <SavedEstablishments />
             </div>
+          </section>
+          <section>
+            <UserReviews />
           </section>
         </div>
       </main>
