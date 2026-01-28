@@ -1,5 +1,5 @@
-import { ScrollArea } from '~/components/ui/scroll-area'
-import SingleReview from '../components/organisms/single-review'
+import { ScrollArea } from "~/components/ui/scroll-area";
+import SingleReview from "../components/organisms/single-review";
 
 export default function ReviewsList() {
   return (
@@ -17,5 +17,5 @@ export default function ReviewsList() {
         </div>
       </ScrollArea>
     </main>
-  )
+  );
 }
