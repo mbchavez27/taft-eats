@@ -15,8 +15,10 @@ export default function UserData({
         <div className="bg-[#326F33] text-white rounded-full p-2">
           {Icon && <Icon size={22} color="white" />}
         </div>
-        <h1 className="font-semibold text-4xl">{value}</h1>
-        <p className="text-md opacity-50">{label}</p>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="font-semibold text-4xl">{value}</h1>
+          <p className="text-md opacity-50 text-center">{label}</p>
+        </div>
       </section>
     </>
   );
