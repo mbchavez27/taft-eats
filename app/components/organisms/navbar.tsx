@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
-import { AiOutlineUser } from 'react-icons/ai'
-import { CiBookmark } from 'react-icons/ci'
-import SearchField from '~/components/molecules/searchfield'
-import SideBar from './sidebar.'
-import { Link } from 'react-router'
+import { useState } from "react";
+import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
+import { CiBookmark } from "react-icons/ci";
+import SearchField from "~/components/molecules/searchfield";
+import SideBar from "./sidebar.";
+import { Link } from "react-router";
+import UserPopover from "./user-popover";
 
 export default function NavBar() {
-  const [isAuthendicated, setAuthentication] = useState(true)
+  const [isAuthendicated, setAuthentication] = useState(true);
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
         <section>
-          <Link to={'/'} className="flex items-center gap-1">
+          <Link to={"/"} className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
@@ -45,9 +45,7 @@ export default function NavBar() {
                   <div className="bg-[#326F33] text-white p-2 rounded-full">
                     <CiBookmark size={24} />
                   </div>
-                  <div className="bg-[#326F33] text-white p-2 rounded-full">
-                    <AiOutlineUser size={24} />
-                  </div>
+                  <UserPopover />
                 </>
               ) : (
                 <>
@@ -66,5 +64,5 @@ export default function NavBar() {
         </section>
       </nav>
     </>
-  )
+  );
 }

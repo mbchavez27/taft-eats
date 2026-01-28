@@ -3,6 +3,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { CiBookmark } from "react-icons/ci";
 import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
 import { AiOutlineUser } from "react-icons/ai";
+import { CiLogout } from "react-icons/ci";
 import {
   Sheet,
   SheetContent,
@@ -71,6 +72,10 @@ export default function SideBar() {
               <div className="bg-[#326F33] border-white border text-white px-4 py-2 rounded-full flex gap-2">
                 <IoLocationOutline size={24} />
                 Map View
+              </div>
+              <div className="bg-[#326F33] border-white border text-white px-4 py-2 rounded-full flex gap-2">
+                <CiLogout size={24} />
+                Log Out
               </div>
             </div>
           </SheetContent>
