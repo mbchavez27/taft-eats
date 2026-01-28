@@ -11,4 +11,8 @@ export default [
     ...prefix("restaurants", [
     route(":restaurant", "./routes/restaurants/index.tsx"),
   ]),
+
+    ...prefix("user", [
+    route("/", "./routes/user-page/index.tsx"),
+  ]),
 ] satisfies RouteConfig;

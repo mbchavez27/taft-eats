@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { Link } from "react-router";
 
 export default function SideBar() {
   const [isAuthendicated, setAuthentication] = useState(true);
@@ -42,10 +43,13 @@ export default function SideBar() {
               {isAuthendicated ? (
                 <>
                   <div className="flex justify-center gap-3 p-2 text-white ">
-                    <div className="flex gap-2 items-center border border-white px-3 py-2 rounded-lg">
+                    <Link
+                      to={"/user/"}
+                      className="flex gap-2 items-center border border-white px-3 py-2 rounded-lg"
+                    >
                       <AiOutlineUser size={24} />
                       User
-                    </div>
+                    </Link>
                     <div className="flex gap-2 items-center border border-white px-3 py-2 rounded-lg">
                       <CiBookmark size={24} />
                       Bookmark

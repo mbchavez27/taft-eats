@@ -1,4 +1,5 @@
 import { AiOutlineUser } from "react-icons/ai";
+import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   Popover,
@@ -28,9 +29,12 @@ export default function UserPopover() {
             </div>
           </PopoverHeader>
           <section className="font-inter font-semibold text-xl flex flex-col gap-4">
-            <button className="bg-white text-black border border-black rounded-full px-3 py-2 ">
+            <Link
+              to={"/user/"}
+              className="bg-white text-black border border-black rounded-full px-3 py-2 "
+            >
               View Profile
-            </button>
+            </Link>
             <button className="bg-[#326F33] text-white border border-[#326F33] rounded-full px-3 py-2 ">
               Log Out
             </button>
