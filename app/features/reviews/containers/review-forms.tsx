@@ -6,7 +6,7 @@ export default function ReviewForms() {
       <main className="bg-white rounded-xl w-full p-5 sm:py-8 sm:px-10 flex flex-col gap-10 h-125 overflow-hidden font-lexend font-bold text-[#326F33]">
         <section className="flex flex-col gap-5">
           <h1 className="text-3xl">How would you rate your experience?</h1>
-          <div className="flex gap-4 px-2">
+          <div className="flex flex-wrap gap-4 px-2">
             <Stars size={48} />
           </div>
         </section>

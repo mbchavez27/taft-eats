@@ -31,11 +31,11 @@ export default function UserPopover() {
           <section className="font-inter font-semibold text-xl flex flex-col gap-4">
             <Link
               to={"/user/"}
-              className="bg-white text-black border border-black rounded-full px-3 py-2 "
+              className="bg-white text-black border border-black rounded-full px-3 py-2 hover:bg-black hover:text-white transition duration-100 "
             >
               View Profile
             </Link>
-            <button className="bg-[#326F33] text-white border border-[#326F33] rounded-full px-3 py-2 ">
+            <button className="bg-[#326F33] text-white border border-[#326F33] rounded-full px-3 py-2 hover:bg-white hover:text-[#326F33] transition duration-100">
               Log Out
             </button>
           </section>
