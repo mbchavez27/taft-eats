@@ -1,18 +1,19 @@
-import { useState } from "react";
-import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
-import { CiBookmark } from "react-icons/ci";
-import SearchField from "~/components/molecules/searchfield";
-import SideBar from "./sidebar.";
-import { Link } from "react-router";
-import UserPopover from "./user-popover";
+import { useState } from 'react'
+import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
+import { CiBookmark } from 'react-icons/ci'
+import SearchField from '~/components/molecules/searchfield'
+import SideBar from './sidebar.'
+import { Link } from 'react-router'
+import UserPopover from './user-popover'
+import Login from '~/features/auth/containers/login'
 
 export default function NavBar() {
-  const [isAuthendicated, setAuthentication] = useState(true);
+  const [isAuthendicated, setAuthentication] = useState(false)
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
         <section>
-          <Link to={"/"} className="flex items-center gap-1">
+          <Link to={'/'} className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
@@ -50,9 +51,7 @@ export default function NavBar() {
               ) : (
                 <>
                   <div className="font-medium flex ml-4 gap-5">
-                    <button className="bg-white text-black border border-black px-4 py-1 rounded-lg">
-                      Log In
-                    </button>
+                    <Login />
                     <button className="bg-[#326F33] text-white px-3 py-1 rounded-lg">
                       Sign Up
                     </button>
@@ -64,5 +63,5 @@ export default function NavBar() {
         </section>
       </nav>
     </>
-  );
+  )
 }
