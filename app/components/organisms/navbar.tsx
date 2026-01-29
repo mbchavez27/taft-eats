@@ -5,9 +5,11 @@ import SearchField from "~/components/molecules/searchfield";
 import SideBar from "./sidebar.";
 import { Link } from "react-router";
 import UserPopover from "./user-popover";
+import Login from "~/features/auth/containers/login";
+import Signup from "~/features/auth/containers/signup";
 
 export default function NavBar() {
-  const [isAuthendicated, setAuthentication] = useState(true);
+  const [isAuthendicated, setAuthentication] = useState(false);
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
@@ -50,12 +52,8 @@ export default function NavBar() {
               ) : (
                 <>
                   <div className="font-medium flex ml-4 gap-5">
-                    <button className="bg-white text-black border border-black px-4 py-1 rounded-lg">
-                      Log In
-                    </button>
-                    <button className="bg-[#326F33] text-white px-3 py-1 rounded-lg">
-                      Sign Up
-                    </button>
+                    <Login />
+                    <Signup />
                   </div>
                 </>
               )}
