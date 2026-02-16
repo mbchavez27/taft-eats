@@ -5,7 +5,6 @@ import EstablishmentHeader from "~/features/establishments/components/organisms/
 import { useState } from "react";
 import ReviewButton from "~/features/reviews/components/molecules/review-button";
 import EstablishmentReviews from "~/features/reviews/containers/establishment-reviews";
-import ReviewForms from "~/features/reviews/containers/review-forms";
 import ReplyForms from "~/features/reviews/containers/reply-forms.tsx";
 
 export function meta({ params }: Route.MetaArgs) {
@@ -18,33 +17,33 @@ export function meta({ params }: Route.MetaArgs) {
 
 export default function Restaurant() {
   const { restaurant } = useParams();
-  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isReplyOpen, setIsReplyOpen] = useState(false);
 
-  const handleOpenReply = () => setIsReviewOpen(true);
+  const handleOpenReply = () => setIsReplyOpen(true);
   return (
     <>
       <main className="flex flex-col lg:flex-row py-12 px-10 lg:gap-8 gap-16">
         {/* Sidebar */}
         <div className="flex lg:w-1/4">
-          <EstablishmentDetails isReviewOpen={isReviewOpen} />
+          <EstablishmentDetails isReviewOpen={isReplyOpen} />
         </div>
 
         {/* Main content */}
         <div className="w-full lg:w-3/4 flex flex-col gap-6 md:gap-8">
           <EstablishmentHeader />
-          {isReviewOpen ? (
+          {isReplyOpen ? (
             <>
               <ReplyForms />
             </>
           ) : (
             <EstablishmentReviews onReply={handleOpenReply} />
           )}
-          {isReviewOpen ? (
+          {isReplyOpen ? (
             <>
               <div className="flex justify-end gap-4">
                 <ReviewButton
                   onClick={() => {
-                    setIsReviewOpen(false);
+                    setIsReplyOpen(false);
                   }}
                 >
                   Cancel

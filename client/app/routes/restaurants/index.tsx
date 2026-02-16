@@ -19,7 +19,7 @@ export default function Restaurant() {
   const { restaurant } = useParams();
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-  const handleOpenReply = () => setIsReviewOpen(true);
+  const handleOpenReview = () => setIsReviewOpen(true);
 
   return (
     <>
@@ -37,7 +37,7 @@ export default function Restaurant() {
               <ReviewForms />
             </>
           ) : (
-            <EstablishmentReviews onReply={handleOpenReply} />
+            <EstablishmentReviews onReply={handleOpenReview} />
           )}
           {isReviewOpen ? (
             <>
