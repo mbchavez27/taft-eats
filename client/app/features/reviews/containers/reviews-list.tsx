@@ -8,6 +8,8 @@ export default function ReviewsList({
   onOpenForms: () => void;
 }) {
   const location = useLocation();
+  const isUserRoute = location.pathname.includes("/user");
+  const isOwnerRoute = location.pathname.includes("/restaurants/owner");
 
   return (
     <main className="bg-white rounded-xl w-full p-4 sm:p-6 flex flex-col gap-4 h-125 overflow-hidden">
@@ -16,8 +18,9 @@ export default function ReviewsList({
           {Array.from({ length: 8 }).map((_, index) => (
             <SingleReview
               key={index}
-              is_owner={location.pathname?.includes("restaurants/owner")}
               onOpenForms={onOpenForms}
+              is_owner={isOwnerRoute}
+              is_user={isUserRoute}
             />
           ))}
         </div>

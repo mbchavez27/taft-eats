@@ -2,14 +2,17 @@ import ReactionCounter from "./reaction-counter";
 import ReviewContent from "./review-content";
 import ReviewRating from "./review-rating";
 import UserDetails from "./user-details";
+import { MdEdit } from "react-icons/md";
 
 interface SingleReviewProps {
   is_owner?: boolean;
+  is_user?: boolean;
   onOpenForms?: () => void;
 }
 
 export default function SingleReview({
   is_owner,
+  is_user,
   onOpenForms,
 }: SingleReviewProps) {
   return (
@@ -30,7 +33,13 @@ export default function SingleReview({
       {/* RIGHT SIDE */}
       <div className="flex justify-between items-center gap-6 lg:gap-12">
         <ReviewRating />
-        {is_owner ? (
+        {is_user ? (
+          <>
+            <button>
+              <MdEdit size={24} />
+            </button>
+          </>
+        ) : is_owner ? (
           <>
             <button
               onClick={onOpenForms}
