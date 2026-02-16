@@ -54,7 +54,7 @@ export default function ReviewContent() {
                   </p>
                 </div>
               </div>
-              <div className="h-full bg-black opacity-50 w-[4px]"></div>
+              <div className="shrink-0 self-stretch bg-black opacity-20 w-[1px]"></div>
               <div className="flex items-center gap-3">
                 <h1 className="text-[#808080] text-md sm:text-lg lg:text-xl">
                   rating
