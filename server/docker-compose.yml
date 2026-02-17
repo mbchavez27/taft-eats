@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: taft_eats_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_DATABASE: taft_eats
+      MYSQL_USER: taft_app
+      MYSQL_PASSWORD: taft123
+    ports: 
+      - "3307:3306"
+    volumes: 
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql_data:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"

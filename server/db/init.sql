@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     INDEX idx_email (email)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Restaurants (
     restaurant_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

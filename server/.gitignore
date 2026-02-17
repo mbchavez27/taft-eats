@@ -39,3 +39,6 @@ temp/
 # Optional: If using eslint or prettier caches
 .eslintcache
 .prettiercache
+
+# Database Data (Do not commit!)
+mysql_data/
