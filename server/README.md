@@ -74,7 +74,7 @@ DB_NAME=taft_eats
 
 **If using Manual Setup (Option B)**
 
-```
+```env
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
