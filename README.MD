@@ -74,8 +74,8 @@ This project follows a modern, separation-of-concerns architecture.
 
 ## Design Resources
 
-- **System Architecture**: [View High-Level Architecture]()
-- **UI/UX Concept**: [View Figma Design]()
+- **System Architecture**: [View High-Level Architecture]("https://www.figma.com/board/rw1mAEY6jcGxnEbcFgBzMq/Taft-Eats-High-Level-Architecture?node-id=0-1&t=J6hIF6ZBW60einCs-1")
+- **UI/UX Concept**: [View Figma Design]("https://www.figma.com/design/hzsAc9kw3l4jjuULtujrTC/CCAPDEV-TAFTEATS?node-id=0-1&t=PiNB6iF8vnjbx1jL-1")
 
 ---
 
