@@ -4,10 +4,10 @@ services:
     container_name: taft_eats_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root 
-      MYSQL_DATABASE: taft_eats
-      MYSQL_USER: taft_app
-      MYSQL_PASSWORD: taft123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports: 
       - "3307:3306"
     volumes: 
