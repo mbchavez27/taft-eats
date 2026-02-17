@@ -93,9 +93,8 @@ This project is fully containerized. You can run the Database, Backend, and Fron
 1. **Clone the repository**:
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:mbchavez27/taft-eats.git
 cd taft-eats
-
 ```
 
 2. **Run the application**:
