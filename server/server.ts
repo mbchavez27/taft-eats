@@ -1,10 +1,19 @@
-import dotenv from 'dotenv'
-import app from './src/app.ts'
+import dotenv from "dotenv";
+import app from "./src/app.ts";
+import { checkDatabaseConnection } from "./src/shared/config/database.ts";
 
-dotenv.config()
+dotenv.config();
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-})
+const startServer = async () => {
+  await checkDatabaseConnection();
+
+  app.listen(PORT, () => {
+    console.log(
+      `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+    );
+  });
+};
+
+startServer();
