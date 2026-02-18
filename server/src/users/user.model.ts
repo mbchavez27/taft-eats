@@ -2,7 +2,7 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2'
 import { pool } from 'shared/config/database.js'
 
 export interface User extends RowDataPacket {
-  id: number
+  user_id: number
   username: string
   name: string
   email: string
@@ -25,7 +25,7 @@ export const UserModel = {
 
   findByID: async (id: number): Promise<User | null> => {
     const [rows] = await pool.query<User[]>(
-      'SELECT * FROM Users WHERE id = ?',
+      'SELECT * FROM Users WHERE user_id = ?',
       [id],
     )
     return rows.length > 0 ? rows[0] : null
@@ -48,19 +48,21 @@ export const UserModel = {
       | 'password_hash'
       | 'name'
       | 'bio'
+      | 'role'
       | 'profile_picture_url'
     >,
   ): Promise<number> => {
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO Users 
-        (email, username, password_hash, name, bio, profile_picture_url) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
+        (email, username, password_hash, name, bio, role, profile_picture_url) 
+       VALUES (?, ?, ?, ?, ?, ?,?)`,
       [
         user.email,
         user.username,
         user.password_hash,
         user.name,
         user.bio || null,
+        user.role || 'user',
         user.profile_picture_url || null,
       ],
     )
