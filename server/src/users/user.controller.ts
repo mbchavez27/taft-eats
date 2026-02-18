@@ -14,8 +14,15 @@ export const UserController = {
 
       const newUser = await UserService.register(userData)
 
+      const token = jwt.sign(
+        { userId: newUser.user_id, role: newUser.role },
+        JWT_SECRET,
+        { expiresIn: '14d' },
+      )
+
       res.status(201).json({
         message: 'User registered successfully',
+        token,
         data: newUser,
       })
     } catch (error: any) {
