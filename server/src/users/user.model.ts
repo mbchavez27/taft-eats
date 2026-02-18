@@ -14,7 +14,7 @@ export interface User extends RowDataPacket {
 
 export const UserModel = {
   //Find Users
-  findUserByEmail: async (email: string): Promise<User | null> => {
+  findByEmail: async (email: string): Promise<User | null> => {
     const [rows] = await pool.query<User[]>(
       'SELECT * FROM Users WHERE email = ? LIMIT 1',
       [email],
