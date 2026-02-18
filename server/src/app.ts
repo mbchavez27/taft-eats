@@ -1,7 +1,16 @@
-import express from 'express'
+import express from "express";
+import cors from "cors";
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-export default app
+app.use(cors());
+
+app.get("/", (req, res) => {
+  res
+    .status(200)
+    .json({ status: "ok", message: "Tafts Eats API is running..." });
+});
+
+export default app;
