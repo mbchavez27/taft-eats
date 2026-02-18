@@ -1,1 +1,1 @@
-// User data model or entity
+export const UserModel = {};

@@ -1,1 +1,1 @@
-// User business logic
+export const UserService = {};
