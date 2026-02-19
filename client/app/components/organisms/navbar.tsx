@@ -5,8 +5,6 @@ import SearchField from "~/components/molecules/searchfield";
 import SideBar from "./sidebar.";
 import { Link } from "react-router";
 import UserPopover from "./user-popover";
-import Login from "~/features/auth/containers/login";
-import Signup from "~/features/auth/containers/signup";
 import OwnerSettings from "~/features/users/containers/owner-settings";
 
 export default function NavBar() {

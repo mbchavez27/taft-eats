@@ -1,11 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Camera } from "lucide-react"; // Optional: icon to indicate upload
+import { Camera } from "lucide-react";
+import type { SignUpFormTypes } from "../../types/auth.types";
 
 interface Step2Props {
   onBack: () => void;
+  formData: SignUpFormTypes;
+  updateFormData: (field: keyof SignUpFormTypes, value: any) => void;
 }
 
-export function Step2({ onBack }: Step2Props) {
+export function Step2({ onBack, formData, updateFormData }: Step2Props) {
   return (
     <div className="w-full flex flex-col gap-5 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="text-[#326F33] font-bold flex flex-col justify-center items-center text-center">
@@ -23,7 +26,10 @@ export function Step2({ onBack }: Step2Props) {
           className="cursor-pointer group relative"
         >
           <Avatar className="w-24 h-24 border-2 border-[#326F33]">
-            <AvatarImage src="" alt="Profile" />
+            <AvatarImage
+              src={formData.avatar ? URL.createObjectURL(formData.avatar) : ""}
+              alt="Profile"
+            />
             <AvatarFallback className="bg-[#f0fdf4] text-[#326F33]">
               <Camera size={32} />
             </AvatarFallback>
@@ -37,6 +43,11 @@ export function Step2({ onBack }: Step2Props) {
           id="avatar-upload"
           className="hidden"
           accept="image/*"
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              updateFormData("avatar", e.target.files[0]);
+            }
+          }}
         />
         <span className="text-sm text-[#9CB16F]">Upload Profile Picture</span>
       </div>
@@ -48,6 +59,8 @@ export function Step2({ onBack }: Step2Props) {
         <input
           type="text"
           id="username"
+          value={formData.username}
+          onChange={(e) => updateFormData("username", e.target.value)}
           className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
           placeholder="Choose a username"
           required
@@ -60,6 +73,8 @@ export function Step2({ onBack }: Step2Props) {
         </label>
         <textarea
           id="bio"
+          value={formData.bio}
+          onChange={(e) => updateFormData("bio", e.target.value)}
           className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33] min-h-[100px] resize-none"
           placeholder="Tell us a little about yourself..."
         />
@@ -81,35 +96,13 @@ export function Step2({ onBack }: Step2Props) {
         <button
           type="button"
           onClick={onBack}
-          className="
-            border-2 border-[#326F33]
-            text-[#326F33]
-            font-bold
-            rounded-lg
-            w-1/3
-            py-2 
-            px-4
-            cursor-pointer 
-            hover:bg-gray-50
-            transition-colors
-          "
+          className="border-2 border-[#326F33] text-[#326F33] font-bold rounded-lg w-1/3 py-2 px-4 cursor-pointer hover:bg-gray-50 transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
-          className="
-            bg-[#326F33] 
-            text-white 
-            font-bold
-            rounded-lg
-            w-2/3 
-            py-2 
-            px-6
-            cursor-pointer 
-            hover:bg-[#285a29] 
-            transition-colors
-          "
+          className="bg-[#326F33] text-white font-bold rounded-lg w-2/3 py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors"
         >
           Sign Up
         </button>
