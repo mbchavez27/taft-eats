@@ -11,8 +11,7 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
   const [error, setError] = useState<string | null>(null);
 
   const handleNextClick = () => {
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,64}$/;
 
     if (
       !formData.name ||
