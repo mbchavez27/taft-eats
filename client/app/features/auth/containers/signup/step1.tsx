@@ -1,5 +1,6 @@
-import { Checkbox } from "~/components/ui/checkbox";
-import { type SignUpFormTypes } from "../../types/auth.types";
+import { useState } from "react";
+import type { SignUpFormTypes } from "../../types/auth.types";
+
 interface Step1Props {
   onNext: () => void;
   formData: SignUpFormTypes;
@@ -7,9 +8,45 @@ interface Step1Props {
 }
 
 export function Step1({ onNext, formData, updateFormData }: Step1Props) {
+  const [error, setError] = useState<string | null>(null);
+
+  const handleNextClick = () => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setError("Please fill out all fields.");
+      return;
+    }
+
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character (@$!%*?&).",
+      );
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setError(null);
+    onNext();
+  };
+
+  const inputBorderClass = error
+    ? "border-red-500 focus:border-red-600"
+    : "border-black focus:border-[#326F33]";
+
   return (
-    <div className="w-full flex flex-col gap-5 animate-in fade-in slide-in-from-left-4 duration-300">
-      <div className="text-[#326F33] font-bold flex flex-col justify-center items-center text-center">
+    <div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-left-4 duration-300">
+      <div className="text-[#326F33] font-bold flex flex-col justify-center items-center text-center mb-2">
         <h1 className="text-2xl md:text-3xl font-bold mt-2 leading-tight">
           Sign Up to unlock the <br className="hidden md:block" />
           best of Taft Eats!
@@ -26,7 +63,7 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
           value={formData.name}
           onChange={(e) => updateFormData("name", e.target.value)}
           placeholder="Enter your full name"
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
+          className={`border-2 rounded-md w-full p-2 outline-none transition-colors ${inputBorderClass}`}
           required
         />
       </div>
@@ -41,7 +78,7 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
           value={formData.email}
           onChange={(e) => updateFormData("email", e.target.value)}
           placeholder="Enter your email"
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
+          className={`border-2 rounded-md w-full p-2 outline-none transition-colors ${inputBorderClass}`}
           required
         />
       </div>
@@ -56,7 +93,7 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
           value={formData.password}
           onChange={(e) => updateFormData("password", e.target.value)}
           placeholder="Create a password"
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
+          className={`border-2 rounded-md w-full p-2 outline-none transition-colors ${inputBorderClass}`}
           required
         />
       </div>
@@ -74,15 +111,21 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
           value={formData.confirmPassword}
           onChange={(e) => updateFormData("confirmPassword", e.target.value)}
           placeholder="Confirm your password"
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
+          className={`border-2 rounded-md w-full p-2 outline-none transition-colors ${inputBorderClass}`}
           required
         />
       </div>
 
-      <div className="flex">
+      {error && (
+        <div className="text-red-500 text-sm font-medium p-3 text-center">
+          {error}
+        </div>
+      )}
+
+      <div className="flex mt-2">
         <button
           type="button"
-          onClick={onNext}
+          onClick={handleNextClick}
           className="bg-[#326F33] text-white font-bold rounded-lg w-full py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors"
         >
           Next
