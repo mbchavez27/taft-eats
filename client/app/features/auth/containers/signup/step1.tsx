@@ -9,10 +9,9 @@ interface Step1Props {
 
 export function Step1({ onNext, formData, updateFormData }: Step1Props) {
   const [error, setError] = useState<string | null>(null);
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,64}$/;
 
   const handleNextClick = () => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,64}$/;
-
     if (
       !formData.name ||
       !formData.email ||
@@ -120,7 +119,18 @@ export function Step1({ onNext, formData, updateFormData }: Step1Props) {
           {error}
         </div>
       )}
-
+      {formData.password && (
+        <div
+          className={`text-sm font-medium p-3 text-center ${
+            !passwordRegex.test(formData.password)
+              ? "text-red-500"
+              : "text-green-500"
+          }`}
+        >
+          Password is{" "}
+          {passwordRegex.test(formData.password) ? "Accepted" : "Rejected"}
+        </div>
+      )}
       <div className="flex mt-2">
         <button
           type="button"
