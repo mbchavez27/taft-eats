@@ -7,3 +7,9 @@ export interface SignUpFormTypes {
   bio: string
   avatar: File | null
 }
+
+export type LoginFormTypes = {
+  email: string
+  password: string
+  rememberMe: boolean
+}

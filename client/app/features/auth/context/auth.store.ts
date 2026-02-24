@@ -8,6 +8,7 @@ interface AuthState {
   isLoading: boolean
   verifySession: () => Promise<void>
   logout: () => Promise<void>
+  setSession: (user: UserResponseDTO) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -15,11 +16,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
 
+  setSession: (user) => set({ user, isAuthenticated: true, isLoading: false }),
+
   verifySession: async () => {
     set({ isLoading: true })
     try {
       const data = await AuthService.verifySession()
-
       set({
         user: data.user,
         isAuthenticated: true,

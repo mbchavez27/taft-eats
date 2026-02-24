@@ -34,7 +34,7 @@ export const useSignUp = () => {
   const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)
 
-  const verifySession = useAuthStore((state) => state.verifySession)
+  const setSession = useAuthStore((state) => state.setSession)
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -55,9 +55,10 @@ export const useSignUp = () => {
     try {
       const { confirmPassword, ...payload } = data
 
-      await AuthService.register(payload)
+      const response = await AuthService.register(payload)
 
-      await verifySession()
+      setSession(response.user)
+
       navigate('/')
     } catch (error: any) {
       setServerError(error.message || 'Failed to register. Please try again.')
