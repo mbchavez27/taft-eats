@@ -28,7 +28,7 @@ export type UserResponseDTO = {
   bio: string | null
   role: 'user' | 'owner' | 'admin'
   profile_picture_url: string | null
-  created_at: Date
+  created_at: Date | string
 }
 
 export type LoginDTO = {
@@ -38,8 +38,6 @@ export type LoginDTO = {
 
 export interface AuthResponse {
   message: string
-  token?: string
-  data?: UserResponseDTO // From register
-  user?: UserResponseDTO // From login
+  user: UserResponseDTO
   error?: string
 }

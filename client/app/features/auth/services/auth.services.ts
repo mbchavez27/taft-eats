@@ -48,7 +48,7 @@ export const AuthService = {
 
   logout: async (): Promise<void> => {
     try {
-      await fetch(`${API_BASE_URL}/api/logout`, {
+      await fetch(`${API_BASE_URL}/api/users/logout`, {
         method: 'POST',
         credentials: 'include',
       })
@@ -57,7 +57,16 @@ export const AuthService = {
     }
   },
 
-  getToken: () => {
-    return localStorage.getItem('token')
+  verifySession: async (): Promise<any> => {
+    const response = await fetch(`${API_BASE_URL}/api/users/verify`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error('Not Authenticated')
+    }
+
+    return await response.json()
   },
 }

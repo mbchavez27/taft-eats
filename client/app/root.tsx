@@ -10,6 +10,8 @@ import {
 import type { Route } from './+types/root'
 import './app.css'
 import NavBar from '~/components/organisms/navbar'
+import { useAuthStore } from './features/auth/context/auth.store'
+import { useEffect } from 'react'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -43,6 +45,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const verifySession = useAuthStore((state) => state.verifySession)
+
+  useEffect(() => {
+    verifySession()
+  }, [verifySession])
+
   return (
     <>
       <Outlet />

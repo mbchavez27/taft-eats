@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { AuthService } from '../services/auth.services'
+import { useAuthStore } from '../context/auth.store'
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,64}$/
 
@@ -33,6 +34,8 @@ export const useSignUp = () => {
   const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)
 
+  const verifySession = useAuthStore((state) => state.verifySession)
+
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     mode: 'onChange',
@@ -53,6 +56,8 @@ export const useSignUp = () => {
       const { confirmPassword, ...payload } = data
 
       await AuthService.register(payload)
+
+      await verifySession()
       navigate('/')
     } catch (error: any) {
       setServerError(error.message || 'Failed to register. Please try again.')
