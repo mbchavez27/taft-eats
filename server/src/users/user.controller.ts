@@ -2,9 +2,15 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { UserService } from './user.service.js'
 import { CreateUserDTO, LoginDTO, UpdateUserDTO } from './dto/user-dto.js'
-import { error } from 'node:console'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-this'
+
+const cookies = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+}
 
 export const UserController = {
   //Register POST /api/users/register
@@ -20,9 +26,10 @@ export const UserController = {
         { expiresIn: '14d' },
       )
 
+      res.cookie('auth-token', token, cookies)
+
       res.status(201).json({
         message: 'User registered successfully',
-        token,
         data: newUser,
       })
     } catch (error: any) {
@@ -58,6 +65,8 @@ export const UserController = {
         { expiresIn: '14d' },
       )
 
+      res.cookie('auth-token', token, cookies)
+
       res.status(200).json({
         message: 'Login successful',
         token,
@@ -67,6 +76,13 @@ export const UserController = {
       console.error('Login Error: ', error)
       res.status(500).json({ error: 'Internal server error' })
     }
+  },
+
+  //Login POST /api/users/logout
+  logout: async (req: Request, res: Response) => {
+    res.cookie('auth-token', '', { ...cookies, maxAge: 0 })
+
+    res.status(200).json({ message: 'Logged out successfully' })
   },
 
   //TODO: Add update user controller
