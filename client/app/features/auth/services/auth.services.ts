@@ -13,6 +13,7 @@ export const AuthService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(userData),
     })
 
@@ -20,10 +21,6 @@ export const AuthService = {
 
     if (!response.ok) {
       throw new Error(data.error || 'Registration failed')
-    }
-
-    if (data.token) {
-      localStorage.setItem('token', data.token)
     }
 
     return data
@@ -35,6 +32,7 @@ export const AuthService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(credentials),
     })
     const data: AuthResponse = await response.json()
@@ -45,15 +43,18 @@ export const AuthService = {
       )
     }
 
-    if (data.token) {
-      localStorage.setItem('token', data.token)
-    }
-
     return data
   },
 
-  logout: () => {
-    localStorage.removeItem('token')
+  logout: async (): Promise<void> => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch (error: any) {
+      console.error('Logout failed: ', error)
+    }
   },
 
   getToken: () => {
