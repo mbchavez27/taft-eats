@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-this'
 const cookies = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  sameSite: 'lax' as const,
   maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
 }
 

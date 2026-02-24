@@ -13,7 +13,7 @@ export const requireAuth = (
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies.token
+    const token = req.cookies['auth-token']
 
     if (!token) {
       return res.status(401).json({ error: 'Not logged in' })
