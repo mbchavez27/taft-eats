@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const AuthService = {
   register: async (userData: CreateUserDTO): Promise<AuthResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export const AuthService = {
   },
 
   login: async (credentials: LoginDTO): Promise<AuthResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const AuthService = {
 
   logout: async (): Promise<void> => {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
+      await fetch(`${API_BASE_URL}/api/logout`, {
         method: 'POST',
         credentials: 'include',
       })

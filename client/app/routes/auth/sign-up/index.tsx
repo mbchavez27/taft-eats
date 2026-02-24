@@ -1,39 +1,30 @@
-import { useState, type FormEvent } from "react";
-import type { Route } from "./+types/index";
-import { Step1 } from "~/features/auth/containers/signup/step1";
-import { Step2 } from "~/features/auth/containers/signup/step2";
-import { type SignUpFormTypes } from "~/features/auth/types/auth.types";
+import { useState } from 'react'
+import type { Route } from './+types/index'
+import { Step1 } from '~/features/auth/containers/signup/step1'
+import { Step2 } from '~/features/auth/containers/signup/step2'
+import { useSignUp } from '~/features/auth/hooks/useSignUp'
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "Sign Up" }, { name: "description", content: "Taft Eats" }];
+  return [{ title: 'Sign Up' }, { name: 'description', content: 'Taft Eats' }]
 }
 
 export default function SignUp() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1)
 
-  const [formData, setFormData] = useState<SignUpFormTypes>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    username: "",
-    bio: "",
-    avatar: null,
-  });
+  const { form, onSubmit, serverError, isSubmitting, validateStep1 } =
+    useSignUp()
 
-  const updateFormData = (field: keyof SignUpFormTypes, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Submitting this data to the service:", formData);
-  };
+  const handleNextStep = async () => {
+    const isValid = await validateStep1()
+    if (isValid) {
+      setStep(2)
+    }
+  }
 
   return (
     <main className="flex justify-center items-center min-h-screen p-4">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         className="
         bg-white 
         font-lexend 
@@ -49,21 +40,22 @@ export default function SignUp() {
           alt="Taft Eats Logo"
           className="w-[150px] h-[150px] object-contain"
         />
-        {step === 1 && (
-          <Step1
-            onNext={() => setStep(2)}
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        )}
+
+        {step === 1 && <Step1 onNext={handleNextStep} form={form} />}
+
         {step === 2 && (
           <Step2
             onBack={() => setStep(1)}
-            formData={formData}
-            updateFormData={updateFormData}
+            form={form}
+            isLoading={isSubmitting}
           />
+        )}
+        {serverError && (
+          <div className="w-full p-3 text-sm text-red-600 bg-red-50 rounded-md text-center border border-red-200">
+            {serverError}
+          </div>
         )}
       </form>
     </main>
-  );
+  )
 }

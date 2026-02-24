@@ -1,14 +1,38 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Camera } from "lucide-react";
-import type { SignUpFormTypes } from "../../types/auth.types";
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { Camera, Loader2 } from 'lucide-react'
+import type { UseFormReturn } from 'react-hook-form'
+import type { SignUpFormValues } from '../../hooks/useSignUp'
 
 interface Step2Props {
-  onBack: () => void;
-  formData: SignUpFormTypes;
-  updateFormData: (field: keyof SignUpFormTypes, value: any) => void;
+  onBack: () => void
+  form: UseFormReturn<SignUpFormValues>
+  isLoading?: boolean
 }
 
-export function Step2({ onBack, formData, updateFormData }: Step2Props) {
+export function Step2({ onBack, form, isLoading }: Step2Props) {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form
+
+  const avatarFile = watch('avatar')
+
+  const avatarPreviewUrl =
+    avatarFile instanceof File || avatarFile instanceof Blob
+      ? URL.createObjectURL(avatarFile)
+      : ''
+
+  const getInputClass = (fieldName: keyof SignUpFormValues) => {
+    const hasError = !!errors[fieldName]
+    return `border-2 rounded-md w-full p-2 outline-none transition-colors ${
+      hasError
+        ? 'border-red-500 focus:border-red-600'
+        : 'border-black focus:border-[#326F33]'
+    }`
+  }
+
   return (
     <div className="w-full flex flex-col gap-5 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="text-[#326F33] font-bold flex flex-col justify-center items-center text-center">
@@ -26,10 +50,7 @@ export function Step2({ onBack, formData, updateFormData }: Step2Props) {
           className="cursor-pointer group relative"
         >
           <Avatar className="w-24 h-24 border-2 border-[#326F33]">
-            <AvatarImage
-              src={formData.avatar ? URL.createObjectURL(formData.avatar) : ""}
-              alt="Profile"
-            />
+            <AvatarImage src={avatarPreviewUrl} alt="Profile" />
             <AvatarFallback className="bg-[#f0fdf4] text-[#326F33]">
               <Camera size={32} />
             </AvatarFallback>
@@ -45,7 +66,10 @@ export function Step2({ onBack, formData, updateFormData }: Step2Props) {
           accept="image/*"
           onChange={(e) => {
             if (e.target.files && e.target.files.length > 0) {
-              updateFormData("avatar", e.target.files[0]);
+              setValue('avatar', e.target.files[0], {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
             }
           }}
         />
@@ -59,12 +83,15 @@ export function Step2({ onBack, formData, updateFormData }: Step2Props) {
         <input
           type="text"
           id="username"
-          value={formData.username}
-          onChange={(e) => updateFormData("username", e.target.value)}
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33]"
+          {...register('username')}
+          className={getInputClass('username')}
           placeholder="Choose a username"
-          required
         />
+        {errors.username && (
+          <span className="text-red-500 text-sm mt-1">
+            {errors.username.message}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col w-full">
@@ -73,19 +100,23 @@ export function Step2({ onBack, formData, updateFormData }: Step2Props) {
         </label>
         <textarea
           id="bio"
-          value={formData.bio}
-          onChange={(e) => updateFormData("bio", e.target.value)}
-          className="border-2 border-black rounded-md w-full p-2 outline-none focus:border-[#326F33] min-h-[100px] resize-none"
+          {...register('bio')}
+          className={`${getInputClass('bio')} min-h-[100px] resize-none`}
           placeholder="Tell us a little about yourself..."
         />
+        {errors.bio && (
+          <span className="text-red-500 text-sm mt-1">
+            {errors.bio.message}
+          </span>
+        )}
       </div>
 
       <p className="text-xs text-center text-[#326F33] leading-tight px-2">
-        By continuing, you agree to Taft Eat’s{" "}
+        By continuing, you agree to Taft Eat’s{' '}
         <span className="font-bold underline cursor-pointer">
           Terms of Service
-        </span>{" "}
-        and acknowledge Taft Eat’s{" "}
+        </span>{' '}
+        and acknowledge Taft Eat’s{' '}
         <span className="font-bold underline cursor-pointer">
           Privacy Policy
         </span>
@@ -96,17 +127,26 @@ export function Step2({ onBack, formData, updateFormData }: Step2Props) {
         <button
           type="button"
           onClick={onBack}
-          className="border-2 border-[#326F33] text-[#326F33] font-bold rounded-lg w-1/3 py-2 px-4 cursor-pointer hover:bg-gray-50 transition-colors"
+          disabled={isLoading}
+          className="border-2 border-[#326F33] text-[#326F33] font-bold rounded-lg w-1/3 py-2 px-4 cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Back
         </button>
         <button
           type="submit"
-          className="bg-[#326F33] text-white font-bold rounded-lg w-2/3 py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors"
+          disabled={isLoading}
+          className="bg-[#326F33] text-white font-bold rounded-lg w-2/3 py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Sign Up
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            'Sign Up'
+          )}
         </button>
       </div>
     </div>
-  );
+  )
 }
