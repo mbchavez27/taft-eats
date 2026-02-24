@@ -1,9 +1,9 @@
 export interface SignUpFormTypes {
-  name: "";
-  email: "";
-  password: "";
-  confirmPassword: "";
-  username: "";
-  bio: "";
-  avatar: File | null;
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
+  username: string
+  bio: string
+  avatar: File | null
 }
