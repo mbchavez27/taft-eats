@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import type { Route } from './+types/index'
 import { Step1 } from '~/features/auth/containers/signup/step1'
-import { Step2 } from '~/features/auth/containers/signup/step2'
+import { UserStep2 } from '~/features/auth/containers/signup/user-step2'
 import { useSignUp } from '~/features/auth/hooks/useSignUp'
+import { OwnerStep2 } from '~/features/auth/containers/signup/owner-step2'
+import { OwnerStep3 } from '~/features/auth/containers/signup/owner-step3'
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Sign Up' }, { name: 'description', content: 'Taft Eats' }]
@@ -10,13 +12,16 @@ export function meta({}: Route.MetaArgs) {
 
 export default function SignUp() {
   const [step, setStep] = useState(1)
+  const [role, setRole] = useState<'owner' | 'user'>('user')
 
   const { form, onSubmit, serverError, isSubmitting, validateStep1 } =
     useSignUp()
 
-  const handleNextStep = async () => {
+  const handleNextStep = async (selectedRole: 'owner' | 'user') => {
     const isValid = await validateStep1()
     if (isValid) {
+      setRole(selectedRole)
+      form.setValue('role', selectedRole)
       setStep(2)
     }
   }
@@ -43,9 +48,24 @@ export default function SignUp() {
 
         {step === 1 && <Step1 onNext={handleNextStep} form={form} />}
 
-        {step === 2 && (
-          <Step2
+        {step === 2 && role === 'owner' && (
+          <OwnerStep2
             onBack={() => setStep(1)}
+            onNext={() => setStep(3)}
+            form={form}
+            isLoading={isSubmitting}
+          />
+        )}
+        {step === 2 && role === 'user' && (
+          <UserStep2
+            onBack={() => setStep(1)}
+            form={form}
+            isLoading={isSubmitting}
+          />
+        )}
+        {step === 3 && (
+          <OwnerStep3
+            onBack={() => setStep(2)}
             form={form}
             isLoading={isSubmitting}
           />

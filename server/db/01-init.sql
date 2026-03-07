@@ -44,20 +44,23 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- If owner account is deleted, set this field to NULL
-    FOREIGN KEY (owner_user_id) REFERENCES Users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (owner_user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     
     INDEX idx_name (name)
 );
 
+CREATE TABLE Tags (
+    tag_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    category ENUM('tag', 'cuisine', 'food') NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Restaurant_Tags (
-    tag_id INT AUTO_INCREMENT PRIMARY KEY,
     restaurant_id BIGINT UNSIGNED,
-    tag_name VARCHAR(50) NOT NULL,
-    
+    tag_id BIGINT UNSIGNED,
+    PRIMARY KEY (restaurant_id, tag_id),
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE,
-    
-    -- Prevent duplicate tags for the same restaurant
-    UNIQUE KEY unique_restaurant_tag (restaurant_id, tag_name)
+    FOREIGN KEY (tag_id) REFERENCES Tags(tag_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS User_Bookmarks (
@@ -109,3 +112,18 @@ CREATE TABLE IF NOT EXISTS Review_Replies (
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- Trigger to delete the Owner when their Restaurant is deleted
+DELIMITER //
+
+CREATE TRIGGER after_restaurant_delete
+AFTER DELETE ON Restaurants
+FOR EACH ROW
+BEGIN
+    -- Only delete the user if they were actually assigned as the owner
+    IF OLD.owner_user_id IS NOT NULL THEN
+        DELETE FROM Users WHERE user_id = OLD.owner_user_id;
+    END IF;
+END //
+
+DELIMITER ;

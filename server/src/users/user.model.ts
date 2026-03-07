@@ -1,9 +1,14 @@
-import { RowDataPacket, ResultSetHeader } from 'mysql2'
+import {
+  RowDataPacket,
+  ResultSetHeader,
+  Pool,
+  PoolConnection,
+} from 'mysql2/promise'
 import { pool } from 'shared/config/database.js'
 
 export interface User extends RowDataPacket {
   user_id: number
-  username: string
+  username?: string
   name: string
   email: string
   password_hash: string
@@ -51,14 +56,17 @@ export const UserModel = {
       | 'role'
       | 'profile_picture_url'
     >,
+    connection?: Pool | PoolConnection,
   ): Promise<number> => {
-    const [result] = await pool.query<ResultSetHeader>(
+    const db = (connection || pool) as Pool
+
+    const [result] = await db.query<ResultSetHeader>(
       `INSERT INTO Users 
         (email, username, password_hash, name, bio, role, profile_picture_url) 
        VALUES (?, ?, ?, ?, ?, ?,?)`,
       [
         user.email,
-        user.username,
+        user.username || null,
         user.password_hash,
         user.name,
         user.bio || null,

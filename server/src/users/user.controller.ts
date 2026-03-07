@@ -32,7 +32,7 @@ export const UserController = {
 
       res.status(201).json({
         message: 'User registered successfully',
-        data: newUser,
+        user: newUser,
       })
     } catch (error: any) {
       if (
@@ -41,7 +41,7 @@ export const UserController = {
       ) {
         res.status(409).json({ error: error.message })
       } else {
-        console.error('Register Error: ', error)
+        console.error('[Register Error]:', error)
         res.status(500).json({ error: 'Internal server error' })
       }
     }

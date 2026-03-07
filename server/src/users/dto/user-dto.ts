@@ -1,11 +1,22 @@
 export type CreateUserDTO = {
-  username: string
   name: string
   email: string
   password: string //unhashed
+
+  //User
+  username?: string
   bio?: string
   role?: 'user' | 'owner' | 'admin' //default is user
   profile_picture_url?: string
+
+  //Establishment
+  restaurantName?: string
+  restaurantDescription?: string
+  restaurantBanner?: any
+  latitude?: number
+  longitude?: number
+  tags?: { id: bigint; label: string }[]
+  price_range?: '$' | '$$' | '$$$'
 }
 
 export type UpdateUserDTO = {
@@ -22,7 +33,7 @@ export type UpdateUserRoleDTO = {
 
 export type UserResponseDTO = {
   user_id: number
-  username: string
+  username?: string
   name: string
   email: string
   bio: string | null

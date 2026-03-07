@@ -34,7 +34,7 @@ export default function SelectTags() {
                   className="flex gap-6 items-center text-black"
                 >
                   <Checkbox
-                    id={tag.id}
+                    id={tag.id.toString()}
                     className="
               border-2
               border-[#416CAE]
@@ -45,7 +45,7 @@ export default function SelectTags() {
               data-[state=checked]:text-white
             "
                   />
-                  <label htmlFor={tag.id}>{tag.label}</label>
+                  <label htmlFor={tag.id.toString()}>{tag.label}</label>
                 </div>
               ))}
             </ScrollArea>

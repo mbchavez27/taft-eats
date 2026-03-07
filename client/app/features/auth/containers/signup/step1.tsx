@@ -2,7 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
 
 interface Step1Props {
-  onNext: () => void
+  onNext: (role: 'owner' | 'user') => void
   form: UseFormReturn<SignUpFormValues>
 }
 
@@ -109,11 +109,26 @@ export function Step1({ onNext, form }: Step1Props) {
         )}
       </div>
 
-      <div className="flex mt-2">
+      <div className="flex justify-center items-end gap-12 mt-4">
+        {/* Left Side: Owner Sign Up */}
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-center font-lexend font-bold text-[#0765A7] text-sm leading-tight">
+            Are you planning to be <br /> an establishment owner?
+          </p>
+          <button
+            type="button"
+            onClick={() => onNext('owner')}
+            className="bg-[#0765A7] text-white font-bold rounded-full py-2 px-6 cursor-pointer hover:bg-[#054d80] transition-colors"
+          >
+            Owner Sign Up
+          </button>
+        </div>
+
+        {/* Right Side: Next Button */}
         <button
           type="button"
-          onClick={onNext}
-          className="bg-[#326F33] text-white font-bold rounded-lg w-full py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors"
+          onClick={() => onNext('user')}
+          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 cursor-pointer hover:bg-[#285a29] transition-colors"
         >
           Next
         </button>
