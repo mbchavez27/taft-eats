@@ -9,7 +9,7 @@ interface Step2Props {
   isLoading?: boolean
 }
 
-export function Step2({ onBack, form, isLoading }: Step2Props) {
+export function UserStep2({ onBack, form, isLoading }: Step2Props) {
   const {
     register,
     setValue,
@@ -123,19 +123,19 @@ export function Step2({ onBack, form, isLoading }: Step2Props) {
         .
       </p>
 
-      <div className="flex w-full gap-3 mt-1">
+      <div className="flex justify-center gap-3 mt-1">
         <button
           type="button"
           onClick={onBack}
           disabled={isLoading}
-          className="border-2 border-[#326F33] text-[#326F33] font-bold rounded-lg w-1/3 py-2 px-4 cursor-pointer hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 cursor-pointer hover:bg-[#285a29] transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-[#326F33] text-white font-bold rounded-lg w-2/3 py-2 px-6 cursor-pointer hover:bg-[#285a29] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 cursor-pointer hover:bg-[#285a29] transition-colors"
         >
           {isLoading ? (
             <>
