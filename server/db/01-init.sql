@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- If owner account is deleted, set this field to NULL
-    FOREIGN KEY (owner_user_id) REFERENCES Users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (owner_user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     
     INDEX idx_name (name)
 );
@@ -112,3 +112,18 @@ CREATE TABLE IF NOT EXISTS Review_Replies (
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- Trigger to delete the Owner when their Restaurant is deleted
+DELIMITER //
+
+CREATE TRIGGER after_restaurant_delete
+AFTER DELETE ON Restaurants
+FOR EACH ROW
+BEGIN
+    -- Only delete the user if they were actually assigned as the owner
+    IF OLD.owner_user_id IS NOT NULL THEN
+        DELETE FROM Users WHERE user_id = OLD.owner_user_id;
+    END IF;
+END //
+
+DELIMITER ;
