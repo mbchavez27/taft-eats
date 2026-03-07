@@ -57,10 +57,34 @@ export const UserService = {
         )
 
         if (data.tags && data.tags.length > 0) {
-          const tagIds = data.tags.map((tag) => Number(tag.id))
+          const finalTagIds: number[] = []
+
+          for (const tag of data.tags) {
+            if (typeof tag.id === 'number') {
+              finalTagIds.push(tag.id)
+            } else {
+              const existingTag =
+                await EstablishmentModel.findRestaurantTagByLabel(
+                  tag.label,
+                  connection,
+                )
+
+              if (existingTag) {
+                finalTagIds.push(existingTag.tag_id)
+              } else {
+                const newTagId = await EstablishmentModel.createRestaurantTags(
+                  tag.label,
+                  connection,
+                )
+                finalTagIds.push(newTagId)
+              }
+            }
+          }
+
+          // Finally, link all the collected tag IDs to the restaurant
           await EstablishmentModel.addRestaurantTags(
             restaurantId,
-            tagIds,
+            finalTagIds,
             connection,
           )
         }

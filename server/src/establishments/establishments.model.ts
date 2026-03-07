@@ -70,4 +70,32 @@ export const EstablishmentModel = {
       [values],
     )
   },
+
+  //Find Restaurant Tags
+  findRestaurantTagByLabel: async (
+    label: string,
+    connection?: Pool | PoolConnection,
+  ): Promise<{ tag_id: number } | null> => {
+    const db = (connection || pool) as Pool
+
+    const [rows] = await db.query<RowDataPacket[]>(
+      'SELECT tag_id FROM Tags WHERE LOWER(label) = LOWER(?) LIMIT 1',
+      [label],
+    )
+    return rows.length > 0 ? (rows[0] as { tag_id: number }) : null
+  },
+
+  // Create Restaurant Tag
+  createRestaurantTags: async (
+    label: string,
+    connection?: Pool | PoolConnection,
+  ): Promise<number> => {
+    const db = (connection || pool) as Pool
+
+    const [result] = await db.query<ResultSetHeader>(
+      'INSERT INTO Tags (label) VALUES (?)',
+      [label],
+    )
+    return result.insertId
+  },
 }

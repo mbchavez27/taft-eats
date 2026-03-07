@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Restaurants (
 
 CREATE TABLE Tags (
     tag_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     category ENUM('tag', 'cuisine', 'food') NOT NULL
 );
 
