@@ -6,8 +6,8 @@ services:
     env_file: .env
     ports: 
       - "3307:3306"
-    volumes: 
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
       - ./mysql_data:/var/lib/mysql
   adminer:
     image: adminer

@@ -4,7 +4,11 @@ import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
 import { Checkbox } from '~/components/ui/checkbox'
 import Prices from '~/features/shared/components/molecules/prices'
-import { initial_tags } from '~/features/filter-menu/data/tags'
+import {
+  initial_cuisines,
+  initial_foods,
+  initial_tags,
+} from '~/features/filter-menu/data/tags'
 
 interface Step2Props {
   onBack: () => void
@@ -49,6 +53,62 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
       </div>
 
       <div className="flex flex-col justify-center items-center">
+        <p className="text-xl text-black font-bold mb-2 ">Foods</p>
+        <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
+          {initial_foods.map((tag) => (
+            <div key={tag.id} className="flex gap-3 items-center text-black">
+              <Checkbox
+                id={tag.id.toString()}
+                className="
+                border-2
+                border-gray-800
+                data-[state=unchecked]:bg-white
+                data-[state=unchecked]:border-gray-800
+                data-[state=checked]:bg-[#416CAE]
+                data-[state=checked]:border-[#416CAE]
+                data-[state=checked]:text-white
+                w-6 h-6 rounded-sm cursor-pointer
+              "
+              />
+              <label
+                htmlFor={tag.id.toString()}
+                className="text-lg font-semibold cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {tag.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col justify-center items-center">
+        <p className="text-xl text-black font-bold mb-2 ">Cuisines</p>
+        <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
+          {initial_cuisines.map((tag) => (
+            <div key={tag.id} className="flex gap-3 items-center text-black">
+              <Checkbox
+                id={tag.id.toString()}
+                className="
+                border-2
+                border-gray-800
+                data-[state=unchecked]:bg-white
+                data-[state=unchecked]:border-gray-800
+                data-[state=checked]:bg-[#416CAE]
+                data-[state=checked]:border-[#416CAE]
+                data-[state=checked]:text-white
+                w-6 h-6 rounded-sm cursor-pointer
+              "
+              />
+              <label
+                htmlFor={tag.id.toString()}
+                className="text-lg font-semibold cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {tag.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col justify-center items-center">
         <p className="text-xl text-black font-bold mb-2 ">Tags</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
           {initial_tags.map((tag) => (
@@ -76,6 +136,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
           ))}
         </div>
       </div>
+
       <div className="flex flex-col justify-center items-center gap-2 mb-8">
         <p className="text-xl text-black font-bold mb-2 ">Price Ranges</p>
         <div className="flex gap-4">

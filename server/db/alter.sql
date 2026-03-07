@@ -1,1 +1,0 @@
-ALTER TABLE Users ADD CONSTRAINT chk_username_role CHECK ((role IN ('owner', 'admin')) OR (username IS NOT NULL));

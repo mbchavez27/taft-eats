@@ -49,15 +49,18 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     INDEX idx_name (name)
 );
 
+CREATE TABLE Tags (
+    tag_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    category ENUM('tag', 'cuisine', 'food') NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Restaurant_Tags (
-    tag_id INT AUTO_INCREMENT PRIMARY KEY,
     restaurant_id BIGINT UNSIGNED,
-    tag_name VARCHAR(50) NOT NULL,
-    
+    tag_id BIGINT UNSIGNED,
+    PRIMARY KEY (restaurant_id, tag_id),
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE,
-    
-    -- Prevent duplicate tags for the same restaurant
-    UNIQUE KEY unique_restaurant_tag (restaurant_id, tag_name)
+    FOREIGN KEY (tag_id) REFERENCES Tags(tag_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS User_Bookmarks (
