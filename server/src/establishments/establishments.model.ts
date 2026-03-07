@@ -1,4 +1,9 @@
-import { RowDataPacket, ResultSetHeader } from 'mysql2'
+import {
+  RowDataPacket,
+  ResultSetHeader,
+  Pool,
+  PoolConnection,
+} from 'mysql2/promise'
 import { pool } from 'shared/config/database.js'
 
 export interface Restaurant extends RowDataPacket {
@@ -6,7 +11,7 @@ export interface Restaurant extends RowDataPacket {
   owner_user_id: number | null
   name: string
   description?: string
-  price_range: '$' | '$$' | '$$$' | '$$$$'
+  price_range: '$' | '$$' | '$$$'
   rating: number
   latitude: number | null
   longitude: number | null
@@ -19,33 +24,50 @@ export const EstablishmentModel = {
   createRestaurant: async (
     restaurant: Pick<
       Restaurant,
-      | 'email'
-      | 'username'
-      | 'password_hash'
+      | 'owner_user_id'
       | 'name'
-      | 'bio'
-      | 'role'
-      | 'profile_picture_url'
+      | 'description'
+      | 'latitude'
+      | 'longitude'
+      | 'price_range'
+      | 'banner_picture_url'
     >,
-    tags: string[],
+    connection?: Pool | PoolConnection,
   ): Promise<number> => {
-    const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO Users 
-        (email, username, password_hash, name, bio, role, profile_picture_url) 
-       VALUES (?, ?, ?, ?, ?, ?,?)`,
+    const db = (connection || pool) as Pool
+
+    const [result] = await db.query<ResultSetHeader>(
+      `INSERT INTO Restaurants 
+        (owner_user_id, name, description, latitude, longitude, price_range, banner_picture_url) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        user.email,
-        user.username,
-        user.password_hash,
-        user.name,
-        user.bio || null,
-        user.role || 'user',
-        user.profile_picture_url || null,
+        restaurant.owner_user_id,
+        restaurant.name,
+        restaurant.description || null,
+        restaurant.latitude || null,
+        restaurant.longitude || null,
+        restaurant.price_range || '$',
+        restaurant.banner_picture_url || null,
       ],
     )
 
     return result.insertId
   },
 
-  //TODO: Create a Update User Function for edit function ie edit forgot password and other details like bio and username and name
+  // Links tags to the restaurant in the junction table
+  addRestaurantTags: async (
+    restaurantId: number,
+    tagIds: number[],
+    connection?: Pool | PoolConnection,
+  ): Promise<void> => {
+    if (!tagIds || tagIds.length === 0) return
+
+    const db = (connection || pool) as Pool
+    const values = tagIds.map((id) => [restaurantId, id])
+
+    await db.query(
+      'INSERT INTO Restaurant_Tags (restaurant_id, tag_id) VALUES ?',
+      [values],
+    )
+  },
 }

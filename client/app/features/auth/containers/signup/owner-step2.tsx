@@ -18,11 +18,11 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
     formState: { errors },
   } = form
 
-  const avatarFile = watch('avatar')
+  const bannerFile = watch('avatar')
 
-  const avatarPreviewUrl =
-    avatarFile instanceof File || avatarFile instanceof Blob
-      ? URL.createObjectURL(avatarFile)
+  const bannerPreviewUrl =
+    bannerFile instanceof File || bannerFile instanceof Blob
+      ? URL.createObjectURL(bannerFile)
       : ''
 
   const getInputClass = (fieldName: keyof SignUpFormValues) => {
@@ -48,7 +48,7 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
           className="cursor-pointer group relative"
         >
           <Avatar className="w-24 h-24 border-2 border-[#326F33]">
-            <AvatarImage src={avatarPreviewUrl} alt="Profile" />
+            <AvatarImage src={bannerPreviewUrl} alt="Profile" />
             <AvatarFallback className="bg-[#f0fdf4] text-[#326F33]">
               <Camera size={32} />
             </AvatarFallback>
@@ -59,12 +59,12 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
         </label>
         <input
           type="file"
-          id="avatar-upload"
+          id="banner-upload"
           className="hidden"
           accept="image/*"
           onChange={(e) => {
             if (e.target.files && e.target.files.length > 0) {
-              setValue('avatar', e.target.files[0], {
+              setValue('restaurantBanner', e.target.files[0], {
                 shouldValidate: true,
                 shouldDirty: true,
               })
@@ -77,36 +77,39 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
       </div>
 
       <div className="flex flex-col w-full">
-        <label htmlFor="username" className="text-black font-medium mb-1">
+        <label htmlFor="restaurantName" className="text-black font-medium mb-1">
           Establishment Name*
         </label>
         <input
           type="text"
-          id="username"
-          {...register('username')}
-          className={getInputClass('username')}
+          id="restaurantName"
+          {...register('restaurantName')}
+          className={getInputClass('restaurantName')}
           placeholder="Choose a Establishment Name"
         />
-        {errors.username && (
+        {errors.restaurantName && (
           <span className="text-red-500 text-sm mt-1">
-            {errors.username.message}
+            {errors.restaurantName.message}
           </span>
         )}
       </div>
 
       <div className="flex flex-col w-full">
-        <label htmlFor="bio" className="text-black font-medium mb-1">
-          Bio
+        <label
+          htmlFor="restaurantDescription"
+          className="text-black font-medium mb-1"
+        >
+          Description
         </label>
         <textarea
-          id="bio"
-          {...register('bio')}
-          className={`${getInputClass('bio')} min-h-[100px] resize-none`}
+          id="restaurantDescription"
+          {...register('restaurantDescription')}
+          className={`${getInputClass('restaurantDescription')} min-h-[100px] resize-none`}
           placeholder="Tell us a little about the establishment"
         />
-        {errors.bio && (
+        {errors.restaurantDescription && (
           <span className="text-red-500 text-sm mt-1">
-            {errors.bio.message}
+            {errors.restaurantDescription.message}
           </span>
         )}
       </div>

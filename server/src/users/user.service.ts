@@ -6,6 +6,8 @@ import {
   UserResponseDTO,
   UpdateUserDTO,
 } from './dto/user-dto.js'
+import { pool } from 'shared/config/database.js'
+import { EstablishmentModel } from 'establishments/establishments.model.js'
 
 export const UserService = {
   //Register
@@ -14,32 +16,73 @@ export const UserService = {
     const existingEmail = await UserModel.findByEmail(data.email)
     if (existingEmail) throw new Error('Email already registered')
 
-    const existingUser = await UserModel.findByUsername(data.username)
-    if (existingUser) throw new Error('Username already taken')
+    if (data.username) {
+      const existingUser = await UserModel.findByUsername(data.username)
+      if (existingUser) throw new Error('Username already taken')
+    }
 
     //Hash Passwords
     const saltRounds = 10
     const password_hash = await bcrypt.hash(data.password, saltRounds)
 
-    const userId = await UserModel.createUser({
-      username: data.username,
-      name: data.name,
-      email: data.email,
-      password_hash: password_hash,
-      bio: data.bio,
-      role: data.role || 'user',
-      profile_picture_url: data.profile_picture_url || null,
-    })
+    const connection = await pool.getConnection()
+    try {
+      await connection.beginTransaction()
 
-    return {
-      user_id: userId,
-      username: data.username,
-      name: data.name,
-      email: data.email,
-      bio: data.bio || null,
-      role: data.role || 'user',
-      profile_picture_url: data.profile_picture_url || null,
-      created_at: new Date(),
+      const userId = await UserModel.createUser(
+        {
+          username: data.username,
+          name: data.name,
+          email: data.email,
+          password_hash: password_hash,
+          bio: data.bio,
+          role: data.role || 'user',
+          profile_picture_url: data.profile_picture_url || null,
+        },
+        connection,
+      )
+
+      if (data.role === 'owner') {
+        const restaurantId = await EstablishmentModel.createRestaurant(
+          {
+            owner_user_id: userId,
+            name: data.restaurantName!,
+            description: data.restaurantDescription!,
+            latitude: data.latitude!,
+            longitude: data.longitude!,
+            price_range: data.price_range as any,
+            banner_picture_url: data.restaurantBanner!,
+          },
+          connection,
+        )
+
+        if (data.tags && data.tags.length > 0) {
+          const tagIds = data.tags.map((tag) => Number(tag.id))
+          await EstablishmentModel.addRestaurantTags(
+            restaurantId,
+            tagIds,
+            connection,
+          )
+        }
+      }
+
+      await connection.commit()
+
+      return {
+        user_id: userId,
+        username: data.username || '',
+        name: data.name,
+        email: data.email,
+        bio: data.bio || null,
+        role: data.role || 'user',
+        profile_picture_url: data.profile_picture_url || null,
+        created_at: new Date(),
+      }
+    } catch (error) {
+      await connection.rollback()
+      throw error
+    } finally {
+      connection.release()
     }
   },
 
