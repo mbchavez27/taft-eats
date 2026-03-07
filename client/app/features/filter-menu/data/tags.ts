@@ -1,6 +1,6 @@
 import type { TagsTypes } from '../types/filter.types'
 
-export const tags: TagsTypes[] = [
+export const initial_tags: TagsTypes[] = [
   { id: 1n, label: 'Burger' },
   { id: 2n, label: 'Pizza' },
   { id: 3n, label: 'Pasta' },
