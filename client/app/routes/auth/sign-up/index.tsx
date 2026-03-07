@@ -21,6 +21,7 @@ export default function SignUp() {
     const isValid = await validateStep1()
     if (isValid) {
       setRole(selectedRole)
+      form.setValue('role', selectedRole)
       setStep(2)
     }
   }

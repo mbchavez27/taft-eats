@@ -3,7 +3,6 @@ import { Loader2, Plus } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
 import { Checkbox } from '~/components/ui/checkbox'
-import Prices from '~/features/shared/components/molecules/prices'
 import {
   initial_cuisines,
   initial_foods,
@@ -24,6 +23,8 @@ export function OwnerStep3({ onBack, form, isLoading }: Step3Props) {
   const { setValue, watch } = form
 
   const selectedTags = watch('tags') || []
+
+  const currentPriceRange = watch('price_range')
 
   // --- Local State for Custom Tags ---
   const [customFoods, setCustomFoods] = useState<CustomTag[]>([])
@@ -256,7 +257,31 @@ export function OwnerStep3({ onBack, form, isLoading }: Step3Props) {
       <div className="flex flex-col justify-center items-center gap-2 mb-8">
         <p className="text-xl text-black font-bold mb-2 ">Price Ranges</p>
         <div className="flex gap-4">
-          <Prices />
+          {[
+            { label: '₱', value: '$' },
+            { label: '₱₱', value: '$$' },
+            { label: '₱₱₱', value: '$$$' },
+          ].map((price, index) => {
+            const isSelected = currentPriceRange === price.value
+            return (
+              <button
+                key={index}
+                type="button"
+                onClick={() =>
+                  setValue('price_range', price.value as '$' | '$$' | '$$$', {
+                    shouldValidate: true,
+                  })
+                }
+                className={`font-bold rounded-xl px-5 py-0.5 border-2 transition text-lg ${
+                  isSelected
+                    ? 'bg-[#416CAE] text-white border-[#416CAE]'
+                    : 'bg-white text-[#326F33] border-[#416CAE]'
+                }`}
+              >
+                {price.label}
+              </button>
+            )
+          })}
         </div>
       </div>
       <p className="text-xs text-center text-[#326F33] leading-tight px-2">

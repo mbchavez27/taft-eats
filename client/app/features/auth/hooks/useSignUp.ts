@@ -141,9 +141,14 @@ export const useSignUp = () => {
             .replace(/\s+/g, '_')
             .replace(/[^\w]/g, '') || payload.email.split('@')[0]
 
+      const safeTags = payload.tags?.map((tag) => ({
+        ...tag,
+        id: tag.id.toString(),
+      }))
       const finalPayload: CreateUserDTO = {
         ...payload,
         username: generatedUsername,
+        tags: safeTags as any,
       }
       const response = await AuthService.register(finalPayload)
 
