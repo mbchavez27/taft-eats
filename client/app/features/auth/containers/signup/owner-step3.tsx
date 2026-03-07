@@ -53,7 +53,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
       </div>
 
       <div className="flex flex-col justify-center items-center">
-        <p className="text-xl text-black font-bold mb-2 ">Foods</p>
+        <p className="text-xl text-black font-bold mt-4 mb-2 ">Foods</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
           {initial_foods.map((tag) => (
             <div key={tag.id} className="flex gap-3 items-center text-black">
@@ -80,6 +80,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
           ))}
         </div>
       </div>
+      <hr />
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl text-black font-bold mb-2 ">Cuisines</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
@@ -108,6 +109,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
           ))}
         </div>
       </div>
+      <hr />
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl text-black font-bold mb-2 ">Tags</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
@@ -137,6 +139,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
         </div>
       </div>
 
+      <hr />
       <div className="flex flex-col justify-center items-center gap-2 mb-8">
         <p className="text-xl text-black font-bold mb-2 ">Price Ranges</p>
         <div className="flex gap-4">

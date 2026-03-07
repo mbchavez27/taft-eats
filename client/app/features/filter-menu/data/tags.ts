@@ -1,11 +1,11 @@
 import type { TagsTypes } from '../types/filter.types'
 
 export const initial_tags: TagsTypes[] = [
-  { id: 1n, label: 'Burger' },
-  { id: 2n, label: 'Pizza' },
-  { id: 3n, label: 'Pasta' },
-  { id: 4n, label: 'Chicken' },
-  { id: 5n, label: 'Sushi' },
+  { id: 1n, label: 'Open 24 hours' },
+  { id: 2n, label: 'Student-friendly' },
+  { id: 3n, label: 'Free WiFi' },
+  { id: 4n, label: 'Vegetarian-friendly' },
+  { id: 5n, label: 'Vegan-friendly' },
 ]
 
 export const initial_cuisines: TagsTypes[] = [
