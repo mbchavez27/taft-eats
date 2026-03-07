@@ -6,7 +6,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE IF NOT EXISTS Users (
     user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(50) UNIQUE,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -14,6 +14,11 @@ CREATE TABLE IF NOT EXISTS Users (
     
     -- Supports 'user', 'owner' (restaurant owner), and 'admin'
     role ENUM('user', 'owner', 'admin') NOT NULL DEFAULT 'user',
+
+    -- Allow Non user to not have username
+    CONSTRAINT chk_username_role CHECK (
+        (role IN ('owner', 'admin')) OR (username IS NOT NULL)
+    ),
     
     profile_picture_url VARCHAR(2048) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
