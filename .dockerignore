@@ -1,0 +1,5 @@
+node_modules
+dist
+build
+*.log
+server/mysql_data
