@@ -53,7 +53,7 @@ export const signUpSchema = z
         message: 'Longitude is required for establishments',
       }),
     tags: z.array(z.any()).optional(),
-    price_range: z.string().optional(),
+    price_range: z.enum(['$', '$$', '$$$']).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
