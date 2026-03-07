@@ -10,9 +10,8 @@ import { pool } from 'shared/config/database.js'
 import { EstablishmentModel } from 'establishments/establishments.model.js'
 
 export const UserService = {
-  //Register
   register: async (data: CreateUserDTO): Promise<UserResponseDTO> => {
-    //Check if user already exists
+    // Check if user already exists
     const existingEmail = await UserModel.findByEmail(data.email)
     if (existingEmail) throw new Error('Email already registered')
 
@@ -21,7 +20,7 @@ export const UserService = {
       if (existingUser) throw new Error('Username already taken')
     }
 
-    //Hash Passwords
+    // Hash Passwords
     const saltRounds = 10
     const password_hash = await bcrypt.hash(data.password, saltRounds)
 
@@ -56,13 +55,20 @@ export const UserService = {
           connection,
         )
 
+        // --- UPDATED TAG LOGIC HERE ---
         if (data.tags && data.tags.length > 0) {
-          const finalTagIds: number[] = []
+          // Now strictly collecting bigints
+          const finalTagIds: bigint[] = []
 
           for (const tag of data.tags) {
-            if (typeof tag.id === 'number') {
-              finalTagIds.push(tag.id)
+            // Safely cast to BigInt (handles string/number/bigint payloads from JSON)
+            const tagId = BigInt(tag.id)
+
+            if (tagId > 0n) {
+              // It's a real tag from the predefined list
+              finalTagIds.push(tagId)
             } else {
+              // It's a custom tag (temporary negative ID)! Check by label.
               const existingTag =
                 await EstablishmentModel.findRestaurantTagByLabel(
                   tag.label,
@@ -70,18 +76,20 @@ export const UserService = {
                 )
 
               if (existingTag) {
-                finalTagIds.push(existingTag.tag_id)
+                // Another owner already made this custom tag, use its real ID
+                finalTagIds.push(BigInt(existingTag.tag_id))
               } else {
+                // Completely new tag, insert it and get the newly generated ID
                 const newTagId = await EstablishmentModel.createRestaurantTags(
                   tag.label,
                   connection,
                 )
-                finalTagIds.push(newTagId)
+                finalTagIds.push(BigInt(newTagId))
               }
             }
           }
 
-          // Finally, link all the collected tag IDs to the restaurant
+          // Finally, link all the collected real tag IDs to the restaurant
           await EstablishmentModel.addRestaurantTags(
             restaurantId,
             finalTagIds,
@@ -109,7 +117,6 @@ export const UserService = {
       connection.release()
     }
   },
-
   login: async (data: LoginDTO): Promise<UserResponseDTO | null> => {
     const user = await UserModel.findByEmail(data.email)
 

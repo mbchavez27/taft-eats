@@ -42,23 +42,62 @@ export const signUpSchema = z
     restaurantBanner: z.any().optional(),
     latitude: z
       .union([z.number(), z.nan()]) // Handles the case where the input is cleared
-      .optional()
-      .refine((val) => val !== undefined && !isNaN(val as number), {
-        message: 'Latitude is required for establishments',
-      }),
-    longitude: z
-      .union([z.number(), z.nan()])
-      .optional()
-      .refine((val) => val !== undefined && !isNaN(val as number), {
-        message: 'Longitude is required for establishments',
-      }),
-    tags: z.array(z.any()).optional(),
+      .optional(),
+    longitude: z.union([z.number(), z.nan()]).optional(),
+    tags: z
+      .array(
+        z.object({
+          id: z.union([z.bigint()]),
+          label: z.string(),
+        }),
+      )
+      .optional(),
     price_range: z.enum(['$', '$$', '$$$']).optional(),
-  })
+  }) // 1. Password Check
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   })
+  // 2. Owner Requirement: Restaurant Name
+  .refine(
+    (data) =>
+      data.role !== 'owner' ||
+      (data.restaurantName && data.restaurantName.trim() !== ''),
+    {
+      message: 'Establishment name is required',
+      path: ['restaurantName'],
+    },
+  )
+  // 3. Owner Requirement: Restaurant Description
+  .refine(
+    (data) =>
+      data.role !== 'owner' ||
+      (data.restaurantDescription && data.restaurantDescription.trim() !== ''),
+    {
+      message: 'Establishment description is required',
+      path: ['restaurantDescription'],
+    },
+  )
+  // 4. Owner Requirement: Latitude
+  .refine(
+    (data) =>
+      data.role !== 'owner' ||
+      (data.latitude !== undefined && !Number.isNaN(data.latitude)),
+    {
+      message: 'Latitude is required for establishments',
+      path: ['latitude'],
+    },
+  )
+  // 5. Owner Requirement: Longitude
+  .refine(
+    (data) =>
+      data.role !== 'owner' ||
+      (data.longitude !== undefined && !Number.isNaN(data.longitude)),
+    {
+      message: 'Longitude is required for establishments',
+      path: ['longitude'],
+    },
+  )
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>
 

@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { Camera, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { Loader2, Plus } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
 import { Checkbox } from '~/components/ui/checkbox'
@@ -10,35 +10,81 @@ import {
   initial_tags,
 } from '~/features/filter-menu/data/tags'
 
-interface Step2Props {
+interface Step3Props {
   onBack: () => void
-  onNext: () => void
+  onNext?: () => void
   form: UseFormReturn<SignUpFormValues>
   isLoading?: boolean
 }
 
-export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
-  const {
-    register,
-    setValue,
-    watch,
-    formState: { errors },
-  } = form
+// Strictly locked to bigint to match your database and Zod schema
+type CustomTag = { id: bigint; label: string }
 
-  const avatarFile = watch('avatar')
+export function OwnerStep3({ onBack, form, isLoading }: Step3Props) {
+  const { setValue, watch } = form
 
-  const avatarPreviewUrl =
-    avatarFile instanceof File || avatarFile instanceof Blob
-      ? URL.createObjectURL(avatarFile)
-      : ''
+  const selectedTags = watch('tags') || []
 
-  const getInputClass = (fieldName: keyof SignUpFormValues) => {
-    const hasError = !!errors[fieldName]
-    return `border-2 rounded-md w-full p-2 outline-none transition-colors ${
-      hasError
-        ? 'border-red-500 focus:border-red-600'
-        : 'border-black focus:border-[#326F33]'
-    }`
+  // --- Local State for Custom Tags ---
+  const [customFoods, setCustomFoods] = useState<CustomTag[]>([])
+  const [foodInput, setFoodInput] = useState('')
+
+  const [customCuisines, setCustomCuisines] = useState<CustomTag[]>([])
+  const [cuisineInput, setCuisineInput] = useState('')
+
+  const [customTags, setCustomTags] = useState<CustomTag[]>([])
+  const [tagInput, setTagInput] = useState('')
+
+  // --- Toggle tag selection in React Hook Form ---
+  const handleToggleTag = (tag: CustomTag, isChecked: boolean) => {
+    if (isChecked) {
+      setValue('tags', [...selectedTags, tag], { shouldValidate: true })
+    } else {
+      setValue(
+        'tags',
+        selectedTags.filter((t) => t.id !== tag.id),
+        { shouldValidate: true },
+      )
+    }
+  }
+
+  const isTagSelected = (id: bigint) => {
+    return selectedTags.some((t) => t.id === id)
+  }
+
+  // --- Handlers for Adding Custom Tags (Using negative BigInt for temp IDs) ---
+  const handleAddFood = () => {
+    if (!foodInput.trim()) return
+    // Generate a temporary negative bigint based on the current timestamp
+    const newFood: CustomTag = {
+      id: BigInt(-Date.now()),
+      label: foodInput.trim(),
+    }
+    setCustomFoods([...customFoods, newFood])
+    setFoodInput('')
+    setValue('tags', [...selectedTags, newFood], { shouldValidate: true })
+  }
+
+  const handleAddCuisine = () => {
+    if (!cuisineInput.trim()) return
+    const newCuisine: CustomTag = {
+      id: BigInt(-Date.now()),
+      label: cuisineInput.trim(),
+    }
+    setCustomCuisines([...customCuisines, newCuisine])
+    setCuisineInput('')
+    setValue('tags', [...selectedTags, newCuisine], { shouldValidate: true })
+  }
+
+  const handleAddTag = () => {
+    if (!tagInput.trim()) return
+    const newTag: CustomTag = {
+      id: BigInt(-Date.now()),
+      label: tagInput.trim(),
+    }
+    setCustomTags([...customTags, newTag])
+    setTagInput('')
+    setValue('tags', [...selectedTags, newTag], { shouldValidate: true })
   }
 
   return (
@@ -52,23 +98,22 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
         </p>
       </div>
 
-      <div className="flex flex-col justify-center items-center">
+      {/* --- FOODS SECTION --- */}
+      <div className="flex flex-col justify-center items-center w-full">
         <p className="text-xl text-black font-bold mt-4 mb-2 ">Foods</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
-          {initial_foods.map((tag) => (
-            <div key={tag.id} className="flex gap-3 items-center text-black">
+          {[...initial_foods, ...customFoods].map((tag) => (
+            <div
+              key={tag.id.toString()}
+              className="flex gap-3 items-center text-black"
+            >
               <Checkbox
                 id={tag.id.toString()}
-                className="
-                border-2
-                border-gray-800
-                data-[state=unchecked]:bg-white
-                data-[state=unchecked]:border-gray-800
-                data-[state=checked]:bg-[#416CAE]
-                data-[state=checked]:border-[#416CAE]
-                data-[state=checked]:text-white
-                w-6 h-6 rounded-sm cursor-pointer
-              "
+                checked={isTagSelected(tag.id)}
+                onCheckedChange={(checked) =>
+                  handleToggleTag(tag, checked as boolean)
+                }
+                className="border-2 border-gray-800 data-[state=unchecked]:bg-white data-[state=unchecked]:border-gray-800 data-[state=checked]:bg-[#416CAE] data-[state=checked]:border-[#416CAE] data-[state=checked]:text-white w-6 h-6 rounded-sm cursor-pointer"
               />
               <label
                 htmlFor={tag.id.toString()}
@@ -79,25 +124,47 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
             </div>
           ))}
         </div>
+        <div className="flex items-center gap-2 mt-2 px-8 w-full max-w-sm">
+          <input
+            type="text"
+            value={foodInput}
+            onChange={(e) => setFoodInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleAddFood()
+              }
+            }}
+            placeholder="Add custom food..."
+            className="flex-1 border-2 border-gray-300 rounded-md p-2 outline-none focus:border-[#326F33] transition-colors text-sm"
+          />
+          <button
+            type="button"
+            onClick={handleAddFood}
+            className="bg-[#326F33] text-white p-2 rounded-md hover:bg-[#285a29] transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       </div>
       <hr />
-      <div className="flex flex-col justify-center items-center">
+
+      {/* --- CUISINES SECTION --- */}
+      <div className="flex flex-col justify-center items-center w-full">
         <p className="text-xl text-black font-bold mb-2 ">Cuisines</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
-          {initial_cuisines.map((tag) => (
-            <div key={tag.id} className="flex gap-3 items-center text-black">
+          {[...initial_cuisines, ...customCuisines].map((tag) => (
+            <div
+              key={tag.id.toString()}
+              className="flex gap-3 items-center text-black"
+            >
               <Checkbox
                 id={tag.id.toString()}
-                className="
-                border-2
-                border-gray-800
-                data-[state=unchecked]:bg-white
-                data-[state=unchecked]:border-gray-800
-                data-[state=checked]:bg-[#416CAE]
-                data-[state=checked]:border-[#416CAE]
-                data-[state=checked]:text-white
-                w-6 h-6 rounded-sm cursor-pointer
-              "
+                checked={isTagSelected(tag.id)}
+                onCheckedChange={(checked) =>
+                  handleToggleTag(tag, checked as boolean)
+                }
+                className="border-2 border-gray-800 data-[state=unchecked]:bg-white data-[state=unchecked]:border-gray-800 data-[state=checked]:bg-[#416CAE] data-[state=checked]:border-[#416CAE] data-[state=checked]:text-white w-6 h-6 rounded-sm cursor-pointer"
               />
               <label
                 htmlFor={tag.id.toString()}
@@ -108,25 +175,47 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
             </div>
           ))}
         </div>
+        <div className="flex items-center gap-2 mt-2 px-8 w-full max-w-sm">
+          <input
+            type="text"
+            value={cuisineInput}
+            onChange={(e) => setCuisineInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleAddCuisine()
+              }
+            }}
+            placeholder="Add custom cuisine..."
+            className="flex-1 border-2 border-gray-300 rounded-md p-2 outline-none focus:border-[#326F33] transition-colors text-sm"
+          />
+          <button
+            type="button"
+            onClick={handleAddCuisine}
+            className="bg-[#326F33] text-white p-2 rounded-md hover:bg-[#285a29] transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       </div>
       <hr />
-      <div className="flex flex-col justify-center items-center">
+
+      {/* --- TAGS SECTION --- */}
+      <div className="flex flex-col justify-center items-center w-full">
         <p className="text-xl text-black font-bold mb-2 ">Tags</p>
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 px-8 py-4 w-fit mx-auto">
-          {initial_tags.map((tag) => (
-            <div key={tag.id} className="flex gap-3 items-center text-black">
+          {[...initial_tags, ...customTags].map((tag) => (
+            <div
+              key={tag.id.toString()}
+              className="flex gap-3 items-center text-black"
+            >
               <Checkbox
                 id={tag.id.toString()}
-                className="
-                border-2
-                border-gray-800
-                data-[state=unchecked]:bg-white
-                data-[state=unchecked]:border-gray-800
-                data-[state=checked]:bg-[#416CAE]
-                data-[state=checked]:border-[#416CAE]
-                data-[state=checked]:text-white
-                w-6 h-6 rounded-sm cursor-pointer
-              "
+                checked={isTagSelected(tag.id)}
+                onCheckedChange={(checked) =>
+                  handleToggleTag(tag, checked as boolean)
+                }
+                className="border-2 border-gray-800 data-[state=unchecked]:bg-white data-[state=unchecked]:border-gray-800 data-[state=checked]:bg-[#416CAE] data-[state=checked]:border-[#416CAE] data-[state=checked]:text-white w-6 h-6 rounded-sm cursor-pointer"
               />
               <label
                 htmlFor={tag.id.toString()}
@@ -136,10 +225,34 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
               </label>
             </div>
           ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2 px-8 w-full max-w-sm">
+          <input
+            type="text"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleAddTag()
+              }
+            }}
+            placeholder="Add custom tag..."
+            className="flex-1 border-2 border-gray-300 rounded-md p-2 outline-none focus:border-[#326F33] transition-colors text-sm"
+          />
+          <button
+            type="button"
+            onClick={handleAddTag}
+            className="bg-[#326F33] text-white p-2 rounded-md hover:bg-[#285a29] transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
       <hr />
+
+      {/* --- Price Ranges & Footer --- */}
       <div className="flex flex-col justify-center items-center gap-2 mb-8">
         <p className="text-xl text-black font-bold mb-2 ">Price Ranges</p>
         <div className="flex gap-4">
@@ -174,7 +287,7 @@ export function OwnerStep3({ onBack, onNext, form, isLoading }: Step2Props) {
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin mr-2 inline" />
               Saving...
             </>
           ) : (

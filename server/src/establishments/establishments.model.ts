@@ -57,13 +57,14 @@ export const EstablishmentModel = {
   // Links tags to the restaurant in the junction table
   addRestaurantTags: async (
     restaurantId: number,
-    tagIds: number[],
+    tagIds: bigint[],
     connection?: Pool | PoolConnection,
   ): Promise<void> => {
     if (!tagIds || tagIds.length === 0) return
 
     const db = (connection || pool) as Pool
-    const values = tagIds.map((id) => [restaurantId, id])
+
+    const values = tagIds.map((id) => [restaurantId, id.toString()])
 
     await db.query(
       'INSERT INTO Restaurant_Tags (restaurant_id, tag_id) VALUES ?',
