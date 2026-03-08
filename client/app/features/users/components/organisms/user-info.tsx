@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { MdEdit } from "react-icons/md";
+import { useState } from 'react'
+import { MdEdit } from 'react-icons/md'
+import { useAuthStore } from '~/features/auth/context/auth.store'
 
 export default function UserInfo() {
-  const [isEditing, setIsEditing] = useState(false);
+  const user = useAuthStore((state) => state.user)
+  const [isEditing, setIsEditing] = useState(false)
   return (
     <>
       <main className="bg-white rounded-xl w-full px-8 py-5 font-lexend text-black flex flex-col gap-4 justify-center items-center">
@@ -15,13 +17,13 @@ export default function UserInfo() {
               type="text"
               name="name"
               id="name"
-              value={"John Doe"}
+              value={user?.name}
               readOnly={!isEditing}
               className={`
           border-2 border-black rounded-lg
           px-2 py-1 pr-8
           focus:outline-none
-          ${!isEditing && "bg-gray-100 cursor-default"}
+          ${!isEditing && 'bg-gray-100 cursor-default'}
         `}
             />
 
@@ -39,7 +41,7 @@ export default function UserInfo() {
             <input
               type="text"
               readOnly={true}
-              value={"user123@gmail.com"}
+              value={user?.email}
               className={`
           border-2 border-black rounded-lg
           px-2 py-1 pr-8
@@ -57,13 +59,13 @@ export default function UserInfo() {
               type="text"
               id="username"
               name="username"
-              value={"@User123"}
+              value={user?.username}
               readOnly={!isEditing}
               className={`
           border-2 border-black rounded-lg
           px-2 py-1 pr-8
           focus:outline-none
-          ${!isEditing && "bg-gray-100 cursor-default"}
+          ${!isEditing && 'bg-gray-100 cursor-default'}
         `}
             />
 
@@ -81,13 +83,13 @@ export default function UserInfo() {
             <textarea
               id="bio"
               name="bio"
-              value={"this is my bio"}
+              value={user?.bio ?? ''}
               readOnly={!isEditing}
               className={`
           border-2 border-black rounded-lg
           px-2 py-1 pr-8
           focus:outline-none
-          ${!isEditing && "bg-gray-100 cursor-default"}
+          ${!isEditing && 'bg-gray-100 cursor-default'}
         `}
             />
 
@@ -99,5 +101,5 @@ export default function UserInfo() {
         </section>
       </main>
     </>
-  );
+  )
 }
