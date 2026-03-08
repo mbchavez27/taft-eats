@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Data access layer for handling establishment (restaurant) and tag records in the database.
+ * @module models/EstablishmentModel
+ */
+
 import {
   RowDataPacket,
   ResultSetHeader,
@@ -6,6 +11,11 @@ import {
 } from 'mysql2/promise'
 import { pool } from 'shared/config/database.js'
 
+/**
+ * Represents a Restaurant database record.
+ * @interface Restaurant
+ * @extends {RowDataPacket}
+ */
 export interface Restaurant extends RowDataPacket {
   restaurant_id: number
   owner_user_id: number | null
@@ -19,7 +29,19 @@ export interface Restaurant extends RowDataPacket {
   created_at: string
 }
 
+/**
+ * Model object containing methods to interact with the Restaurants and Tags database tables.
+ * @namespace EstablishmentModel
+ */
 export const EstablishmentModel = {
+  /**
+   * Inserts a new restaurant record into the database.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {Pick<Restaurant, 'owner_user_id' | 'name' | 'description' | 'latitude' | 'longitude' | 'price_range' | 'banner_picture_url'>} restaurant - The restaurant data to insert.
+   * @param {Pool | PoolConnection} [connection] - Optional database connection/pool to use (useful for transactions).
+   * @returns {Promise<number>} A promise that resolves to the newly created restaurant's auto-incremented ID.
+   */
   //Create Establishment
   createRestaurant: async (
     restaurant: Pick<
@@ -54,6 +76,15 @@ export const EstablishmentModel = {
     return result.insertId
   },
 
+  /**
+   * Links an array of tag IDs to a specific restaurant in the junction table.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} restaurantId - The ID of the restaurant.
+   * @param {bigint[]} tagIds - An array of tag IDs (as BigInts) to link to the restaurant.
+   * @param {Pool | PoolConnection} [connection] - Optional database connection/pool to use (useful for transactions).
+   * @returns {Promise<void>} A promise that resolves when the insertion is complete.
+   */
   // Links tags to the restaurant in the junction table
   addRestaurantTags: async (
     restaurantId: number,
@@ -72,6 +103,14 @@ export const EstablishmentModel = {
     )
   },
 
+  /**
+   * Searches for an existing tag by its string label (case-insensitive).
+   * @async
+   * @memberof EstablishmentModel
+   * @param {string} label - The text label of the tag to find.
+   * @param {Pool | PoolConnection} [connection] - Optional database connection/pool to use.
+   * @returns {Promise<{ tag_id: number } | null>} A promise resolving to an object containing the tag_id, or null if not found.
+   */
   //Find Restaurant Tags
   findRestaurantTagByLabel: async (
     label: string,
@@ -86,6 +125,14 @@ export const EstablishmentModel = {
     return rows.length > 0 ? (rows[0] as { tag_id: number }) : null
   },
 
+  /**
+   * Creates a new tag record in the database.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {string} label - The text label for the new tag.
+   * @param {Pool | PoolConnection} [connection] - Optional database connection/pool to use (useful for transactions).
+   * @returns {Promise<number>} A promise that resolves to the newly created tag's auto-incremented ID.
+   */
   // Create Restaurant Tag
   createRestaurantTags: async (
     label: string,
