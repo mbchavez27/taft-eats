@@ -33,3 +33,12 @@ export interface SingleRestaurantResponseDto {
   success: boolean
   data: RestaurantDto
 }
+
+export interface RestaurantTagsResponseDto {
+  success: boolean
+  data: {
+    tag_id: number
+    name: string
+    category: string
+  }[]
+}

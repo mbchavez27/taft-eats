@@ -1,5 +1,6 @@
 import type {
   PaginatedRestaurantsResponseDto,
+  RestaurantTagsResponseDto,
   SingleRestaurantResponseDto,
 } from '../types/establishments.types'
 
@@ -70,6 +71,30 @@ export const EstablishmentService = {
     if (!response.ok) {
       throw new Error(
         (data as any).error || "Failed to fetch owner's establishment",
+      )
+    }
+
+    return data
+  },
+
+  getTagsByRestaurantId: async (
+    id: number,
+  ): Promise<RestaurantTagsResponseDto> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/${id}/tags`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    const data: RestaurantTagsResponseDto = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        (data as any).error || 'Failed to fetch establishment tags',
       )
     }
 

@@ -26,4 +26,11 @@ router.get('/owner/:ownerId', EstablishmentController.getRestaurantByOwnerId)
  */
 router.get('/:id', EstablishmentController.getRestaurantById)
 
+/**
+ * @route   GET /api/establishments/:id/tags
+ * @desc    Get all tags associated with a specific restaurant
+ * @access  Public
+ */
+router.get('/:id/tags', EstablishmentController.getTagsByRestaurantId)
+
 export default router

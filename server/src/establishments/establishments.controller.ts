@@ -124,4 +124,32 @@ export const EstablishmentController = {
       })
     }
   },
+
+  /**
+   * Handles GET requests to fetch all tags for a specific restaurant.
+   * Expects 'id' (restaurant_id) in the route parameters.
+   */
+  getTagsByRestaurantId: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = parseInt(req.params.id as string, 10)
+
+      if (isNaN(id)) {
+        res.status(400).json({ error: 'Invalid restaurant ID formatting.' })
+        return
+      }
+
+      // Call the model we just created
+      const tags = await EstablishmentModel.getTagsByRestaurantId(id)
+
+      res.status(200).json({
+        success: true,
+        data: tags,
+      })
+    } catch (error) {
+      console.error('Error in getTagsByRestaurantId:', error)
+      res.status(500).json({
+        error: 'Internal server error while fetching restaurant tags.',
+      })
+    }
+  },
 }

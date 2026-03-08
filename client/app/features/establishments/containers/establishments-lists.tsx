@@ -66,6 +66,7 @@ export default function EstablishmentsLists() {
               <React.Fragment key={pageIndex}>
                 {page.data.map((establishment) => (
                   <EstablishmentsCard
+                    id={establishment.restaurant_id}
                     key={establishment.restaurant_id}
                     name={establishment.name}
                     rating={establishment.rating}
