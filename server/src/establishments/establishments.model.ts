@@ -30,6 +30,17 @@ export interface Restaurant extends RowDataPacket {
 }
 
 /**
+ * Represents a Tag database record.
+ * @interface Tag
+ * @extends {RowDataPacket}
+ */
+export interface Tag extends RowDataPacket {
+  tag_id: number
+  name: string
+  category: 'tag' | 'cuisine' | 'food'
+}
+
+/**
  * Model object containing methods to interact with the Restaurants and Tags database tables.
  * @namespace EstablishmentModel
  */
@@ -95,6 +106,25 @@ export const EstablishmentModel = {
     )
 
     return rows.length > 0 ? rows[0] : null
+  },
+
+  /**
+   * Retrieves all tags associated with a specific restaurant.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} restaurantId - The unique ID of the restaurant.
+   * @returns {Promise<Tag[]>} A promise resolving to an array of Tag objects.
+   */
+  getTagsByRestaurantId: async (restaurantId: number): Promise<Tag[]> => {
+    const query = `
+      SELECT t.tag_id, t.name, t.category 
+      FROM Tags t
+      JOIN Restaurant_Tags rt ON t.tag_id = rt.tag_id
+      WHERE rt.restaurant_id = ?
+    `
+
+    const [rows] = await pool.query<Tag[]>(query, [restaurantId])
+    return rows
   },
 
   /**

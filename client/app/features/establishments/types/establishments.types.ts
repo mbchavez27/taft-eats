@@ -1,6 +1,6 @@
 /**
  * BASE DTO:
- * The standard representation of a Restaurant sent to the frontend.
+ * The standard representation of a Restaurant received from the backend.
  */
 export interface RestaurantDto {
   restaurant_id: number
@@ -16,19 +16,29 @@ export interface RestaurantDto {
 }
 
 /**
- * RESPONSE DTOs:
- * What the backend sends back to the frontend.
+ * RESPONSE DTO:
+ * Used for GET /api/establishments (Infinite Scroll)
  */
-
-// Used for GET /api/establishments (Your Infinite Scroll)
 export interface PaginatedRestaurantsResponseDto {
   success: boolean
   data: RestaurantDto[]
   nextCursor?: number
 }
 
-// Used for GET /api/establishments/:id or /owner/:ownerId
+/**
+ * RESPONSE DTO:
+ * Used for GET /api/establishments/:id or /api/establishments/owner/:ownerId
+ */
 export interface SingleRestaurantResponseDto {
   success: boolean
   data: RestaurantDto
+}
+
+export interface RestaurantTagsResponseDto {
+  success: boolean
+  data: {
+    tag_id: number
+    name: string
+    category: string
+  }[]
 }

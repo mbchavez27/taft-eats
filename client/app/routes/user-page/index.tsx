@@ -1,17 +1,26 @@
-import UserDetails from "~/features/users/containers/user-details";
-import type { Route } from "../+types/user-page/index";
-import UserStatistics from "~/features/users/components/organisms/user-statistics";
-import SavedEstablishments from "~/features/users/components/organisms/saved-establishments";
-import UserReviews from "~/features/reviews/containers/user-reviews";
+import UserDetails from '~/features/users/containers/user-details'
+import type { Route } from '../+types/user-page/index'
+import UserStatistics from '~/features/users/components/organisms/user-statistics'
+import SavedEstablishments from '~/features/users/components/organisms/saved-establishments'
+import UserReviews from '~/features/reviews/containers/user-reviews'
+import { useAuthStore } from '~/features/auth/context/auth.store'
+import { useNavigate } from 'react-router'
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Taft Eats - User" },
-    { name: "description", content: "Taft Eats" },
-  ];
+    { title: 'Taft Eats - User' },
+    { name: 'description', content: 'Taft Eats' },
+  ]
 }
 
 export default function UserPage() {
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
+
+  if (!user) {
+    navigate('/')
+  }
+
   return (
     <>
       <main className="flex flex-col lg:flex-row py-12 px-10 lg:gap-8 gap-16">
@@ -36,5 +45,5 @@ export default function UserPage() {
         </div>
       </main>
     </>
-  );
+  )
 }

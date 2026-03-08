@@ -46,3 +46,13 @@ export type LoginDTO = {
   email: string
   password: string
 }
+
+export type SavedEstablishmentsDTO = {
+  userId: number
+  savedEstablishments: number
+}
+
+export type CreatedReviewsDTO = {
+  userId: number
+  createdReviews: number
+}
