@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Service layer for user-related business logic, including registration and authentication.
+ * @module services/UserService
+ */
+
 import bcrypt from 'bcrypt'
 import { UserModel } from './user.model.js'
 import {
@@ -9,7 +14,21 @@ import {
 import { pool } from 'shared/config/database.js'
 import { EstablishmentModel } from 'establishments/establishments.model.js'
 
+/**
+ * Service object containing methods for user management.
+ * @namespace UserService
+ */
 export const UserService = {
+  /**
+   * Registers a new user. Handles password hashing and executes a database transaction
+   * to ensure data integrity. If the user is an 'owner', it also provisions an associated
+   * restaurant and handles tag resolution/creation.
+   * * @async
+   * @memberof UserService
+   * @param {CreateUserDTO} data - The data transfer object containing user registration details and optional establishment data.
+   * @returns {Promise<UserResponseDTO>} A promise that resolves to the newly created user's profile.
+   * @throws {Error} Throws if the email or username is already registered, or if a database transaction fails.
+   */
   register: async (data: CreateUserDTO): Promise<UserResponseDTO> => {
     // Check if user already exists
     const existingEmail = await UserModel.findByEmail(data.email)
@@ -55,20 +74,16 @@ export const UserService = {
           connection,
         )
 
-        // --- UPDATED TAG LOGIC HERE ---
         if (data.tags && data.tags.length > 0) {
           // Now strictly collecting bigints
           const finalTagIds: bigint[] = []
 
           for (const tag of data.tags) {
-            // Safely cast to BigInt (handles string/number/bigint payloads from JSON)
             const tagId = BigInt(tag.id)
 
             if (tagId > 0n) {
-              // It's a real tag from the predefined list
               finalTagIds.push(tagId)
             } else {
-              // It's a custom tag (temporary negative ID)! Check by label.
               const existingTag =
                 await EstablishmentModel.findRestaurantTagByLabel(
                   tag.label,
@@ -76,7 +91,6 @@ export const UserService = {
                 )
 
               if (existingTag) {
-                // Another owner already made this custom tag, use its real ID
                 finalTagIds.push(BigInt(existingTag.tag_id))
               } else {
                 // Completely new tag, insert it and get the newly generated ID
@@ -89,7 +103,6 @@ export const UserService = {
             }
           }
 
-          // Finally, link all the collected real tag IDs to the restaurant
           await EstablishmentModel.addRestaurantTags(
             restaurantId,
             finalTagIds,
@@ -117,6 +130,15 @@ export const UserService = {
       connection.release()
     }
   },
+
+  /**
+   * Authenticates a user by validating their email address and checking the
+   * bcrypt hash of their password.
+   * * @async
+   * @memberof UserService
+   * @param {LoginDTO} data - The data transfer object containing login credentials.
+   * @returns {Promise<UserResponseDTO | null>} A promise resolving to the user's data if credentials are valid, or null if invalid.
+   */
   login: async (data: LoginDTO): Promise<UserResponseDTO | null> => {
     const user = await UserModel.findByEmail(data.email)
 

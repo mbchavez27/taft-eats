@@ -1,9 +1,19 @@
+/**
+ * @fileoverview Main Express application configuration.
+ * Sets up global middleware (CORS, JSON parsing, cookies) and mounts API routes.
+ * @module app
+ */
+
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 import userRoutes from './users/user.routes.js'
 
+/**
+ * The configured Express application instance.
+ * @type {express.Express}
+ */
 const app = express()
 
 app.use(cookieParser())
@@ -16,6 +26,15 @@ app.use(
   }),
 )
 
+/**
+ * Mounts user-related routes under the /api/users/ path.
+ * @name use/api/users
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {string} path - The base path for the routes.
+ * @param {express.Router} router - The router handling user endpoints.
+ */
 app.use('/api/users/', userRoutes)
 
 export default app

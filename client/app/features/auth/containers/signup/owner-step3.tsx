@@ -54,18 +54,6 @@ export function OwnerStep3({ onBack, form, isLoading }: Step3Props) {
   }
 
   // --- Handlers for Adding Custom Tags (Using negative BigInt for temp IDs) ---
-  const handleAddFood = () => {
-    if (!foodInput.trim()) return
-    // Generate a temporary negative bigint based on the current timestamp
-    const newFood: CustomTag = {
-      id: BigInt(-Date.now()),
-      label: foodInput.trim(),
-    }
-    setCustomFoods([...customFoods, newFood])
-    setFoodInput('')
-    setValue('tags', [...selectedTags, newFood], { shouldValidate: true })
-  }
-
   const handleAddCuisine = () => {
     if (!cuisineInput.trim()) return
     const newCuisine: CustomTag = {
@@ -124,28 +112,6 @@ export function OwnerStep3({ onBack, form, isLoading }: Step3Props) {
               </label>
             </div>
           ))}
-        </div>
-        <div className="flex items-center gap-2 mt-2 px-8 w-full max-w-sm">
-          <input
-            type="text"
-            value={foodInput}
-            onChange={(e) => setFoodInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleAddFood()
-              }
-            }}
-            placeholder="Add custom food..."
-            className="flex-1 border-2 border-gray-300 rounded-md p-2 outline-none focus:border-[#326F33] transition-colors text-sm"
-          />
-          <button
-            type="button"
-            onClick={handleAddFood}
-            className="bg-[#326F33] text-white p-2 rounded-md hover:bg-[#285a29] transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
         </div>
       </div>
       <hr />

@@ -7,6 +7,14 @@ import { UserModel } from './user.model.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-this'
 
+/**
+ * Default cookie configuration for authentication tokens.
+ * @type {object}
+ * @property {boolean} httpOnly - Prevents client-side scripts from accessing the cookie.
+ * @property {boolean} secure - Ensures cookie is sent over HTTPS only (enabled in production).
+ * @property {string} sameSite - CSRF protection setting.
+ * @property {number} maxAge - Cookie expiration set to 14 days in milliseconds.
+ */
 const cookies = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -14,8 +22,18 @@ const cookies = {
   maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
 }
 
+/**
+ * Controller handling user-related HTTP requests including registration,
+ * authentication, and session management.
+ */
 export const UserController = {
-  //Register POST /api/users/register
+  /**
+   * Registers a new user in the system.
+   * * @route POST /api/users/register
+   * @param {Request} req - Express request object containing CreateUserDTO in body.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void>} Returns 201 with user data and auth cookie on success, or error status on failure.
+   */
   register: async (req: Request, res: Response) => {
     try {
       const userData: CreateUserDTO = req.body
@@ -47,7 +65,13 @@ export const UserController = {
     }
   },
 
-  //Login POST /api/users/login
+  /**
+   * Authenticates a user and establishes a session via JWT and cookies.
+   * * @route POST /api/users/login
+   * @param {Request} req - Express request object containing LoginDTO in body.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void>} Returns 200 with JWT and user data on success, or 401/500 on failure.
+   */
   login: async (req: Request, res: Response) => {
     try {
       const credentials: LoginDTO = req.body
@@ -80,14 +104,27 @@ export const UserController = {
     }
   },
 
-  //Login POST /api/users/logout
+  /**
+   * Logs out the current user by clearing the authentication cookie.
+   * * @route POST /api/users/logout
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void>} Returns 200 message on success.
+   */
   logout: async (req: Request, res: Response) => {
     res.cookie('auth-token', '', { ...cookies, maxAge: 0 })
 
     res.status(200).json({ message: 'Logged out successfully' })
   },
 
-  //Verify GET /api/user/verify
+  /**
+   * Verifies the current user's session and returns their profile data.
+   * Requires authentication middleware to have previously populated req.user.
+   * * @route GET /api/user/verify
+   * @param {AuthRequest} req - Express request extended with user session data.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void>} Returns 200 with user profile, 401 if unauthorized, or 404 if not found.
+   */
   verify: async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user?.userId
