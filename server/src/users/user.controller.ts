@@ -145,59 +145,5 @@ export const UserController = {
     }
   },
 
-  /**
-   * Retrieves the number of reviews created by the authenticated user.
-   * * @route GET /api/users/:id/reviews
-   * @param {Request} req - Express request object containing userId as route param.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<void>} Returns 200 with CreatedReviewsDTO or 404 if user not found.
-   */
-  getNumberOfReviews: async (req: Request, res: Response) => {
-    try {
-      const userId = Number(req.params.id)
-      if (isNaN(userId)) {
-        return res.status(400).json({ error: 'Invalid user ID' })
-      }
-
-      const reviews = await UserModel.getNumberOfReviews(userId)
-
-      if (!reviews) {
-        return res.status(404).json({ error: 'User not found' })
-      }
-
-      res.status(200).json(reviews)
-    } catch (error) {
-      console.error('Get Number of Reviews Error:', error)
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  },
-
-  /**
-   * Retrieves the number of saved/bookmarked establishments for the authenticated user.
-   * * @route GET /api/users/:id/saved-establishments
-   * @param {Request} req - Express request object containing userId as route param.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<void>} Returns 200 with SavedEstablishmentsDTO or 404 if user not found.
-   */
-  getNumberOfSavedEstablishments: async (req: Request, res: Response) => {
-    try {
-      const userId = Number(req.params.id)
-      if (isNaN(userId)) {
-        return res.status(400).json({ error: 'Invalid user ID' })
-      }
-
-      const saved = await UserModel.getNumberOfSavedEstablishments(userId)
-
-      if (!saved) {
-        return res.status(404).json({ error: 'User not found' })
-      }
-
-      res.status(200).json(saved)
-    } catch (error) {
-      console.error('Get Number of Saved Establishments Error:', error)
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  },
-
   //TODO: Add update user controller
 }

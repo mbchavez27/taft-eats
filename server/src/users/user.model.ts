@@ -118,45 +118,5 @@ export const UserModel = {
     return rows.length > 0 ? rows[0] : null
   },
 
-  /**
-   * Retrieves the number of reviews created by a specific user.
-   * @param {number} id - The unique ID of the user.
-   * @returns {Promise<CreatedReviewsDTO | null>} A promise that resolves to an object containing the userId and the number of reviews created. Returns a default object with 0 reviews if the user has none.
-   */
-  getNumberOfReviews: async (id: number): Promise<CreatedReviewsDTO | null> => {
-    const [rows] = await pool.query<(CreatedReviewsDTO & RowDataPacket)[]>(
-      `
-      SELECT user_id AS userId, COUNT(*) AS createdReviews
-      FROM Reviews
-      WHERE user_id = ?
-      GROUP BY user_id
-      `,
-      [id],
-    )
-
-    return rows.length > 0 ? rows[0] : { userId: id, createdReviews: 0 }
-  },
-
-  /**
-   * Retrieves the number of establishments saved/bookmarked by a specific user.
-   * @param {number} id - The unique ID of the user.
-   * @returns {Promise<SavedEstablishmentsDTO | null>} A promise that resolves to an object containing the userId and the number of saved establishments. Returns a default object with 0 saved establishments if the user has none.
-   */
-  getNumberOfSavedEstablishments: async (
-    id: number,
-  ): Promise<SavedEstablishmentsDTO | null> => {
-    const [rows] = await pool.query<(SavedEstablishmentsDTO & RowDataPacket)[]>(
-      `
-      SELECT user_id AS userId, COUNT(*) AS savedEstablishments
-      FROM User_Bookmarks
-      WHERE user_id = ?
-      GROUP BY user_id
-      `,
-      [id],
-    )
-
-    return rows.length > 0 ? rows[0] : { userId: id, savedEstablishments: 0 }
-  },
-  //TODO: Create a Update User Function for edit function ie edit forgot password and other details like bio and username and name
   // === UPDATE ===
 }

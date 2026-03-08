@@ -55,34 +55,4 @@ router.post('/logout', UserController.logout)
  */
 router.get('/verify', requireAuth, UserController.verify)
 
-/**
- * Route to get the number of reviews created by a specific user.
- * Requires a valid authentication token.
- * @name get/:id/reviews
- * @function
- * @memberof module:routes/userRoutes
- * @inner
- * @param {string} path - Express path including user ID.
- * @param {callback} middleware - Authentication middleware (requireAuth).
- * @param {callback} middleware - Controller method returning CreatedReviewsDTO.
- */
-router.get('/:id/reviews', requireAuth, UserController.getNumberOfReviews)
-
-/**
- * Route to get the number of saved/bookmarked establishments for a specific user.
- * Requires a valid authentication token.
- * @name get/:id/saved-establishments
- * @function
- * @memberof module:routes/userRoutes
- * @inner
- * @param {string} path - Express path including user ID.
- * @param {callback} middleware - Authentication middleware (requireAuth).
- * @param {callback} middleware - Controller method returning SavedEstablishmentsDTO.
- */
-router.get(
-  '/:id/saved-establishments',
-  requireAuth,
-  UserController.getNumberOfSavedEstablishments,
-)
-
 export default router
