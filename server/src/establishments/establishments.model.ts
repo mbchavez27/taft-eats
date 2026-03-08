@@ -35,6 +35,69 @@ export interface Restaurant extends RowDataPacket {
  */
 export const EstablishmentModel = {
   /**
+   * Fetches a paginated list of restaurants using a Cursor (last seen ID).
+   * @async
+   * @param {number} limit - The number of restaurants to return.
+   * @param {number} [lastId] - The ID of the last restaurant fetched in the previous request.
+   * @returns {Promise<Restaurant[]>}
+   */
+  getAllRestaurants: async (
+    limit: number = 10,
+    lastId?: number,
+  ): Promise<Restaurant[]> => {
+    let query = `SELECT * FROM Restaurants`
+    const params: (number | string)[] = []
+
+    // If a lastId is provided, only get restaurants older than that ID
+    if (lastId) {
+      query += ` WHERE restaurant_id < ?`
+      params.push(lastId)
+    }
+
+    query += ` ORDER BY restaurant_id DESC LIMIT ?`
+    params.push(limit)
+
+    const [rows] = await pool.query<Restaurant[]>(query, params)
+
+    return rows
+  },
+
+  /**
+   * Retrieves a single restaurant record by its unique establishment ID.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} id - The primary key (restaurant_id) of the establishment to retrieve.
+   * @returns {Promise<Restaurant | null>} A promise resolving to the restaurant object if found, or null if it doesn't exist.
+   */
+  getRestaurantById: async (id: number): Promise<Restaurant | null> => {
+    const [rows] = await pool.query<Restaurant[]>(
+      'SELECT * FROM Restaurants WHERE restaurant_id = ? LIMIT 1',
+      [id],
+    )
+
+    return rows.length > 0 ? rows[0] : null
+  },
+
+  /**
+   * Retrieves the single restaurant record associated with a specific owner's user ID.
+   * Assumes a strict one-to-one relationship between owners and establishments.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} ownerId - The unique user ID of the restaurant owner.
+   * @returns {Promise<Restaurant | null>} A promise resolving to the owner's restaurant object, or null if they don't have one.
+   */
+  getRestaurantByOwnerId: async (
+    ownerId: number,
+  ): Promise<Restaurant | null> => {
+    const [rows] = await pool.query<Restaurant[]>(
+      'SELECT * FROM Restaurants WHERE owner_user_id = ? LIMIT 1',
+      [ownerId],
+    )
+
+    return rows.length > 0 ? rows[0] : null
+  },
+
+  /**
    * Inserts a new restaurant record into the database.
    * @async
    * @memberof EstablishmentModel
