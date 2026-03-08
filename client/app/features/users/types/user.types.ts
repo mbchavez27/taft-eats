@@ -3,7 +3,7 @@ export type CreateUserDTO = {
   email: string
   password: string //unhashed
 
-  //User
+  // User
   username?: string
   bio?: string
   role?: 'user' | 'owner' | 'admin' //default is user
@@ -33,16 +33,22 @@ export type UpdateUserRoleDTO = {
 
 export type UserResponseDTO = {
   user_id: number
-  username?: string
+  username: string
   name: string
   email: string
   bio: string | null
   role: 'user' | 'owner' | 'admin'
   profile_picture_url: string | null
-  created_at: Date
+  created_at: Date | string
 }
 
 export type LoginDTO = {
   email: string
   password: string
+}
+
+export interface AuthResponse {
+  message: string
+  user: UserResponseDTO
+  error?: string
 }

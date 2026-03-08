@@ -1,23 +1,22 @@
-import { useState } from "react";
-import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
-import { CiBookmark } from "react-icons/ci";
-import SearchField from "~/components/molecules/searchfield";
-import SideBar from "./sidebar.";
-import { Link } from "react-router";
-import UserPopover from "./user-popover";
-import Login from "~/features/auth/containers/login";
-import Signup from "~/features/auth/containers/signup";
-import OwnerSettings from "~/features/users/containers/owner-settings";
+import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
+import { CiBookmark } from 'react-icons/ci'
+import SearchField from '~/components/molecules/searchfield'
+import SideBar from './sidebar.'
+import { Link } from 'react-router'
+import UserPopover from './user-popover'
+import OwnerSettings from '~/features/users/containers/owner-settings'
+import { useAuthStore } from '~/features/auth/context/auth.store'
 
 export default function NavBar() {
-  const [isAuthendicated, setAuthentication] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
+  const { isAuthenticated, user, isLoading } = useAuthStore()
+  const isOwner = user?.role === 'owner'
 
+  console.log(isAuthenticated)
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">
         <section>
-          <Link to={"/"} className="flex items-center gap-1">
+          <Link to={'/'} className="flex items-center gap-1">
             <img
               src="/logos/tafteats_logo.png"
               alt="logo"
@@ -73,25 +72,27 @@ export default function NavBar() {
                   </Link>
                 </div>
                 <div className="flex gap-3">
-                  {isAuthendicated ? (
+                  {isLoading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-24 rounded-lg"></div>
+                  ) : isAuthenticated ? (
                     <>
-                      {/* <div className="bg-[#326F33] text-white p-2 rounded-full">
+                      <div className="bg-[#326F33] text-white p-2 rounded-full">
                         <CiBookmark size={24} />
-                      </div> */}
+                      </div>
                       <UserPopover />
                     </>
                   ) : (
                     <>
                       <div className="font-medium flex ml-4 gap-5">
                         <Link
-                          to={"/auth/login"}
-                          className="bg-white text-black border border-black px-4 py-1 rounded-lg"
+                          to={'/auth/login'}
+                          className="bg-white text-black border border-black px-4 py-1 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                           Log In
                         </Link>
                         <Link
-                          to={"/auth/sign-up"}
-                          className="bg-[#326F33] text-white px-3 py-1 rounded-lg"
+                          to={'/auth/sign-up'}
+                          className="bg-[#326F33] text-white px-3 py-1 rounded-lg hover:bg-[#285a29] transition-colors"
                         >
                           Sign Up
                         </Link>
@@ -105,5 +106,5 @@ export default function NavBar() {
         </section>
       </nav>
     </>
-  );
+  )
 }
