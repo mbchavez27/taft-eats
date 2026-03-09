@@ -13,15 +13,6 @@ import { EstablishmentModel } from '../establishments/establishments.model.js'
  * @namespace ReviewService
  */
 export const ReviewService = {
-  /**
-   * Creates a review, handles new/existing tags, and updates restaurant stats within a transaction.
-   * @async
-   * @memberof ReviewService
-   * @param {number} userId - The ID of the user creating the review.
-   * @param {CreateReviewDTO} data - The review data including optional tags and price range.
-   * @returns {Promise<number>} The ID of the newly created review.
-   * @throws {Error} Throws if the database transaction fails.
-   */
   createReviewWithTags: async (
     userId: number,
     data: CreateReviewDTO,
@@ -45,7 +36,13 @@ export const ReviewService = {
         const finalTagIds: bigint[] = []
 
         for (const tag of data.tags) {
-          const tagId = BigInt(tag.id)
+          let tagId = 0n
+
+          try {
+            tagId = BigInt(tag.id)
+          } catch (e) {
+            tagId = 0n
+          }
 
           if (tagId > 0n) {
             finalTagIds.push(tagId)
@@ -75,9 +72,11 @@ export const ReviewService = {
         )
       }
 
+      const safePriceRange = data.price_range || '$'
+
       await ReviewModel.updateRestaurantStats(
         data.restaurant_id,
-        data.price_range,
+        safePriceRange, // Pass the safe string
         connection,
       )
 
@@ -85,6 +84,7 @@ export const ReviewService = {
       return reviewId
     } catch (error) {
       await connection.rollback()
+      console.error('[Database Transaction Failed]:', error)
       throw error
     } finally {
       connection.release()

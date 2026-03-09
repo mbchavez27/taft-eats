@@ -23,7 +23,7 @@ export const ReviewController = {
    */
   createReview: async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).user?.user_id
+      const userId = (req as any).user?.userId
 
       if (!userId) {
         res.status(401).json({ error: 'Unauthorized. Please log in.' })
@@ -53,8 +53,7 @@ export const ReviewController = {
   /**
    * Handles GET requests to fetch a paginated list of reviews for a restaurant.
    * Expects 'restaurantId' in the route params, and optional 'limit' and 'lastId' in query.
-   * @async
-   * @memberof ReviewController
+   * @async   * @memberof ReviewController
    * @param {Request} req - The Express request object.
    * @param {Response} res - The Express response object.
    * @returns {Promise<void>}

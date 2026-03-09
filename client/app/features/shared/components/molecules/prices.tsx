@@ -1,33 +1,39 @@
-import { useState } from 'react'
-
 type PricesProps = {
   textSize?: string
-  selectedColor?: string // bg + text + border for selected
-  unselectedColor?: string // bg + text + border for unselected
+  selectedColor?: string
+  unselectedColor?: string
+  value?: string
+  onChange?: (val: string) => void
 }
 
 export default function Prices({
   textSize = 'text-lg',
   selectedColor = 'bg-[#416CAE] text-white border-[#416CAE] text-white',
   unselectedColor = 'bg-white text-[#326F33] border-[#416CAE] text-black',
+  value = '$',
+  onChange,
 }: PricesProps) {
-  const [selected, setSelected] = useState<number | null>(null)
+  const priceOptions = [
+    { label: '₱', val: '$' },
+    { label: '₱₱', val: '$$' },
+    { label: '₱₱₱', val: '$$$' },
+  ]
 
-  const prices = ['₱', '₱₱', '₱₱₱']
   return (
     <>
-      {prices.map((price, index) => {
-        const isSelected = selected === index
+      {priceOptions.map((price, index) => {
+        const isSelected = value === price.val
 
         return (
           <button
+            type="button"
             key={index}
-            onClick={() => setSelected(index)}
+            onClick={() => onChange?.(price.val)}
             className={`font-bold rounded-xl px-5 py-0.5 border-2 transition ${textSize} ${
               isSelected ? selectedColor : unselectedColor
             }`}
           >
-            {price}
+            {price.label}
           </button>
         )
       })}
