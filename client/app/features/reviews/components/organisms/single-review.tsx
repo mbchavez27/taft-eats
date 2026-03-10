@@ -1,13 +1,13 @@
-import ReactionCounter from "./reaction-counter";
-import ReviewContent from "./review-content";
-import ReviewRating from "./review-rating";
-import UserDetails from "./user-details";
-import { MdEdit } from "react-icons/md";
+import ReactionCounter from './reaction-counter'
+import ReviewContent from './review-content'
+import ReviewRating from './review-rating'
+import UserDetails from './user-details'
+import { MdEdit } from 'react-icons/md'
 
 interface SingleReviewProps {
-  is_owner?: boolean;
-  is_user?: boolean;
-  onOpenForms?: () => void;
+  is_owner?: boolean
+  is_user?: boolean
+  onOpenForms?: () => void
 }
 
 export default function SingleReview({
@@ -55,5 +55,5 @@ export default function SingleReview({
         )}
       </div>
     </main>
-  );
+  )
 }
