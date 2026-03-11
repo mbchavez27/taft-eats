@@ -9,14 +9,26 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 export const EstablishmentService = {
   getAll: async ({
     pageParam = undefined,
+    tags = [],
+    priceRanges = [],
   }: {
     pageParam?: number
+    tags?: string[]
+    priceRanges?: string[]
   }): Promise<PaginatedRestaurantsResponseDto> => {
-    let url = `${API_BASE_URL}/api/establishments?limit=10`
+    // URLSearchParams automatically handles URL encoding for arrays
+    const urlParams = new URLSearchParams()
 
+    urlParams.append('limit', '10')
     if (pageParam !== undefined) {
-      url += `&lastId=${pageParam}`
+      urlParams.append('lastId', pageParam.toString())
     }
+
+    // Append each tag and price range (creates e.g. ?tags=pizza&tags=burger&priceRanges=$$)
+    tags.forEach((tag) => urlParams.append('tags', tag))
+    priceRanges.forEach((price) => urlParams.append('priceRanges', price))
+
+    const url = `${API_BASE_URL}/api/establishments?${urlParams.toString()}`
 
     const response = await fetch(url, {
       method: 'GET',

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { EstablishmentModel } from './establishments.model.js'
+import { EstablishmentModel, GetRestaurantsFilterParams } from './establishments.model.js'
 
 export const EstablishmentController = {
   /**
@@ -36,12 +36,32 @@ export const EstablishmentController = {
         return
       }
 
-      // 2. Call the model
-      const restaurants = await EstablishmentModel.getAllRestaurants(
-        limit,
-        lastId,
-      )
+      // 2. Helper to parse tags and priceRanges (handles undefined, string, or array of strings)
+      const parseArrayParam = (param: any): string[] => {
+        if (!param) return []
+        if (Array.isArray(param)) return param as string[]
+        return [param as string]
+      }
 
+      const tags = parseArrayParam(req.query.tags)
+      const priceRanges = parseArrayParam(req.query.priceRanges)
+
+      let restaurants
+
+      // 3. Decide which model method to call
+      if (tags.length > 0 || priceRanges.length > 0) {
+        const filterParams: GetRestaurantsFilterParams = {
+          tags,
+          priceRanges,
+          limit,
+          lastId,
+        }
+        restaurants = await EstablishmentModel.getAllRestaurantsByTags(filterParams)
+      } else {
+        restaurants = await EstablishmentModel.getAllRestaurants(limit, lastId)
+      }
+
+      // 4. Send response
       res.status(200).json({
         success: true,
         data: restaurants,

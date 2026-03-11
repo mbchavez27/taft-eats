@@ -6,11 +6,17 @@ import EstablishmentsCard from '../components/organisms/establishment-card'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { EstablishmentService } from '../services/establishments.services'
 
+import { useFilterStore } from '~/features/filter-menu/store/filter.store'
+
 export default function EstablishmentsLists() {
-  // Setup the Intersection Observer to detect when the user hits the bottom
   const { ref, inView } = useInView()
 
-  // Setup TanStack Infinite Query
+  // 1. GET DATA FROM ZUSTAND
+  const { selectedCuisines, selectedTags, selectedPriceRanges } = useFilterStore()
+
+  // 2. COMBINE Cuisines and Tags for the backend (it checks both against the Tags table)
+  const combinedTags = [...selectedCuisines, ...selectedTags]
+
   const {
     data,
     error,
@@ -19,11 +25,16 @@ export default function EstablishmentsLists() {
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ['establishments'],
-    queryFn: EstablishmentService.getAll, // Calls clean service object
+    // 3. ATTACH THE STORE VARIABLES TO QUERY KEY (This makes React Query refetch automatically when filters change)
+    queryKey: ['establishments', combinedTags, selectedPriceRanges],
+    queryFn: ({ pageParam }) =>
+      EstablishmentService.getAll({ 
+        pageParam, 
+        tags: combinedTags, 
+        priceRanges: selectedPriceRanges 
+      }),
     initialPageParam: undefined as number | undefined,
-    // Grabs the nextCursor your backend strictly provides via DTO
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   })
 
   // Trigger fetchNextPage automatically when the invisible 'ref' div comes into view
