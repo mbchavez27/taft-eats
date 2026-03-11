@@ -1,8 +1,11 @@
-import { ScrollArea } from '~/components/ui/scroll-area'
-import { Checkbox } from '~/components/ui/checkbox'
-import { cuisines } from '../../data/dummy_cusine'
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Checkbox } from "~/components/ui/checkbox";
+import { cuisines } from "../../data/dummy_cusine";
+import { useFilterStore } from "../../store/filter.store";
 
 export default function SelectCuisines() {
+  const { selectedCuisines, toggleCuisine } = useFilterStore();
+
   return (
     <>
       <section className="flex flex-col gap-2 px-8 py-4 pb-6">
@@ -11,19 +14,6 @@ export default function SelectCuisines() {
         </div>
         <div className="text-[#BEBEBE] text-sm px-3">
           <div className="flex items-center gap-4">
-            <Checkbox
-              id="cuisine-all"
-              className="
-      border-2
-      border-gray-400
-      data-[state=unchecked]:bg-white
-      data-[state=unchecked]:border-gray-400
-      data-[state=checked]:bg-gray-500
-      data-[state=checked]:border-gray-500
-      data-[state=checked]:text-white
-    "
-            />
-            <label htmlFor="cuisine-all">Select All</label>
           </div>
 
           <div className="font-inter text-[#326F33] font-semibold">
@@ -35,15 +25,9 @@ export default function SelectCuisines() {
                 >
                   <Checkbox
                     id={cuisine.id}
-                    className="
-              border-2
-              border-[#416CAE]
-              data-[state=unchecked]:bg-white
-              data-[state=unchecked]:border-[#416CAE]
-              data-[state=checked]:bg-[#416CAE]
-              data-[state=checked]:border-[#416CAE]
-              data-[state=checked]:text-white
-            "
+                    checked={selectedCuisines.includes(cuisine.label)}
+                    onCheckedChange={() => toggleCuisine(cuisine.label)}
+                    className="border-2 border-[#416CAE] data-[state=checked]:bg-[#416CAE] data-[state=checked]:text-white"
                   />
                   <label htmlFor={cuisine.id}>{cuisine.label}</label>
                 </div>
@@ -53,5 +37,5 @@ export default function SelectCuisines() {
         </div>
       </section>
     </>
-  )
+  );
 }

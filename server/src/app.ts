@@ -9,6 +9,8 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 import userRoutes from './users/user.routes.js'
+import establishmentRoutes from './establishments/establishments.routes.js'
+import reviewRoutes from './reviews/reviews.routes.js'
 
 /**
  * The configured Express application instance.
@@ -36,5 +38,8 @@ app.use(
  * @param {express.Router} router - The router handling user endpoints.
  */
 app.use('/api/users/', userRoutes)
+
+app.use('/api/establishments/', establishmentRoutes)
+app.use('/api/reviews/', reviewRoutes)
 
 export default app

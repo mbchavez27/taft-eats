@@ -20,7 +20,7 @@ export const requireAuth = (
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as {
-      userId: number
+      user_id: number
       role: 'user' | 'owner' | 'admin'
     }
 

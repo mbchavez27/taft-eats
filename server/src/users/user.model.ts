@@ -5,6 +5,7 @@ import {
   PoolConnection,
 } from 'mysql2/promise'
 import { pool } from 'shared/config/database.js'
+import { CreatedReviewsDTO, SavedEstablishmentsDTO } from './dto/user-dto.js'
 
 /**
  * Represents a User record retrieved from the database.
@@ -36,7 +37,47 @@ export interface User extends RowDataPacket {
  * Data access object for interacting with the Users table in the database.
  */
 export const UserModel = {
-  //Find Users
+  // === CREATE ===
+  /**
+   * Creates a new user record in the database.
+   * * @param {Pick<User, 'email' | 'username' | 'password_hash' | 'name' | 'bio' | 'role' | 'profile_picture_url'>} user - An object containing the data for the new user.
+   * @param {Pool | PoolConnection} [connection] - An optional database connection or transaction pool. Defaults to the global pool.
+   * @returns {Promise<number>} A promise that resolves to the auto-incremented insert ID of the newly created user.
+   */
+  createUser: async (
+    user: Pick<
+      User,
+      | 'email'
+      | 'username'
+      | 'password_hash'
+      | 'name'
+      | 'bio'
+      | 'role' // Note: 'role' is included in the Pick type here but is not explicitly defined in the User interface above.
+      | 'profile_picture_url'
+    >,
+    connection?: Pool | PoolConnection,
+  ): Promise<number> => {
+    const db = (connection || pool) as Pool
+
+    const [result] = await db.query<ResultSetHeader>(
+      `INSERT INTO Users 
+        (email, username, password_hash, name, bio, role, profile_picture_url) 
+       VALUES (?, ?, ?, ?, ?, ?,?)`,
+      [
+        user.email,
+        user.username || null,
+        user.password_hash,
+        user.name,
+        user.bio || null,
+        user.role || 'user',
+        user.profile_picture_url || null,
+      ],
+    )
+
+    return result.insertId
+  },
+
+  // === READ ===
   /**
    * Finds a user by their email address.
    * * @param {string} email - The email address to search for.
@@ -77,45 +118,5 @@ export const UserModel = {
     return rows.length > 0 ? rows[0] : null
   },
 
-  //Create User
-  /**
-   * Creates a new user record in the database.
-   * * @param {Pick<User, 'email' | 'username' | 'password_hash' | 'name' | 'bio' | 'role' | 'profile_picture_url'>} user - An object containing the data for the new user.
-   * @param {Pool | PoolConnection} [connection] - An optional database connection or transaction pool. Defaults to the global pool.
-   * @returns {Promise<number>} A promise that resolves to the auto-incremented insert ID of the newly created user.
-   */
-  createUser: async (
-    user: Pick<
-      User,
-      | 'email'
-      | 'username'
-      | 'password_hash'
-      | 'name'
-      | 'bio'
-      | 'role' // Note: 'role' is included in the Pick type here but is not explicitly defined in the User interface above.
-      | 'profile_picture_url'
-    >,
-    connection?: Pool | PoolConnection,
-  ): Promise<number> => {
-    const db = (connection || pool) as Pool
-
-    const [result] = await db.query<ResultSetHeader>(
-      `INSERT INTO Users 
-        (email, username, password_hash, name, bio, role, profile_picture_url) 
-       VALUES (?, ?, ?, ?, ?, ?,?)`,
-      [
-        user.email,
-        user.username || null,
-        user.password_hash,
-        user.name,
-        user.bio || null,
-        user.role || 'user',
-        user.profile_picture_url || null,
-      ],
-    )
-
-    return result.insertId
-  },
-
-  //TODO: Create a Update User Function for edit function ie edit forgot password and other details like bio and username and name
+  // === UPDATE ===
 }

@@ -1,15 +1,21 @@
-export default function EstablishmentHeader() {
+interface Props {
+  name?: string | null
+  lat?: number | null
+  lng?: number | null
+}
+
+export default function EstablishmentHeader({ name, lat, lng }: Props) {
+  const displayLocation =
+    lat != null && lng != null ? `${lat}, ${lng}` : 'Location not available'
+
   return (
-    <>
-      {/* Header */}
-      <header>
-        <h1 className="text-black font-climate uppercase text-3xl md:text-6xl lg:text-7xl tracking-wider">
-          EL POCO CANTINA
-        </h1>
-        <p className="font-lexend text-xl font-bold text-[#9CB16F]">
-          945 Estrada Street, Malate, Manila - Metro Manila
-        </p>
-      </header>
-    </>
+    <header>
+      <h1 className="text-black font-climate uppercase text-3xl md:text-6xl lg:text-7xl tracking-wider">
+        {name}
+      </h1>
+      <p className="font-lexend text-xl font-bold text-[#9CB16F]">
+        Location: {displayLocation}
+      </p>
+    </header>
   )
 }

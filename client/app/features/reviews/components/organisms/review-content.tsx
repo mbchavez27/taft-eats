@@ -3,8 +3,9 @@ import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { FaStar } from "react-icons/fa";
 import ReactionCounter from "./reaction-counter";
+import type { ReviewDto } from "../../types/reviews.types";
 
-export default function ReviewContent() {
+export default function ReviewContent({ review }: { review: ReviewDto }) {
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -25,8 +26,7 @@ export default function ReviewContent() {
           w-[18ch] sm:w-[22ch] lg:w-[25ch]
         "
       >
-        Food was good! Service was fast and the staff were very nice! Love the
-        ambiance inside too. Would come back again!
+        {review.body}
       </p>
 
       {isTruncated && (
@@ -61,7 +61,7 @@ export default function ReviewContent() {
                 </h1>
                 <div className="flex items-center gap-2">
                   <p className="text-xl sm:text-2xl lg:text-3xl font-semibold">
-                    5.0
+                    {review.rating}
                   </p>
                   <FaStar size={32} color={"#FFD24D"} />
                 </div>
@@ -70,8 +70,7 @@ export default function ReviewContent() {
             <hr className="mt-2" />
             <section>
               <p className="font-lexend text-lg sm:text-2xl lg:text-3xl text-left px-6 py-4">
-                “Food was good! Service was fast and the staff were very nice!
-                Love the ambiance inside too. Would come back again!”
+                {review.body}
               </p>
             </section>
             <section className="flex justify-end px-5">
