@@ -30,6 +30,16 @@ export interface Restaurant extends RowDataPacket {
 }
 
 /**
+ * Interface for filtering restaurants by various tags and price ranges.
+ */
+export interface GetRestaurantsFilterParams {
+  tags?: string[];          // Array of tag names (covers cuisines, foods, and tags)
+  priceRanges?: string[];   // Array of price ranges (e.g., ['$', '$$'])
+  limit?: number;           // Pagination limit
+  lastId?: number;          // Cursor for pagination
+}
+
+/**
  * Represents a Tag database record.
  * @interface Tag
  * @extends {RowDataPacket}
@@ -69,6 +79,56 @@ export const EstablishmentModel = {
     params.push(limit)
 
     const [rows] = await pool.query<Restaurant[]>(query, params)
+
+    return rows
+  },
+
+  /**
+   * Fetches a paginated list of restaurants filtered by tags, cuisines, foods, and price range.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {GetRestaurantsFilterParams} params - The filter criteria.
+   * @returns {Promise<Restaurant[]>}
+   */
+  getAllRestaurantsByTags: async (
+    params: GetRestaurantsFilterParams
+  ): Promise<Restaurant[]> => {
+    const { tags = [], priceRanges = [], limit = 10, lastId } = params
+
+    let query = `SELECT r.* FROM Restaurants r WHERE 1=1`
+    const queryParams: (number | string)[] = []
+
+    // 1. Cursor-based pagination filter
+    if (lastId) {
+      query += ` AND r.restaurant_id < ?`
+      queryParams.push(lastId)
+    }
+
+    // 2. Filter by Price Range (direct column on Restaurants table)
+    if (priceRanges.length > 0) {
+      const placeholders = priceRanges.map(() => '?').join(', ')
+      query += ` AND r.price_range IN (${placeholders})`
+      queryParams.push(...priceRanges)
+    }
+
+    // 3. Filter by Tags (Cuisines, Foods, Tags in the Tags table)
+    // Using EXISTS prevents duplicate restaurant rows if a restaurant matches multiple tags
+    if (tags.length > 0) {
+      const placeholders = tags.map(() => '?').join(', ')
+      query += ` AND EXISTS (
+        SELECT 1 FROM Restaurant_Tags rt
+        JOIN Tags t ON rt.tag_id = t.tag_id
+        WHERE rt.restaurant_id = r.restaurant_id
+        AND t.name IN (${placeholders})
+      )`
+      queryParams.push(...tags)
+    }
+
+    // Order by ID descending and apply pagination limit
+    query += ` ORDER BY r.restaurant_id DESC LIMIT ?`
+    queryParams.push(limit)
+
+    const [rows] = await pool.query<Restaurant[]>(query, queryParams)
 
     return rows
   },

@@ -10,6 +10,9 @@ export default function EstablishmentsLists() {
   // Setup the Intersection Observer to detect when the user hits the bottom
   const { ref, inView } = useInView()
 
+  const tags: string[] = [] // e.g., ['pizza', 'burger']
+  const priceRanges: string[] = [] // e.g., ['$$', '$$$']
+
   // Setup TanStack Infinite Query
   const {
     data,
@@ -19,11 +22,13 @@ export default function EstablishmentsLists() {
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ['establishments'],
-    queryFn: EstablishmentService.getAll, // Calls clean service object
+    // IMPORTANT: Include the filters in the queryKey so it refetches when they change
+    queryKey: ['establishments', { tags, priceRanges }],
+    queryFn: ({ pageParam }) =>
+      EstablishmentService.getAll({ pageParam, tags, priceRanges }),
     initialPageParam: undefined as number | undefined,
     // Grabs the nextCursor your backend strictly provides via DTO
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   })
 
   // Trigger fetchNextPage automatically when the invisible 'ref' div comes into view
