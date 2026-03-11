@@ -1,6 +1,6 @@
-import { FaStar } from 'react-icons/fa'
-import { useQuery } from '@tanstack/react-query'
-import { EstablishmentService } from '~/features/establishments/services/establishments.services'
+import { FaStar } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import { EstablishmentService } from "~/features/establishments/services/establishments.services";
 
 export default function EstablishmentTags({
   id,
@@ -8,20 +8,21 @@ export default function EstablishmentTags({
   numberOfReviews,
   tags: initialTags,
 }: {
-  id?: number
-  stars?: number
-  numberOfReviews?: number
-  tags?: string[]
+  id?: number;
+  stars?: number;
+  numberOfReviews?: number;
+  tags?: string[];
 }) {
   // Fetch tags dynamically using the restaurant ID
   const { data: tagsData, isLoading } = useQuery({
-    queryKey: ['establishment-tags', id],
+    queryKey: ["establishment-tags", id],
     queryFn: () => EstablishmentService.getTagsByRestaurantId(id!),
     enabled: !!id,
-  })
+  });
 
+  console.log(tagsData);
   const displayTags = tagsData?.data.map((tag) => tag.name) ??
-    initialTags ?? ['Mexican', 'Fast Food', 'Affordable']
+    initialTags ?? ["Mexican", "Fast Food", "Affordable"];
 
   return (
     <>
@@ -56,5 +57,5 @@ export default function EstablishmentTags({
         </div>
       </main>
     </>
-  )
+  );
 }
