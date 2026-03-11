@@ -8,8 +8,8 @@ import {
   Pool,
   PoolConnection,
   RowDataPacket,
-} from 'mysql2/promise'
-import { pool } from 'shared/config/database.js'
+} from "mysql2/promise";
+import { pool } from "shared/config/database.js";
 
 /**
  * Represents a Review database record joined with basic User info.
@@ -17,15 +17,18 @@ import { pool } from 'shared/config/database.js'
  * @extends {RowDataPacket}
  */
 export interface ReviewRecord extends RowDataPacket {
-  review_id: number
-  restaurant_id: number
-  user_id: number
-  rating: number
-  body: string
-  is_edited: boolean
-  created_at: string
-  username: string
-  profile_picture_url: string | null
+  review_id: number;
+  restaurant_id: number;
+  user_id: number;
+  rating: number;
+  body: string;
+  is_edited: boolean;
+  created_at: string;
+  username: string;
+  profile_picture_url: string | null;
+  like_count: number;
+  dislike_count: number;
+  user_vote: "like" | "dislike" | "none";
 }
 
 /**
@@ -43,14 +46,14 @@ export const ReviewModel = {
    */
   createReview: async (
     reviewData: {
-      restaurant_id: number
-      user_id: number
-      rating: number
-      body: string
+      restaurant_id: number;
+      user_id: number;
+      rating: number;
+      body: string;
     },
     connection?: Pool | PoolConnection,
   ): Promise<number> => {
-    const db = (connection || pool) as Pool
+    const db = (connection || pool) as Pool;
 
     const [result] = await db.query<ResultSetHeader>(
       `INSERT INTO Reviews (restaurant_id, user_id, rating, body) VALUES (?, ?, ?, ?)`,
@@ -60,47 +63,73 @@ export const ReviewModel = {
         reviewData.rating,
         reviewData.body,
       ],
-    )
+    );
 
-    return result.insertId
+    return result.insertId;
   },
 
   /**
-   * Fetches a paginated list of reviews for a specific restaurant using a Cursor (last seen ID).
-   * It also joins the Users table to retrieve the reviewer's username and profile picture.
-   * @async
-   * @memberof ReviewModel
-   * @param {number} restaurantId - The ID of the restaurant.
-   * @param {number} [limit=10] - The number of reviews to return.
-   * @param {number} [lastId] - The ID of the last review fetched in the previous request.
-   * @returns {Promise<ReviewRecord[]>}
+   * Fetches paginated reviews, including like/dislike counts and the current user's vote.
    */
   getReviewsByRestaurantId: async (
     restaurantId: number,
     limit: number = 10,
     lastId?: number,
+    currentUserId?: number, // Passed in to check if the requester has already voted
   ): Promise<ReviewRecord[]> => {
-    // We join the Users table so the frontend knows who wrote the review
     let query = `
-      SELECT r.*, u.username, u.profile_picture_url
+      SELECT 
+        r.*, 
+        u.username, 
+        u.profile_picture_url,
+        (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'like') AS like_count,
+        (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'dislike') AS dislike_count,
+        IFNULL((SELECT vote_type FROM Review_Votes WHERE review_id = r.review_id AND user_id = ?), 'none') AS user_vote
       FROM Reviews r
       JOIN Users u ON r.user_id = u.user_id
       WHERE r.restaurant_id = ?
-    `
-    const params: (number | string)[] = [restaurantId]
+    `;
+    // We pass currentUserId (or null if not logged in), then restaurantId
+    const params: (number | string | null)[] = [
+      currentUserId || null,
+      restaurantId,
+    ];
 
-    // Cursor pagination logic
     if (lastId) {
-      query += ` AND r.review_id < ?`
-      params.push(lastId)
+      query += ` AND r.review_id < ?`;
+      params.push(lastId);
     }
 
-    query += ` ORDER BY r.review_id DESC LIMIT ?`
-    params.push(limit)
+    query += ` ORDER BY r.review_id DESC LIMIT ?`;
+    params.push(limit);
 
-    const [rows] = await pool.query<ReviewRecord[]>(query, params)
+    const [rows] = await pool.query<ReviewRecord[]>(query, params);
+    return rows;
+  },
 
-    return rows
+  /**
+   * Upserts or deletes a user's vote on a review.
+   */
+  voteReview: async (
+    reviewId: number,
+    userId: number,
+    voteType: "like" | "dislike" | "none",
+  ): Promise<void> => {
+    if (voteType === "none") {
+      // Remove the vote
+      await pool.query(
+        `DELETE FROM Review_Votes WHERE review_id = ? AND user_id = ?`,
+        [reviewId, userId],
+      );
+    } else {
+      // Insert or update the vote
+      await pool.query(
+        `INSERT INTO Review_Votes (review_id, user_id, vote_type) 
+         VALUES (?, ?, ?) 
+         ON DUPLICATE KEY UPDATE vote_type = ?`,
+        [reviewId, userId, voteType, voteType],
+      );
+    }
   },
 
   /**
@@ -117,7 +146,7 @@ export const ReviewModel = {
     price_range?: string,
     connection?: Pool | PoolConnection,
   ): Promise<void> => {
-    const db = (connection || pool) as Pool
+    const db = (connection || pool) as Pool;
 
     let query = `
       UPDATE Restaurants r
@@ -126,17 +155,17 @@ export const ReviewModel = {
         FROM Reviews
         WHERE restaurant_id = ?
       )
-    `
-    const params: (number | string)[] = [restaurant_id]
+    `;
+    const params: (number | string)[] = [restaurant_id];
 
     if (price_range) {
-      query += `, r.price_range = ?`
-      params.push(price_range)
+      query += `, r.price_range = ?`;
+      params.push(price_range);
     }
 
-    query += ` WHERE r.restaurant_id = ?`
-    params.push(restaurant_id)
+    query += ` WHERE r.restaurant_id = ?`;
+    params.push(restaurant_id);
 
-    await db.query(query, params)
+    await db.query(query, params);
   },
-}
+};

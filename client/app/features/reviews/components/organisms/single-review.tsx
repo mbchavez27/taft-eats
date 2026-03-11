@@ -18,6 +18,7 @@ export default function SingleReview({
   onOpenForms,
   review,
 }: SingleReviewProps) {
+  console.log(review);
   return (
     <main
       className="
@@ -29,7 +30,7 @@ export default function SingleReview({
     >
       {/* LEFT SIDE */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-12">
-        <UserDetails />
+        <UserDetails review={review} />
         <ReviewContent review={review} />
       </div>
 
@@ -53,7 +54,12 @@ export default function SingleReview({
           </>
         ) : (
           <>
-            <ReactionCounter />
+            <ReactionCounter
+              reviewId={review.review_id}
+              initialReaction={review.user_vote} // Comes from the updated DB query
+              initialLikes={review.like_count} // Comes from the updated DB query
+              initialDislikes={review.dislike_count} // Comes from the updated DB query
+            />
           </>
         )}
       </div>

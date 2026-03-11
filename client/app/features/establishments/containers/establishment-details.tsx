@@ -1,13 +1,13 @@
-import ImageContainer from '~/features/shared/container/image-container'
-import EstablishmentDesription from '../components/organisms/establishment-description'
-import EstablishmentTags from '../components/organisms/establishment-tags'
-import ReviewTags from '~/features/reviews/containers/review-tags'
-import type { RestaurantDto } from '../types/establishments.types'
+import ImageContainer from "~/features/shared/container/image-container";
+import EstablishmentDesription from "../components/organisms/establishment-description";
+import EstablishmentTags from "../components/organisms/establishment-tags";
+import ReviewTags from "~/features/reviews/containers/review-tags";
+import type { RestaurantDto } from "../types/establishments.types";
 
 type EstablishmentDetailsProps = {
-  isReviewOpen?: boolean
-  data?: RestaurantDto
-}
+  isReviewOpen?: boolean;
+  data?: RestaurantDto;
+};
 
 export default function EstablishmentDetails({
   isReviewOpen,
@@ -21,9 +21,9 @@ export default function EstablishmentDetails({
       ) : (
         <>
           <EstablishmentDesription description={data?.description} />
-          <EstablishmentTags stars={data?.rating} />
+          <EstablishmentTags id={data?.restaurant_id} stars={data?.rating} />
         </>
       )}
     </main>
-  )
+  );
 }

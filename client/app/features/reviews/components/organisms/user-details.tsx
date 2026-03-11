@@ -1,17 +1,24 @@
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import type { ReviewDto } from "../../types/reviews.types";
 
-export default function UserDetails() {
+export default function UserDetails({ review }: { review: ReviewDto }) {
   return (
     <main className="flex font-lexend items-center gap-3">
       <Avatar className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarImage src="" />
+        <AvatarFallback>{review.username.charAt(0)}</AvatarFallback>
       </Avatar>
 
       <div>
-        <h1 className="text-base sm:text-lg lg:text-xl">User 122</h1>
-        <p className="text-sm sm:text-base lg:text-lg opacity-50">01/20/26</p>
+        <h1 className="text-base sm:text-lg lg:text-xl">{review.username}</h1>
+        <p className="text-sm sm:text-base lg:text-lg opacity-50">
+          {new Date(review.created_at).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "2-digit",
+          })}
+        </p>
       </div>
     </main>
-  )
+  );
 }

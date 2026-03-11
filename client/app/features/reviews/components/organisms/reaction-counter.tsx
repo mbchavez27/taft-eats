@@ -3,12 +3,26 @@ import {
   FaThumbsUp,
   FaRegThumbsDown,
   FaThumbsDown,
-} from 'react-icons/fa6'
-import useReaction from '../../hooks/useReaction'
+} from "react-icons/fa6";
+import useReaction from "../../hooks/useReaction";
+import type { ReactionType } from "../../types/reviews.types";
 
-export default function ReactionCounter() {
+interface ReactionCounterProps {
+  reviewId: number;
+  initialReaction: ReactionType;
+  initialLikes: number;
+  initialDislikes: number;
+}
+
+export default function ReactionCounter({
+  reviewId,
+  initialReaction,
+  initialLikes,
+  initialDislikes,
+}: ReactionCounterProps) {
+  // Pass the props directly into our newly updated hook
   const { reaction, likeCount, dislikeCount, handleLike, handleDislike } =
-    useReaction(5.0, 5.0)
+    useReaction(reviewId, initialReaction, initialLikes, initialDislikes);
 
   return (
     <main className="flex items-center gap-4">
@@ -18,11 +32,10 @@ export default function ReactionCounter() {
           {likeCount}
         </h1>
 
-        {reaction === 'like' ? (
+        {reaction === "like" ? (
           <FaThumbsUp
-            className="cursor-pointer hover:opacity-70 text-xl sm:text-2xl lg:text-3xl"
+            className="cursor-pointer hover:opacity-70 text-xl sm:text-2xl lg:text-3xl text-[#9CB16F]"
             onClick={handleLike}
-            color="#9CB16F"
           />
         ) : (
           <FaRegThumbsUp
@@ -38,11 +51,10 @@ export default function ReactionCounter() {
           {dislikeCount}
         </h1>
 
-        {reaction === 'dislike' ? (
+        {reaction === "dislike" ? (
           <FaThumbsDown
-            className="cursor-pointer hover:opacity-70 scale-x-[-1] text-xl sm:text-2xl lg:text-3xl"
+            className="cursor-pointer hover:opacity-70 scale-x-[-1] text-xl sm:text-2xl lg:text-3xl text-[#D40000]"
             onClick={handleDislike}
-            color="#D40000"
           />
         ) : (
           <FaRegThumbsDown
@@ -52,5 +64,5 @@ export default function ReactionCounter() {
         )}
       </div>
     </main>
-  )
+  );
 }
