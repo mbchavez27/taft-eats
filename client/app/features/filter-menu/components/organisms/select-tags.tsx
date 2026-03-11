@@ -14,19 +14,6 @@ export default function SelectTags() {
         </div>
         <div className="text-[#BEBEBE] text-sm px-3">
           <div className="flex items-center gap-4">
-            <Checkbox
-              id="cuisine-all"
-              className="
-      border-2
-      border-gray-400
-      data-[state=unchecked]:bg-white
-      data-[state=unchecked]:border-gray-400
-      data-[state=checked]:bg-gray-500
-      data-[state=checked]:border-gray-500
-      data-[state=checked]:text-white
-    "
-            />
-            <label htmlFor="cuisine-all">Select All</label>
           </div>
 
           <div className="font-inter text-[#326F33] font-semibold">
