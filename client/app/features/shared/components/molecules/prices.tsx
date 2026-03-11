@@ -2,15 +2,15 @@ type PricesProps = {
   textSize?: string
   selectedColor?: string
   unselectedColor?: string
-  value?: string
+  values?: string[] // Changed to array
   onChange?: (val: string) => void
 }
 
 export default function Prices({
   textSize = 'text-lg',
-  selectedColor = 'bg-[#416CAE] text-white border-[#416CAE] text-white',
-  unselectedColor = 'bg-white text-[#326F33] border-[#416CAE] text-black',
-  value = '$',
+  selectedColor = 'bg-[#416CAE] text-white border-[#416CAE]',
+  unselectedColor = 'bg-white text-[#326F33] border-[#416CAE]',
+  values = [],
   onChange,
 }: PricesProps) {
   const priceOptions = [
@@ -22,7 +22,7 @@ export default function Prices({
   return (
     <>
       {priceOptions.map((price, index) => {
-        const isSelected = value === price.val
+        const isSelected = values.includes(price.val)
 
         return (
           <button
