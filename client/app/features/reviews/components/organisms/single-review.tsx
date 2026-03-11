@@ -1,3 +1,4 @@
+import type { ReviewDto, ReviewResponseDTO } from "../../types/reviews.types";
 import ReactionCounter from "./reaction-counter";
 import ReviewContent from "./review-content";
 import ReviewRating from "./review-rating";
@@ -8,12 +9,14 @@ interface SingleReviewProps {
   is_owner?: boolean;
   is_user?: boolean;
   onOpenForms?: () => void;
+  review: ReviewDto;
 }
 
 export default function SingleReview({
   is_owner,
   is_user,
   onOpenForms,
+  review,
 }: SingleReviewProps) {
   return (
     <main
@@ -27,12 +30,12 @@ export default function SingleReview({
       {/* LEFT SIDE */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-12">
         <UserDetails />
-        <ReviewContent />
+        <ReviewContent review={review} />
       </div>
 
       {/* RIGHT SIDE */}
       <div className="flex justify-between items-center gap-6 lg:gap-12">
-        <ReviewRating />
+        <ReviewRating review={review.rating} />
         {is_user ? (
           <>
             <button>

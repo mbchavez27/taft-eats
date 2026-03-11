@@ -190,8 +190,9 @@ export const EstablishmentModel = {
 
     const values = tagIds.map((id) => [restaurantId, id.toString()])
 
+    // FIX: Add 'IGNORE' so it doesn't crash on duplicate tags
     await db.query(
-      'INSERT INTO Restaurant_Tags (restaurant_id, tag_id) VALUES ?',
+      'INSERT IGNORE INTO Restaurant_Tags (restaurant_id, tag_id) VALUES ?',
       [values],
     )
   },
@@ -211,8 +212,9 @@ export const EstablishmentModel = {
   ): Promise<{ tag_id: number } | null> => {
     const db = (connection || pool) as Pool
 
+    // FIX: Changed 'label' to 'name'
     const [rows] = await db.query<RowDataPacket[]>(
-      'SELECT tag_id FROM Tags WHERE LOWER(label) = LOWER(?) LIMIT 1',
+      'SELECT tag_id FROM Tags WHERE LOWER(name) = LOWER(?) LIMIT 1',
       [label],
     )
     return rows.length > 0 ? (rows[0] as { tag_id: number }) : null
@@ -233,8 +235,9 @@ export const EstablishmentModel = {
   ): Promise<number> => {
     const db = (connection || pool) as Pool
 
+    // FIX: Changed 'label' to 'name'
     const [result] = await db.query<ResultSetHeader>(
-      'INSERT INTO Tags (label) VALUES (?)',
+      'INSERT INTO Tags (name) VALUES (?)',
       [label],
     )
     return result.insertId
