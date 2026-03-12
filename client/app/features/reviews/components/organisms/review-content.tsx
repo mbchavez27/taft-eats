@@ -1,20 +1,20 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { useState, useEffect, useRef } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { FaStar } from "react-icons/fa";
-import ReactionCounter from "./reaction-counter";
-import type { ReviewDto } from "../../types/reviews.types";
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { useState, useEffect, useRef } from 'react'
+import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog'
+import { FaStar } from 'react-icons/fa'
+import ReactionCounter from './reaction-counter'
+import type { ReviewDto } from '../../types/reviews.types'
 
 export default function ReviewContent({ review }: { review: ReviewDto }) {
-  const [isTruncated, setIsTruncated] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false)
+  const textRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    const el = textRef.current;
+    const el = textRef.current
     if (el) {
-      setIsTruncated(el.scrollWidth > el.clientWidth);
+      setIsTruncated(el.scrollWidth > el.clientWidth)
     }
-  }, []);
+  }, [])
 
   return (
     <main className="font-lexend flex gap-2 sm:gap-3 items-center">
@@ -63,7 +63,7 @@ export default function ReviewContent({ review }: { review: ReviewDto }) {
                   <p className="text-xl sm:text-2xl lg:text-3xl font-semibold">
                     {review.rating}
                   </p>
-                  <FaStar size={32} color={"#FFD24D"} />
+                  <FaStar size={32} color={'#FFD24D'} />
                 </div>
               </div>
             </section>
@@ -74,11 +74,16 @@ export default function ReviewContent({ review }: { review: ReviewDto }) {
               </p>
             </section>
             <section className="flex justify-end px-5">
-              <ReactionCounter />
+              <ReactionCounter
+                reviewId={review.review_id}
+                initialReaction={review.user_vote} // Comes from the updated DB query
+                initialLikes={review.like_count} // Comes from the updated DB query
+                initialDislikes={review.dislike_count} // Comes from the updated DB query
+              />
             </section>
           </DialogContent>
         </Dialog>
       )}
     </main>
-  );
+  )
 }
