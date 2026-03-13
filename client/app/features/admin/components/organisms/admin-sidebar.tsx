@@ -25,7 +25,7 @@ export default function AdminSidebar() {
 
             <Link
               to="/admin/"
-              className={isActive("/admin/users") ? "font-bold" : "font-normal"}
+              className={isActive("/admin/") ? "font-bold" : "font-normal"}
             >
               Users
             </Link>
