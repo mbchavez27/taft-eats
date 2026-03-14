@@ -115,6 +115,32 @@ export const EstablishmentService = {
     return data
   },
 
+  getBookmarks: async ({
+    pageParam = undefined,
+  }: {
+    pageParam?: number
+  } = {}): Promise<PaginatedRestaurantsResponseDto> => {
+    const urlParams = new URLSearchParams()
+    urlParams.append('limit', '10')
+
+    if (pageParam !== undefined) {
+      urlParams.append('lastId', pageParam.toString())
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/user/bookmarks?${urlParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to fetch bookmarks')
+    return data
+  },
+
   bookmark: async (restaurantId: number): Promise<void> => {
     const response = await fetch(
       `${API_BASE_URL}/api/establishments/${restaurantId}/bookmark`,

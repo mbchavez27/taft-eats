@@ -1,6 +1,5 @@
 import FilterMenu from '~/features/filter-menu/containers/filter-menu'
 import type { Route } from '../+types/bookmarks/index'
-import FoodFilter from '~/features/food-filter/containers/food-filter'
 import EstablishmentsLists from '~/features/establishments/containers/establishments-lists'
 
 export function meta({}: Route.MetaArgs) {

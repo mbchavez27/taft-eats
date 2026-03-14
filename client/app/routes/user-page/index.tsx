@@ -1,10 +1,15 @@
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router'
+import { useInfiniteQuery } from '@tanstack/react-query'
+
 import UserDetails from '~/features/users/containers/user-details'
-import type { Route } from '../+types/user-page/index'
 import UserStatistics from '~/features/users/components/organisms/user-statistics'
 import SavedEstablishments from '~/features/users/components/organisms/saved-establishments'
 import UserReviews from '~/features/reviews/containers/user-reviews'
+
 import { useAuthStore } from '~/features/auth/context/auth.store'
-import { useNavigate } from 'react-router'
+import { EstablishmentService } from '~/features/establishments/services/establishments.services'
+import type { Route } from '../+types/user-page/index'
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,10 +21,34 @@ export function meta({}: Route.MetaArgs) {
 export default function UserPage() {
   const user = useAuthStore((state) => state.user)
   const navigate = useNavigate()
+  const { SetBookmarkCount } = useAuthStore()
 
-  if (!user) {
-    navigate('/')
-  }
+  const { data, status, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ['userBookmarks', user?.user_id],
+      queryFn: ({ pageParam }) =>
+        EstablishmentService.getBookmarks({ pageParam }),
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+      enabled: !!user, // Only fetch if user exists
+    })
+
+  const allBookmarks = data?.pages.flatMap((page) => page.data) || []
+  const totalCount = allBookmarks.length
+
+  useEffect(() => {
+    if (status === 'success') {
+      SetBookmarkCount(totalCount)
+    }
+  }, [totalCount, status, SetBookmarkCount])
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/')
+    }
+  }, [user, navigate])
+
+  if (!user) return null
 
   return (
     <>
@@ -36,7 +65,7 @@ export default function UserPage() {
               <UserStatistics />
             </div>
             <div className="flex-1">
-              <SavedEstablishments />
+              <SavedEstablishments items={allBookmarks} />
             </div>
           </section>
           <section>
