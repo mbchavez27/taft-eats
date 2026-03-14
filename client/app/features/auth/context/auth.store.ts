@@ -7,10 +7,12 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   userReviewCount: number
+  bookmarkCount: number
   verifySession: () => Promise<void>
   logout: () => Promise<void>
   setSession: (user: UserResponseDTO) => void
   setReviewCount: (count: number) => void
+  SetBookmarkCount: (count: number) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -18,6 +20,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
   userReviewCount: 0,
+  bookmarkCount: 0,
 
   setSession: (user) => set({ user, isAuthenticated: true, isLoading: false }),
 
@@ -47,4 +50,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   setReviewCount: (count) => set({ userReviewCount: count }),
+
+  SetBookmarkCount: (count) => set({ bookmarkCount: count }),
 }))

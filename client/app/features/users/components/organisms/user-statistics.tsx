@@ -5,7 +5,7 @@ import { useAuthStore } from '~/features/auth/context/auth.store'
 import UserData from '../molecules/user-data'
 
 export default function UserStatistics() {
-  const { user, userReviewCount } = useAuthStore()
+  const { user, userReviewCount, bookmarkCount } = useAuthStore()
   return (
     <main className="bg-white rounded-3xl px-8 py-10 flex flex-row flex-wrap gap-10 w-full h-full">
       <div className="flex-1 flex flex-col gap-4 justify-center items-center">
@@ -21,7 +21,7 @@ export default function UserStatistics() {
       <div className="flex-1 flex flex-col gap-4 justify-center items-center">
         <UserData
           label="Saved Establishments"
-          value={3}
+          value={bookmarkCount}
           icon={MdOutlineRestaurantMenu}
         />
       </div>

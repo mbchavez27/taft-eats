@@ -1,35 +1,50 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import type { RestaurantDto } from '~/features/establishments/types/establishments.types'
 
-export default function SavedEstablishments() {
-  const establishments = [
-    "https://github.com/shadcn.png",
-    "https://github.com/shadcn.png",
-    "https://github.com/shadcn.png",
-    "https://github.com/shadcn.png",
-    "https://github.com/shadcn.png",
-  ];
+interface SavedEstablishmentsProps {
+  items: RestaurantDto[]
+}
 
-  const visible = 3;
-  const extraCount = establishments.length - visible;
+export default function SavedEstablishments({
+  items,
+}: SavedEstablishmentsProps) {
+  const visible = 3
+  const extraCount = items.length - visible
 
   return (
-    <main className="bg-white rounded-3xl px-10 py-8 flex flex-col w-full h-full">
-      <h1 className="font-bold text-xl mb-6">Saved Establishments</h1>
+    <main className="bg-white rounded-3xl px-10 py-8 flex flex-col w-full h-full border-2 border-black drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+      <h1 className="font-climate text-xl mb-6 uppercase">
+        Saved Establishments
+      </h1>
 
       <div className="flex flex-row flex-wrap gap-5 flex-1 justify-center items-center">
-        {establishments.slice(0, visible).map((src, index) => (
-          <Avatar key={index} className="w-16 h-16">
-            <AvatarImage src={src} />
-            <AvatarFallback>CN</AvatarFallback>
+        {items.slice(0, visible).map((establishment) => (
+          <Avatar
+            key={establishment.restaurant_id}
+            className="w-16 h-16 border-2 border-black"
+          >
+            <AvatarImage
+              src={establishment.banner_picture_url ?? ''}
+              className="object-cover"
+            />
+            <AvatarFallback className="font-lexend font-bold">
+              {establishment.name.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         ))}
 
         {extraCount > 0 && (
-          <Avatar className="w-12 h-12 bg-gray-300 text-black flex items-center justify-center">
-            <AvatarFallback>+{extraCount}</AvatarFallback>
-          </Avatar>
+          <div className="w-12 h-12 rounded-full bg-gray-300 text-black border-2 border-black flex items-center justify-center font-lexend font-bold text-sm">
+            +{extraCount}
+          </div>
+        )}
+
+        {items.length === 0 && (
+          <p className="font-lexend text-gray-400 italic text-sm">
+            No saved places yet.
+          </p>
         )}
       </div>
     </main>
-  );
+  )
 }
