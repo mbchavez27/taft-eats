@@ -150,6 +150,21 @@ export const ReviewModel = {
   },
 
   /**
+   * Fetches a single review by its ID.
+   */
+  getReviewById: async (
+    reviewId: number,
+    connection?: Pool | PoolConnection,
+  ): Promise<RowDataPacket | null> => {
+    const db = (connection || pool) as Pool
+    const [rows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM Reviews WHERE review_id = ?`,
+      [reviewId],
+    )
+    return rows.length ? rows[0] : null
+  },
+
+  /**
    * Upserts or deletes a user's vote on a review.
    */
   voteReview: async (
@@ -209,5 +224,36 @@ export const ReviewModel = {
     params.push(restaurant_id)
 
     await db.query(query, params)
+  },
+
+  /**
+   * Updates only the body of a specific review and marks it as edited.
+   */
+  updateReviewBody: async (
+    reviewId: number,
+    userId: number,
+    body: string,
+  ): Promise<boolean> => {
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE Reviews SET body = ?, is_edited = TRUE WHERE review_id = ? AND user_id = ?`,
+      [body, reviewId, userId],
+    )
+    return result.affectedRows > 0
+  },
+
+  /**
+   * Deletes a specific review by the user.
+   */
+  deleteReview: async (
+    reviewId: number,
+    userId: number,
+    connection?: Pool | PoolConnection,
+  ): Promise<boolean> => {
+    const db = (connection || pool) as Pool
+    const [result] = await db.query<ResultSetHeader>(
+      `DELETE FROM Reviews WHERE review_id = ? AND user_id = ?`,
+      [reviewId, userId],
+    )
+    return result.affectedRows > 0
   },
 }
