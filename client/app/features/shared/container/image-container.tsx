@@ -23,7 +23,7 @@ export default function ImageContainer({
 }: ImageContainerProps) {
   const { pathname } = useLocation()
   const params = useParams()
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
 
   // 1. Context Detection based on RouteConfig
   // Matches route(':restaurant_id', './routes/restaurants/index.tsx')
@@ -73,7 +73,7 @@ export default function ImageContainer({
       {/* --- CONTEXTUAL OVERLAYS --- */}
 
       {/* A. CUSTOMER VIEW: Bookmark Ribbon */}
-      {isPublicRestaurantPage && isAuthenticated && (
+      {isPublicRestaurantPage && isAuthenticated && user?.role === 'user' && (
         <div
           className="absolute -top-3 left-3 cursor-pointer transition-transform hover:scale-105 active:scale-95 z-10"
           onClick={(e) => {

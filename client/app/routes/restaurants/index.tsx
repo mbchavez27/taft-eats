@@ -40,7 +40,7 @@ export function meta({ data }: Route.MetaArgs) {
 export default function Restaurant() {
   const { restaurant_id } = useParams<{ restaurant_id: string }>()
   const [isReviewOpen, setIsReviewOpen] = useState(false)
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { user } = useAuthStore()
 
   const restaurantId = restaurant_id ? parseInt(restaurant_id, 10) : 0
 
@@ -104,7 +104,7 @@ export default function Restaurant() {
                 onReply={handleOpenReview}
                 restaurantId={restaurantId}
               />
-              {isAuthenticated && (
+              {user?.role === 'user' && (
                 <div className="flex justify-end">
                   <ReviewButton onClick={handleOpenReview}>
                     Write a Review
