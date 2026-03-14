@@ -6,15 +6,18 @@ interface AuthState {
   user: UserResponseDTO | null
   isAuthenticated: boolean
   isLoading: boolean
+  userReviewCount: number
   verifySession: () => Promise<void>
   logout: () => Promise<void>
   setSession: (user: UserResponseDTO) => void
+  setReviewCount: (count: number) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  userReviewCount: 0,
 
   setSession: (user) => set({ user, isAuthenticated: true, isLoading: false }),
 
@@ -42,4 +45,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: false })
     }
   },
+
+  setReviewCount: (count) => set({ userReviewCount: count }),
 }))
