@@ -28,14 +28,15 @@ export default function SingleReview({
         lg:flex-row lg:items-center lg:justify-between
       "
     >
-      {/* LEFT SIDE */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-12">
-        <UserDetails review={review} />
+      {/* LEFT SIDE WRAPPER */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-12 lg:flex-1">
+        <div className="lg:shrink-0">
+          <UserDetails review={review} />
+        </div>
 
-        {/* Added a container here for ReviewContent + Edited tag */}
-        <div className="flex flex-col gap-1">
+        {/* MIDDLE SECTION: Content */}
+        <div className="flex-1 flex flex-col justify-center items-center text-center gap-1">
           <ReviewContent review={review} />
-          {/* Check if is_edited is true (or 1 from MySQL tinyint) */}
           {!!review.is_edited && (
             <span className="text-sm font-lexend text-gray-500 italic">
               (Edited)
@@ -44,8 +45,8 @@ export default function SingleReview({
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="flex justify-between items-center gap-6 lg:gap-12 shrink-0">
+      {/* RIGHT SIDE WRAPPER */}
+      <div className="flex justify-between items-center gap-6 lg:gap-12 shrink-0 lg:ml-6">
         <ReviewRating review={review.rating} />
         {is_user ? (
           <div className="flex gap-6">

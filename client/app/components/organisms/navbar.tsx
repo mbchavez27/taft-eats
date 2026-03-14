@@ -1,7 +1,7 @@
 import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
 import { CiBookmark } from 'react-icons/ci'
 import SearchField from '~/components/molecules/searchfield'
-import SideBar from './sidebar.'
+import SideBar from './sidebar'
 import { Link } from 'react-router'
 import UserPopover from './user-popover'
 import OwnerSettings from '~/features/users/containers/owner-settings'
@@ -76,9 +76,12 @@ export default function NavBar() {
                     <div className="animate-pulse bg-gray-200 h-8 w-24 rounded-lg"></div>
                   ) : isAuthenticated ? (
                     <>
-                      <div className="bg-[#326F33] text-white p-2 rounded-full">
+                      <Link
+                        to={'/bookmarks/'}
+                        className="bg-[#326F33] text-white p-2 rounded-full"
+                      >
                         <CiBookmark size={24} />
-                      </div>
+                      </Link>
                       <UserPopover />
                     </>
                   ) : (

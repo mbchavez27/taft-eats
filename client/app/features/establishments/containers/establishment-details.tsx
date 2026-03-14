@@ -16,9 +16,10 @@ export default function EstablishmentDetails({
   return (
     <main className="w-xs font-lexend text-[#BFD392] px-4 flex flex-col gap-5">
       <ImageContainer
-        restaurantId={data?.restaurant_id}
+        bannerUrl={data?.banner_picture_url}
         initialIsBookmarked={!!data?.is_bookmarked}
       />
+
       {isReviewOpen ? (
         <ReviewTags />
       ) : (
