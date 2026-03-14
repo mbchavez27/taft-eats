@@ -1,6 +1,6 @@
 import { useFormContext, Controller } from 'react-hook-form'
 import Stars from '~/features/shared/components/molecules/stars'
-import type { ReviewFormValues } from '../hooks/use-review'
+import type { ReviewFormValues } from '../hooks/useCreateReview'
 
 export default function ReviewForms() {
   const {

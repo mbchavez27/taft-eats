@@ -11,7 +11,7 @@ import EstablishmentReviews from '~/features/reviews/containers/establishment-re
 import ReviewForms from '~/features/reviews/containers/review-forms'
 import { EstablishmentService } from '~/features/establishments/services/establishments.services'
 
-import { useReview } from '~/features/reviews/hooks/use-review'
+import { useReview } from '~/features/reviews/hooks/useCreateReview'
 import { useAuthStore } from '~/features/auth/context/auth.store'
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -59,6 +59,8 @@ export default function Restaurant() {
       handleCloseReview()
     },
   )
+
+  console.log(data?.data)
 
   return (
     <FormProvider {...form}>

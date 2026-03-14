@@ -178,4 +178,74 @@ export const ReviewController = {
       res.status(500).json({ error: 'Internal server error while voting.' })
     }
   },
+
+  /**
+   * Handles PATCH requests to edit a review's body.
+   */
+  editReview: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).user?.userId
+      const reviewId = parseInt(req.params.reviewId as string, 10)
+      const { body } = req.body
+
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized. Please log in.' })
+        return
+      }
+
+      if (isNaN(reviewId) || !body || body.trim().length < 20) {
+        res.status(400).json({ error: 'Invalid review ID or body too short.' })
+        return
+      }
+
+      const success = await ReviewService.editReviewBody(reviewId, userId, body)
+
+      if (!success) {
+        res.status(403).json({ error: 'Not authorized or review not found.' })
+        return
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: 'Review updated successfully.' })
+    } catch (error) {
+      console.error('Error in editReview:', error)
+      res
+        .status(500)
+        .json({ error: 'Internal server error while editing review.' })
+    }
+  },
+
+  /**
+   * Handles DELETE requests to remove a review.
+   */
+  deleteReview: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).user?.userId
+      const reviewId = parseInt(req.params.reviewId as string, 10)
+
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized. Please log in.' })
+        return
+      }
+
+      if (isNaN(reviewId)) {
+        res.status(400).json({ error: 'Invalid review ID formatting.' })
+        return
+      }
+
+      await ReviewService.deleteReview(reviewId, userId)
+
+      res
+        .status(200)
+        .json({ success: true, message: 'Review deleted successfully.' })
+    } catch (error: any) {
+      console.error('Error in deleteReview:', error)
+      res
+        .status(500)
+        .json({
+          error: error.message || 'Internal server error while deleting.',
+        })
+    }
+  },
 }

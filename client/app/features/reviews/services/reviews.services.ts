@@ -136,4 +136,27 @@ export const ReviewService = {
 
     return data as VoteResponseDTO
   },
+
+  updateBody: async (reviewId: number, body: string): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ body }),
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to update review')
+  },
+
+  delete: async (reviewId: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to delete review')
+  },
 }

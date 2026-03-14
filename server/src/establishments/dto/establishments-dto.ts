@@ -7,12 +7,13 @@ export interface RestaurantDto {
   owner_user_id: number | null
   name: string
   description: string | null
-  price_range: '$' | '$$' | '$$$'
+  price_range: '$' | '$$' | '$$$' | '$$$$'
   rating: number
   latitude: number | null
   longitude: number | null
   banner_picture_url: string | null
   created_at: string
+  is_bookmarked?: boolean | number
 }
 
 /**

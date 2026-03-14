@@ -13,6 +13,9 @@ import { EstablishmentModel } from '../establishments/establishments.model.js'
  * @namespace ReviewService
  */
 export const ReviewService = {
+  /**
+   * Creates a new Review
+   */
   createReviewWithTags: async (
     userId: number,
     data: CreateReviewDTO,
@@ -85,6 +88,62 @@ export const ReviewService = {
     } catch (error) {
       await connection.rollback()
       console.error('[Database Transaction Failed]:', error)
+      throw error
+    } finally {
+      connection.release()
+    }
+  },
+
+  /**
+   * Edits the body of an existing review.
+   */
+  editReviewBody: async (
+    reviewId: number,
+    userId: number,
+    body: string,
+  ): Promise<boolean> => {
+    return await ReviewModel.updateReviewBody(reviewId, userId, body)
+  },
+
+  /**
+   * Deletes a review and safely updates the restaurant's stats.
+   */
+  deleteReview: async (reviewId: number, userId: number): Promise<boolean> => {
+    const connection = await pool.getConnection()
+
+    try {
+      await connection.beginTransaction()
+
+      // 1. Get the review to find the restaurant_id
+      const review = await ReviewModel.getReviewById(reviewId, connection)
+      if (!review || review.user_id !== userId) {
+        throw new Error('Review not found or unauthorized to delete.')
+      }
+
+      const restaurantId = review.restaurant_id
+
+      // 2. Delete the review
+      const deleted = await ReviewModel.deleteReview(
+        reviewId,
+        userId,
+        connection,
+      )
+      if (!deleted) {
+        throw new Error('Failed to delete review.')
+      }
+
+      // 3. Update the restaurant's average rating
+      await ReviewModel.updateRestaurantStats(
+        restaurantId,
+        undefined,
+        connection,
+      )
+
+      await connection.commit()
+      return true
+    } catch (error) {
+      await connection.rollback()
+      console.error('[Delete Review Transaction Failed]:', error)
       throw error
     } finally {
       connection.release()
