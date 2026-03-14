@@ -47,10 +47,14 @@ export default function ReviewContent({ review }: { review: ReviewDto }) {
 
                 <div>
                   <h1 className="text-sm sm:text-md lg:text-lg">
-                    User 122's comment
+                    {review.username}
                   </h1>
                   <p className="text-xs sm:text-sm lg:text-md opacity-50">
-                    01/20/26
+                    {new Date(review.created_at).toLocaleDateString('en-US', {
+                      month: '2-digit',
+                      day: '2-digit',
+                      year: '2-digit',
+                    })}
                   </p>
                 </div>
               </div>
