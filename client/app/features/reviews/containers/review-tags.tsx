@@ -5,7 +5,7 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 import { Checkbox } from '~/components/ui/checkbox'
 import Prices from '~/features/shared/components/molecules/prices'
 import { initial_tags } from '~/features/filter-menu/data/tags'
-import type { ReviewFormValues } from '../hooks/use-review'
+import type { ReviewFormValues } from '../hooks/useCreateReview'
 
 type CustomTag = { id: bigint | string | number; label: string }
 

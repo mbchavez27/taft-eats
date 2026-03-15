@@ -41,7 +41,7 @@ export const UserController = {
       const newUser = await UserService.register(userData)
 
       const token = jwt.sign(
-        { userId: newUser.user_id, role: newUser.role },
+        { user_id: newUser.user_id, role: newUser.role },
         JWT_SECRET,
         { expiresIn: '14d' },
       )
@@ -84,7 +84,7 @@ export const UserController = {
 
       const token = jwt.sign(
         {
-          userId: user.user_id,
+          user_id: user.user_id,
           role: user.role,
         },
         JWT_SECRET,
