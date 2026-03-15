@@ -75,7 +75,9 @@ export const ReviewModel = {
     restaurantId: number,
     limit: number = 10,
     lastId?: number,
-    currentUserId?: number, // Passed in to check if the requester has already voted
+    currentUserId?: number,
+    sort?: string,
+    rating?: number
   ): Promise<ReviewRecord[]> => {
     let query = `
       SELECT 
@@ -89,18 +91,33 @@ export const ReviewModel = {
       JOIN Users u ON r.user_id = u.user_id
       WHERE r.restaurant_id = ?
     `
-    // We pass currentUserId (or null if not logged in), then restaurantId
     const params: (number | string | null)[] = [
       currentUserId || null,
       restaurantId,
     ]
 
+    // 1. Handle Star Rating Filter
+    if (rating !== undefined && !isNaN(rating)) {
+      query += ` AND r.rating = ?`
+      params.push(rating)
+    }
+
+    // 2. Handle Pagination Cursor
     if (lastId) {
-      query += ` AND r.review_id < ?`
+      if (sort === 'oldest') {
+        query += ` AND r.review_id > ?` 
+      } else {
+        query += ` AND r.review_id < ?` 
+      }
       params.push(lastId)
     }
 
-    query += ` ORDER BY r.review_id DESC LIMIT ?`
+    // 3. Handle Sorting Order
+    if (sort === 'oldest') {
+      query += ` ORDER BY r.review_id ASC LIMIT ?`
+    } else {
+      query += ` ORDER BY r.review_id DESC LIMIT ?` 
+    }
     params.push(limit)
 
     const [rows] = await pool.query<ReviewRecord[]>(query, params)

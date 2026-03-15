@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormProvider } from 'react-hook-form'
 
-import type { Route } from '../+types/restaurants/index'
+import type { Route } from '../+types/index'
 import EstablishmentDetails from '~/features/establishments/containers/establishment-details'
 import EstablishmentHeader from '~/features/establishments/components/organisms/establishment-header'
 import ReviewButton from '~/features/reviews/components/molecules/review-button'
@@ -78,7 +78,6 @@ export default function Restaurant() {
 
           {isReviewOpen ? (
             <form onSubmit={onSubmit} className="flex flex-col gap-6">
-              {/* Form Area - Now takes up full width! */}
               <div className="w-full">
                 <ReviewForms />
               </div>
@@ -103,6 +102,7 @@ export default function Restaurant() {
               <EstablishmentReviews
                 onReply={handleOpenReview}
                 restaurantId={restaurantId}
+                restaurantName={data?.data.name}
               />
               {user?.role === 'user' && (
                 <div className="flex justify-end">
