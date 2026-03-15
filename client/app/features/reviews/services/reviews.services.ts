@@ -11,9 +11,11 @@ export const ReviewService = {
   getByRestaurantId: async ({
     restaurantId,
     pageParam = undefined,
+    sort = 'newest',
   }: {
     restaurantId: number
     pageParam?: number
+    sort?: 'newest' | 'oldest' | 1 | 2 | 3 | 4 | 5 | string | number
   }): Promise<PaginatedReviewsResponseDto> => {
     let url = `${API_BASE_URL}/api/reviews/restaurant/${restaurantId}?limit=10`
 
@@ -21,13 +23,17 @@ export const ReviewService = {
       url += `&lastId=${pageParam}`
     }
 
+    if (typeof sort === 'number' || (typeof sort === 'string' && /^[1-5]$/.test(sort))) {
+      url += `&rating=${sort}`
+    } else if (typeof sort === 'string') {
+      url += `&sort=${sort}`
+    }
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      // Include credentials if you want the backend to know who is requesting
-      // so it can return their specific 'user_vote' status
       credentials: 'include',
     })
 

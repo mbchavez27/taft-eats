@@ -64,8 +64,6 @@ export const ReviewController = {
   ): Promise<void> => {
     try {
       const restaurantId = parseInt(req.params.restaurantId as string, 10)
-
-      // Extract userId if the user is logged in (even on a public route)
       const currentUserId = (req as any).user?.userId
 
       if (isNaN(restaurantId)) {
@@ -82,11 +80,18 @@ export const ReviewController = {
       const lastId =
         typeof lastIdRaw === 'string' ? parseInt(lastIdRaw, 10) : undefined
 
+      const sort = req.query.sort as string | undefined
+      const rating = req.query.rating
+        ? parseInt(req.query.rating as string, 10)
+        : undefined
+
       const reviews = await ReviewModel.getReviewsByRestaurantId(
         restaurantId,
         limit,
         lastId,
         currentUserId,
+        sort,
+        rating,
       )
 
       res.status(200).json({

@@ -7,12 +7,16 @@ import SingleReview from "../components/organisms/single-review";
 import { ReviewService } from "../services/reviews.services";
 import type { ReviewDto } from "../types/reviews.types";
 
+type SortValue = 'newest' | 'oldest' | 1 | 2 | 3 | 4 | 5
+
 export default function ReviewsList({
   restaurantId,
   onOpenForms,
+  sort = 'newest',
 }: {
   restaurantId: number;
   onOpenForms: () => void;
+  sort?: SortValue;
 }) {
   const location = useLocation();
   const isUserRoute = location.pathname.includes("/user");
@@ -21,9 +25,9 @@ export default function ReviewsList({
 
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["reviews", restaurantId],
+      queryKey: ["reviews", restaurantId, sort], // sort added here
       queryFn: ({ pageParam = 0 }) =>
-        ReviewService.getByRestaurantId({ restaurantId, pageParam }),
+        ReviewService.getByRestaurantId({ restaurantId, pageParam, sort }),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       enabled: !!restaurantId,
