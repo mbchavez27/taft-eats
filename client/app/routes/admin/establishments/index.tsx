@@ -32,7 +32,7 @@ export default function EstablishmentsPage() {
 
   const handleSave = () => {
     setEstablishmentsData(prev =>
-      prev.map(item => item.id === editingId ? editData : item)
+      prev.map(item => (item.id === editingId ? editData : item))
     );
     setEditingId(null);
     setEditData(null);
@@ -41,6 +41,16 @@ export default function EstablishmentsPage() {
   const handleCancel = () => {
     setEditingId(null);
     setEditData(null);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this establishment?')) {
+      setEstablishmentsData(prev => prev.filter((item) => item.id !== id));
+      if (editingId === id) {
+        setEditingId(null);
+        setEditData(null);
+      }
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -201,12 +211,23 @@ export default function EstablishmentsPage() {
                 </TableCell>
                 <TableCell className="py-4 text-center">
                   {editingId === item.id ? (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 justify-center">
                       <Button size="sm" onClick={handleSave}>Save</Button>
                       <Button size="sm" variant="outline" onClick={handleCancel}>Cancel</Button>
                     </div>
                   ) : (
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>Edit</Button>
+                    <div className="flex gap-2 justify-center">
+                      <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   )}
                 </TableCell>
               </TableRow>

@@ -29,6 +29,7 @@ export default [
     layout('./routes/admin/layout.tsx', [
       index('./routes/admin/index.tsx'),
 
+      route('users', './routes/admin/users/index.tsx'),
       route('establishments', './routes/admin/establishments/index.tsx'),
       route('reviews', './routes/admin/reviews/index.tsx'),
     ]),

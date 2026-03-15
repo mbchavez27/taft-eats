@@ -22,29 +22,19 @@ export function meta({}: Route.MetaArgs) {
 
 export default function ReviewsPage() {
   const [reviewsData, setReviewsData] = useState(reviews);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<any>(null);
+  const [hiddenIds, setHiddenIds] = useState<number[]>([]);
 
-  const handleEdit = (item: any) => {
-    setEditingId(item.id);
-    setEditData({ ...item });
-  };
-
-  const handleSave = () => {
-    setReviewsData(prev =>
-      prev.map(item => item.id === editingId ? editData : item)
+  const handleHideToggle = (id: number) => {
+    setHiddenIds((prev) =>
+      prev.includes(id) ? prev.filter((hid) => hid !== id) : [...prev, id]
     );
-    setEditingId(null);
-    setEditData(null);
   };
 
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditData(null);
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
+  const handleDelete = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this review?')) {
+      setReviewsData((prev) => prev.filter((item) => item.id !== id));
+      setHiddenIds((prev) => prev.filter((hid) => hid !== id));
+    }
   };
 
   return (
@@ -77,77 +67,42 @@ export default function ReviewsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reviewsData.map((review) => (
-              <TableRow key={review.id} className="align-top">
-                <TableCell className="text-center py-4">
-                  <div className="flex justify-center items-center">
-                    <Avatar size="sm">
-                      <AvatarImage src="" alt={review.userId} />
-                      <AvatarFallback>{review.userId.slice(-1).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                </TableCell>
+            {reviewsData.map((review) => {
+              const isHidden = hiddenIds.includes(review.id);
 
-                <TableCell className="text-center py-4 font-medium">
-                  {review.id}
-                </TableCell>
-
-                <TableCell className="py-4 text-slate-600 text-sm leading-relaxed max-w-[350px] whitespace-normal break-words">
-                  {editingId === review.id ? (
-                    <textarea
-                      value={editData.body}
-                      onChange={(e) => handleChange('body', e.target.value)}
-                      className="w-full border rounded px-2 py-1"
-                      rows={3}
-                    />
-                  ) : (
-                    review.body
-                  )}
-                </TableCell>
-
-                <TableCell className="py-4 text-center font-medium text-slate-900">
-                  {editingId === review.id ? (
-                    <input
-                      type="number"
-                      value={editData.rating}
-                      onChange={(e) => handleChange('rating', e.target.value)}
-                      className="w-16 border rounded px-2 py-1 text-center"
-                    />
-                  ) : (
-                    review.rating
-                  )}
-                </TableCell>
-
-                <TableCell className="py-4 text-slate-600 font-medium text-sm">
-                  {editingId === review.id ? (
-                    <input
-                      type="number"
-                      value={editData.userId}
-                      onChange={(e) => handleChange('userId', e.target.value)}
-                      className="w-16 border rounded px-2 py-1"
-                    />
-                  ) : (
-                    review.userId
-                  )}
-                </TableCell>
-
-                <TableCell className="py-4 min-w-[150px]">
-                  {editingId === review.id ? (
-                    <div className="flex flex-col whitespace-normal break-words">
-                      <input
-                        type="text"
-                        value={editData.restaurant}
-                        onChange={(e) => handleChange('restaurant', e.target.value)}
-                        className="text-slate-900 font-medium text-sm border rounded px-2 py-1"
-                      />
-                      <input
-                        type="number"
-                        value={editData.restaurantId}
-                        onChange={(e) => handleChange('restaurantId', e.target.value)}
-                        className="text-xs text-slate-400 italic border rounded px-2 py-1 mt-1"
-                      />
+              return (
+                <TableRow
+                  key={review.id}
+                  className={isHidden ? "align-top opacity-50" : "align-top"}
+                >
+                  <TableCell className="text-center py-4">
+                    <div className="flex justify-center items-center">
+                      <Avatar size="sm">
+                        <AvatarImage src="" alt={review.userId} />
+                        <AvatarFallback>
+                          {review.userId.slice(-1).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
-                  ) : (
+                  </TableCell>
+
+                  <TableCell className="text-center py-4 font-medium">
+                    {review.id}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-slate-600 text-sm leading-relaxed max-w-[350px] whitespace-normal break-words">
+                    {review.body}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-center font-medium text-slate-900">
+                    {review.rating}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-slate-600 font-medium text-sm">
+                    {review.userId}
+                  </TableCell>
+
+                  <TableCell className="py-4 min-w-[150px]">
                     <div className="flex flex-col whitespace-normal break-words">
                       <span className="text-slate-900 font-medium text-sm">
                         {review.restaurant}
@@ -156,56 +111,49 @@ export default function ReviewsPage() {
                         {review.restaurantId}
                       </span>
                     </div>
-                  )}
-                </TableCell>
+                  </TableCell>
 
-                <TableCell className="py-4 text-sm">
-                  {editingId === review.id ? (
-                    <input
-                      type="number"
-                      value={editData.ownerId || ''}
-                      onChange={(e) => handleChange('ownerId', e.target.value)}
-                      className="w-16 border rounded px-2 py-1"
-                      placeholder="NULL"
-                    />
-                  ) : review.ownerId ? (
-                    <span className="text-slate-900">{review.ownerId}</span>
-                  ) : (
-                    <span className="text-slate-400 font-mono text-xs">
-                      NULL
-                    </span>
-                  )}
-                </TableCell>
+                  <TableCell className="py-4 text-sm">
+                    {review.ownerId ? (
+                      <span className="text-slate-900">{review.ownerId}</span>
+                    ) : (
+                      <span className="text-slate-400 font-mono text-xs">
+                        NULL
+                      </span>
+                    )}
+                  </TableCell>
 
-                <TableCell className="py-4 text-sm">
-                  {editingId === review.id ? (
-                    <textarea
-                      value={editData.response || ''}
-                      onChange={(e) => handleChange('response', e.target.value)}
-                      className="w-full border rounded px-2 py-1"
-                      rows={2}
-                      placeholder="NULL"
-                    />
-                  ) : review.response ? (
-                    <span className="text-slate-900">{review.response}</span>
-                  ) : (
-                    <span className="text-slate-400 font-mono text-xs">
-                      NULL
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="py-4 text-center">
-                  {editingId === review.id ? (
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSave}>Save</Button>
-                      <Button size="sm" variant="outline" onClick={handleCancel}>Cancel</Button>
+                  <TableCell className="py-4 text-sm">
+                    {review.response ? (
+                      <span className="text-slate-900">{review.response}</span>
+                    ) : (
+                      <span className="text-slate-400 font-mono text-xs">
+                        NULL
+                      </span>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleHideToggle(review.id)}
+                      >
+                        {isHidden ? "Unhide" : "Hide"}
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(review.id)}
+                      >
+                        Delete
+                      </Button>
                     </div>
-                  ) : (
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(review)}>Edit</Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
