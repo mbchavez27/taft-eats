@@ -17,9 +17,10 @@ export default function EstablishmentsLists() {
 
   const isBookmarksPage = location.pathname.includes('/bookmarks')
 
-  const { selectedCuisines, selectedTags, selectedPriceRanges } =
+  const { selectedCuisines, selectedTags, selectedPriceRanges, selectedFoods } =
     useFilterStore()
-  const combinedTags = [...selectedCuisines, ...selectedTags]
+
+  const combinedTags = [...selectedCuisines, ...selectedTags, ...selectedFoods]
 
   const {
     data,
