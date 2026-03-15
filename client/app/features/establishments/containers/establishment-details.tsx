@@ -1,13 +1,13 @@
-import ImageContainer from '~/features/shared/container/image-container'
-import EstablishmentDesription from '../components/organisms/establishment-description'
-import EstablishmentTags from '../components/organisms/establishment-tags'
-import ReviewTags from '~/features/reviews/containers/review-tags'
-import type { RestaurantDto } from '../types/establishments.types'
+import ImageContainer from "~/features/shared/container/image-container";
+import EstablishmentDesription from "../components/organisms/establishment-description";
+import EstablishmentTags from "../components/organisms/establishment-tags";
+import ReviewTags from "~/features/reviews/containers/review-tags";
+import type { RestaurantDto } from "../types/establishments.types";
 
 type EstablishmentDetailsProps = {
-  isReviewOpen?: boolean
-  data?: RestaurantDto
-}
+  isReviewOpen?: boolean;
+  data?: RestaurantDto;
+};
 
 export default function EstablishmentDetails({
   isReviewOpen,
@@ -15,11 +15,7 @@ export default function EstablishmentDetails({
 }: EstablishmentDetailsProps) {
   return (
     <main className="w-xs font-lexend text-[#BFD392] px-4 flex flex-col gap-5">
-      <ImageContainer
-        bannerUrl={data?.banner_picture_url}
-        initialIsBookmarked={!!data?.is_bookmarked}
-      />
-
+      <ImageContainer />
       {isReviewOpen ? (
         <ReviewTags />
       ) : (

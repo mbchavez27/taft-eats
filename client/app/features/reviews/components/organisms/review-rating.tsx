@@ -1,4 +1,4 @@
-import { FaStar } from 'react-icons/fa'
+import { FaStar } from "react-icons/fa";
 
 export default function ReviewRating({ review }: { review?: number }) {
   return (
@@ -6,5 +6,5 @@ export default function ReviewRating({ review }: { review?: number }) {
       <h1 className="text-lg sm:text-2xl lg:text-4xl">{review}</h1>
       <FaStar className="text-yellow-400 text-lg sm:text-2xl lg:text-4xl" />
     </main>
-  )
+  );
 }

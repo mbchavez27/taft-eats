@@ -37,6 +37,34 @@ export interface Tag extends RowDataPacket {
   category: 'tag' | 'cuisine' | 'food'
 }
 
+<<<<<<< HEAD
+/**
+ * Interface for filtering restaurants by various tags and price ranges.
+ */
+export interface GetRestaurantsFilterParams {
+  tags?: string[];          // Array of tag names (covers cuisines, foods, and tags)
+  priceRanges?: string[];   // Array of price ranges (e.g., ['$', '$$'])
+  limit?: number;           // Pagination limit
+  lastId?: number;          // Cursor for pagination
+}
+
+/**
+ * Represents a Tag database record.
+ * @interface Tag
+ * @extends {RowDataPacket}
+ */
+export interface Tag extends RowDataPacket {
+  tag_id: number
+  name: string
+  category: 'tag' | 'cuisine' | 'food'
+}
+
+/**
+ * Model object containing methods to interact with the Restaurants and Tags database tables.
+ * @namespace EstablishmentModel
+ */
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
 export const EstablishmentModel = {
   getAllRestaurants: async (
     limit: number = 10,
@@ -64,6 +92,24 @@ export const EstablishmentModel = {
     return rows
   },
 
+<<<<<<< HEAD
+  /**
+   * Fetches a paginated list of restaurants filtered by tags, cuisines, foods, and price range.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {GetRestaurantsFilterParams} params - The filter criteria.
+   * @returns {Promise<Restaurant[]>}
+   */
+  getAllRestaurantsByTags: async (
+    params: GetRestaurantsFilterParams
+  ): Promise<Restaurant[]> => {
+    const { tags = [], priceRanges = [], limit = 10, lastId } = params
+
+    let query = `SELECT r.* FROM Restaurants r WHERE 1=1`
+    const queryParams: (number | string)[] = []
+
+    // 1. Cursor-based pagination filter
+=======
   getAllRestaurantsByTags: async (
     params: GetRestaurantsFilterParams,
     currentUserId?: number,
@@ -79,17 +125,27 @@ export const EstablishmentModel = {
     `
     const queryParams: any[] = [currentUserId || 0]
 
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     if (lastId) {
       query += ` AND r.restaurant_id < ?`
       queryParams.push(lastId)
     }
 
+<<<<<<< HEAD
+    // 2. Filter by Price Range (direct column on Restaurants table)
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     if (priceRanges.length > 0) {
       const placeholders = priceRanges.map(() => '?').join(', ')
       query += ` AND r.price_range IN (${placeholders})`
       queryParams.push(...priceRanges)
     }
 
+<<<<<<< HEAD
+    // 3. Filter by Tags (Cuisines, Foods, Tags in the Tags table)
+    // Using EXISTS prevents duplicate restaurant rows if a restaurant matches multiple tags
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     if (tags.length > 0) {
       const placeholders = tags.map(() => '?').join(', ')
       query += ` AND EXISTS (
@@ -101,10 +157,32 @@ export const EstablishmentModel = {
       queryParams.push(...tags)
     }
 
+<<<<<<< HEAD
+    // Order by ID descending and apply pagination limit
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     query += ` ORDER BY r.restaurant_id DESC LIMIT ?`
     queryParams.push(limit)
 
     const [rows] = await pool.query<Restaurant[]>(query, queryParams)
+<<<<<<< HEAD
+
+    return rows
+  },
+
+  /**
+   * Retrieves a single restaurant record by its unique establishment ID.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} id - The primary key (restaurant_id) of the establishment to retrieve.
+   * @returns {Promise<Restaurant | null>} A promise resolving to the restaurant object if found, or null if it doesn't exist.
+   */
+  getRestaurantById: async (id: number): Promise<Restaurant | null> => {
+    const [rows] = await pool.query<Restaurant[]>(
+      'SELECT * FROM Restaurants WHERE restaurant_id = ? LIMIT 1',
+      [id],
+    )
+=======
     return rows
   },
 
@@ -125,6 +203,7 @@ export const EstablishmentModel = {
       currentUserId || 0,
       id,
     ])
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
 
     return rows.length > 0 ? rows[0] : null
   },
@@ -139,6 +218,16 @@ export const EstablishmentModel = {
     return rows.length > 0 ? rows[0] : null
   },
 
+<<<<<<< HEAD
+  /**
+   * Retrieves all tags associated with a specific restaurant.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {number} restaurantId - The unique ID of the restaurant.
+   * @returns {Promise<Tag[]>} A promise resolving to an array of Tag objects.
+   */
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
   getTagsByRestaurantId: async (restaurantId: number): Promise<Tag[]> => {
     const query = `
       SELECT t.tag_id, t.name, t.category 
@@ -146,10 +235,26 @@ export const EstablishmentModel = {
       JOIN Restaurant_Tags rt ON t.tag_id = rt.tag_id
       WHERE rt.restaurant_id = ?
     `
+<<<<<<< HEAD
+
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     const [rows] = await pool.query<Tag[]>(query, [restaurantId])
     return rows
   },
 
+<<<<<<< HEAD
+  /**
+   * Inserts a new restaurant record into the database.
+   * @async
+   * @memberof EstablishmentModel
+   * @param {Pick<Restaurant, 'owner_user_id' | 'name' | 'description' | 'latitude' | 'longitude' | 'price_range' | 'banner_picture_url'>} restaurant - The restaurant data to insert.
+   * @param {Pool | PoolConnection} [connection] - Optional database connection/pool to use (useful for transactions).
+   * @returns {Promise<number>} A promise that resolves to the newly created restaurant's auto-incremented ID.
+   */
+  //Create Establishment
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
   createRestaurant: async (
     restaurant: Pick<
       Restaurant,
@@ -189,6 +294,11 @@ export const EstablishmentModel = {
     if (!tagIds || tagIds.length === 0) return
     const db = (connection || pool) as Pool
     const values = tagIds.map((id) => [restaurantId, id.toString()])
+<<<<<<< HEAD
+
+    // FIX: Add 'IGNORE' so it doesn't crash on duplicate tags
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     await db.query(
       'INSERT IGNORE INTO Restaurant_Tags (restaurant_id, tag_id) VALUES ?',
       [values],
@@ -200,6 +310,11 @@ export const EstablishmentModel = {
     connection?: Pool | PoolConnection,
   ): Promise<{ tag_id: number } | null> => {
     const db = (connection || pool) as Pool
+<<<<<<< HEAD
+
+    // FIX: Changed 'label' to 'name'
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     const [rows] = await db.query<RowDataPacket[]>(
       'SELECT tag_id FROM Tags WHERE LOWER(name) = LOWER(?) LIMIT 1',
       [label],
@@ -212,6 +327,11 @@ export const EstablishmentModel = {
     connection?: Pool | PoolConnection,
   ): Promise<number> => {
     const db = (connection || pool) as Pool
+<<<<<<< HEAD
+
+    // FIX: Changed 'label' to 'name'
+=======
+>>>>>>> f4be32f40609428a4857cab3aad880a714af629e
     const [result] = await db.query<ResultSetHeader>(
       'INSERT INTO Tags (name) VALUES (?)',
       [label],

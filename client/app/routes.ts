@@ -11,12 +11,11 @@ export default [
     index('./routes/index.tsx'),
 
     ...prefix('restaurants', [
-      route('owner/:owner_id', './routes/restaurants/owner/index.tsx'),
+      route('owner', './routes/restaurants/owner/index.tsx'),
       route(':restaurant_id', './routes/restaurants/index.tsx'),
     ]),
 
     ...prefix('user', [route('/', './routes/user-page/index.tsx')]),
-    ...prefix('bookmarks', [route('/', './routes/bookmarks/index.tsx')]),
 
     ...prefix('maps', [route('/', './routes/map-view/index.tsx')]),
 
@@ -30,6 +29,7 @@ export default [
     layout('./routes/admin/layout.tsx', [
       index('./routes/admin/index.tsx'),
 
+      route('users', './routes/admin/users/index.tsx'),
       route('establishments', './routes/admin/establishments/index.tsx'),
       route('reviews', './routes/admin/reviews/index.tsx'),
     ]),

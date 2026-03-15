@@ -19,6 +19,7 @@ export default function SingleReview({
   onOpenForms,
   review,
 }: SingleReviewProps) {
+  console.log(review);
   return (
     <main
       className="
