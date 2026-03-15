@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormProvider } from 'react-hook-form'
 
-import type { Route } from '../+types/restaurants/index'
+import type { Route } from '../+types/index'
 import EstablishmentDetails from '~/features/establishments/containers/establishment-details'
 import EstablishmentHeader from '~/features/establishments/components/organisms/establishment-header'
 import ReviewButton from '~/features/reviews/components/molecules/review-button'
@@ -11,7 +11,7 @@ import EstablishmentReviews from '~/features/reviews/containers/establishment-re
 import ReviewForms from '~/features/reviews/containers/review-forms'
 import { EstablishmentService } from '~/features/establishments/services/establishments.services'
 
-import { useReview } from '~/features/reviews/hooks/use-review'
+import { useReview } from '~/features/reviews/hooks/useCreateReview'
 import { useAuthStore } from '~/features/auth/context/auth.store'
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -40,7 +40,7 @@ export function meta({ data }: Route.MetaArgs) {
 export default function Restaurant() {
   const { restaurant_id } = useParams<{ restaurant_id: string }>()
   const [isReviewOpen, setIsReviewOpen] = useState(false)
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { user } = useAuthStore()
 
   const restaurantId = restaurant_id ? parseInt(restaurant_id, 10) : 0
 
@@ -78,7 +78,6 @@ export default function Restaurant() {
 
           {isReviewOpen ? (
             <form onSubmit={onSubmit} className="flex flex-col gap-6">
-              {/* Form Area - Now takes up full width! */}
               <div className="w-full">
                 <ReviewForms />
               </div>
@@ -103,8 +102,9 @@ export default function Restaurant() {
               <EstablishmentReviews
                 onReply={handleOpenReview}
                 restaurantId={restaurantId}
+                restaurantName={data?.data.name}
               />
-              {isAuthenticated && (
+              {user?.role === 'user' && (
                 <div className="flex justify-end">
                   <ReviewButton onClick={handleOpenReview}>
                     Write a Review

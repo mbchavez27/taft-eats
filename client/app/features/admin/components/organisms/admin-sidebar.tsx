@@ -16,15 +16,15 @@ export default function AdminSidebar() {
         </header>
         <section className="px-20 py-28">
           <div className="font-lexend text-2xl text-[#326F33] flex flex-col gap-10">
-            {/* <Link
+            <Link
               to="/admin"
-              className={isActive('/admin') ? 'font-bold' : 'font-normal'}
+              className={isActive("/admin") ? "font-bold" : "font-normal"}
             >
               Dashboard
-            </Link> */}
+            </Link>
 
             <Link
-              to="/admin/"
+              to="/admin/users"
               className={isActive("/admin/users") ? "font-bold" : "font-normal"}
             >
               Users

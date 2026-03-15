@@ -4,11 +4,13 @@ interface FilterState {
   selectedCuisines: string[]
   selectedTags: string[]
   selectedPriceRanges: string[]
-  rating: number 
+  selectedFoods: string[]
+  rating: number
 
   toggleCuisine: (cuisine: string) => void
   toggleTag: (tag: string) => void
   togglePriceRange: (priceRange: string) => void
+  toggleFood: (food: string) => void
   setRating: (rating: number) => void
   clearFilters: () => void
 }
@@ -17,6 +19,7 @@ export const useFilterStore = create<FilterState>((set) => ({
   selectedCuisines: [],
   selectedTags: [],
   selectedPriceRanges: [],
+  selectedFoods: [],
   rating: 0,
 
   toggleCuisine: (cuisine) =>
@@ -40,6 +43,11 @@ export const useFilterStore = create<FilterState>((set) => ({
         : [...state.selectedPriceRanges, priceRange],
     })),
 
+    toggleFood: (food) =>
+      set((state) => ({
+        selectedFoods: state.selectedFoods.includes(food) ? [] : [food],
+      })),
+
   setRating: (rating) => set({ rating }),
 
   clearFilters: () =>
@@ -47,6 +55,7 @@ export const useFilterStore = create<FilterState>((set) => ({
       selectedCuisines: [],
       selectedTags: [],
       selectedPriceRanges: [],
+      selectedFoods: [],
       rating: 0,
     }),
 }))

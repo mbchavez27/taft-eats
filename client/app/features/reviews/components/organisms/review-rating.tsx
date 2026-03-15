@@ -1,6 +1,6 @@
 import { FaStar } from "react-icons/fa";
 
-export default function ReviewRating({ review }: { review: number }) {
+export default function ReviewRating({ review }: { review?: number }) {
   return (
     <main className="flex items-center gap-2 sm:gap-4 font-lexend font-semibold">
       <h1 className="text-lg sm:text-2xl lg:text-4xl">{review}</h1>

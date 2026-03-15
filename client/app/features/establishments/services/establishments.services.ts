@@ -16,7 +16,6 @@ export const EstablishmentService = {
     tags?: string[]
     priceRanges?: string[]
   }): Promise<PaginatedRestaurantsResponseDto> => {
-    // URLSearchParams automatically handles URL encoding for arrays
     const urlParams = new URLSearchParams()
 
     urlParams.append('limit', '10')
@@ -24,7 +23,6 @@ export const EstablishmentService = {
       urlParams.append('lastId', pageParam.toString())
     }
 
-    // Append each tag and price range (creates e.g. ?tags=pizza&tags=burger&priceRanges=$$)
     tags.forEach((tag) => urlParams.append('tags', tag))
     priceRanges.forEach((price) => urlParams.append('priceRanges', price))
 
@@ -35,6 +33,7 @@ export const EstablishmentService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     })
 
     const data: PaginatedRestaurantsResponseDto = await response.json()
@@ -52,6 +51,7 @@ export const EstablishmentService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     })
 
     const data: SingleRestaurantResponseDto = await response.json()
@@ -75,6 +75,7 @@ export const EstablishmentService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       },
     )
 
@@ -99,6 +100,7 @@ export const EstablishmentService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       },
     )
 
@@ -111,5 +113,63 @@ export const EstablishmentService = {
     }
 
     return data
+  },
+
+  getBookmarks: async ({
+    pageParam = undefined,
+  }: {
+    pageParam?: number
+  } = {}): Promise<PaginatedRestaurantsResponseDto> => {
+    const urlParams = new URLSearchParams()
+    urlParams.append('limit', '10')
+
+    if (pageParam !== undefined) {
+      urlParams.append('lastId', pageParam.toString())
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/user/bookmarks?${urlParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to fetch bookmarks')
+    return data
+  },
+
+  bookmark: async (restaurantId: number): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/${restaurantId}/bookmark`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to bookmark restaurant')
+    }
+  },
+
+  unbookmark: async (restaurantId: number): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/${restaurantId}/bookmark`,
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to unbookmark restaurant')
+    }
   },
 }
