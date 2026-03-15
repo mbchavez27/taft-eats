@@ -7,8 +7,11 @@ import {
 } from '~/components/ui/carousel'
 import FoodCard from '../components/food-card'
 import { food_filters } from '../data/food'
+import { useFilterStore } from '~/features/filter-menu/store/filter.store'
 
 export default function FoodFilter() {
+  const { selectedFoods, toggleFood } = useFilterStore()
+
   return (
     <>
       <main className="flex flex-col gap-3">
@@ -23,16 +26,20 @@ export default function FoodFilter() {
             }}
           >
             <CarouselContent className="flex gap-4">
-              {food_filters.map((food_filter, index) => {
+              {food_filters.map((food_filter) => {
+                const isSelected = selectedFoods.includes(food_filter.name)
                 return (
-                  <>
-                    <CarouselItem
-                      key={food_filter.id}
-                      className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-fit basis-auto"
-                    >
-                      <FoodCard img={food_filter.img} food={food_filter.name} />
-                    </CarouselItem>
-                  </>
+                  <CarouselItem
+                    key={food_filter.id}
+                    className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-fit basis-auto"
+                    onClick={() => toggleFood(food_filter.name)}
+                  >
+                    <FoodCard
+                      img={food_filter.img}
+                      food={food_filter.name}
+                      isSelected={isSelected}
+                    />
+                  </CarouselItem>
                 )
               })}
             </CarouselContent>
