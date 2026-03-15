@@ -11,7 +11,7 @@ export default [
     index('./routes/index.tsx'),
 
     ...prefix('restaurants', [
-      route('owner', './routes/restaurants/owner/index.tsx'),
+      route('owner/:owner_id', './routes/restaurants/owner/index.tsx'),
       route(':restaurant_id', './routes/restaurants/index.tsx'),
     ]),
 
