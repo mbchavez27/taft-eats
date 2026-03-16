@@ -38,6 +38,25 @@ router.get(
 router.get('/user/:userId', ReviewController.getReviewsByUserId)
 
 /**
+ * @route   GET /api/reviews
+ * @desc    Get a paginated list of ALL reviews (Admin feature)
+ * @access  Private (Admin only)
+ */
+// IMPORTANT: Place this before parameterized routes or use a dedicated /admin prefix
+router.get('/', requireAuth, ReviewController.getAllReviews)
+
+/**
+ * @route   DELETE /api/reviews/admin/:reviewId
+ * @desc    Delete a review as an admin (bypasses user ownership)
+ * @access  Private (Admin only)
+ */
+router.delete(
+  '/admin/:reviewId',
+  requireAuth,
+  ReviewController.deleteReviewAsAdmin,
+)
+
+/**
  * @route   POST /api/reviews/:reviewId/vote
  * @desc    Submit, update, or remove a user's vote (like/dislike) on a specific review.
  * @access  Private
