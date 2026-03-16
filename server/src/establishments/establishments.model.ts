@@ -195,6 +195,42 @@ export const EstablishmentModel = {
     )
   },
 
+  // src/models/establishments.model.ts
+
+  /**
+   * Searches for restaurants by name using a partial match.
+   * Includes logic to check if the current user has bookmarked the results.
+   *
+   * @param {string} searchQuery - The text to search for in restaurant names.
+   * @param {number} [limit=5] - The maximum number of results to return.
+   * @param {number} [currentUserId] - Optional user ID to check bookmark status.
+   * @returns {Promise<Restaurant[]>} A promise that resolves to an array of matching restaurants.
+   */
+  searchRestaurantsByName: async (
+    searchQuery: string,
+    limit: number = 5,
+    currentUserId?: number,
+  ): Promise<Restaurant[]> => {
+    const query = `
+      SELECT r.*,
+      IF(ub.user_id IS NOT NULL, 1, 0) AS is_bookmarked
+      FROM Restaurants r
+      LEFT JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id AND ub.user_id = ?
+      WHERE r.name LIKE ?
+      ORDER BY r.name ASC
+      LIMIT ?
+    `
+    // Use % around the search query for partial matching
+    const params: (string | number)[] = [
+      currentUserId || 0,
+      `%${searchQuery}%`,
+      limit,
+    ]
+
+    const [rows] = await pool.query<Restaurant[]>(query, params)
+    return rows
+  },
+
   findRestaurantTagByLabel: async (
     label: string,
     connection?: Pool | PoolConnection,
