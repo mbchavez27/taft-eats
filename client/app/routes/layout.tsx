@@ -15,8 +15,14 @@ export default function RootLayout() {
     )
   }
 
-  if (isAuthenticated && user?.role === 'admin') {
-    return <Navigate to="/admin" replace />
+  if (location.pathname === '/') {
+    if (isAuthenticated && user?.role === 'admin') {
+      return <Navigate to="/admin" replace />
+    }
+
+    if (isAuthenticated && user?.role === 'owner') {
+      return <Navigate to={`/restaurants/owner/${user.user_id}`} replace />
+    }
   }
 
   return (

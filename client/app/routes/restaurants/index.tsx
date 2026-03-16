@@ -59,7 +59,7 @@ export default function Restaurant() {
       handleCloseReview()
     },
   )
-  console.log(data)
+
   return (
     <FormProvider {...form}>
       <main className="flex flex-col lg:flex-row py-12 px-10 lg:gap-8 gap-16">
