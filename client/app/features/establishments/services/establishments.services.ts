@@ -172,4 +172,44 @@ export const EstablishmentService = {
       throw new Error(data.error || 'Failed to unbookmark restaurant')
     }
   },
+
+  delete: async (id: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to delete establishment')
+    }
+  },
+
+  searchByName: async (
+    query: string,
+    limit: number = 5,
+  ): Promise<PaginatedRestaurantsResponseDto> => {
+    const urlParams = new URLSearchParams()
+    urlParams.append('q', query)
+    urlParams.append('limit', limit.toString())
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/search?${urlParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to search establishments')
+    }
+
+    return data as PaginatedRestaurantsResponseDto
+  },
 }

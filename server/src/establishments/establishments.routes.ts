@@ -23,6 +23,13 @@ router.get(
 )
 
 /**
+ * @route   GET /api/establishments/search
+ * @desc    Search restaurants by name (accepts ?q=keyword&limit=5)
+ * @access  Public
+ */
+router.get('/search', optionalAuth, EstablishmentController.searchRestaurants)
+
+/**
  * @route   GET /api/establishments/:id
  * @desc    Get a specific restaurant by its ID
  * @access  Public
@@ -74,5 +81,12 @@ router.delete(
   requireAuth,
   EstablishmentController.unbookmarkRestaurant,
 )
+
+/**
+ * @route   DELETE /api/establishments/:id
+ * @desc    Delete a specific restaurant (Owner only)
+ * @access  Private
+ */
+router.delete('/:id', requireAuth, EstablishmentController.deleteRestaurant)
 
 export default router
