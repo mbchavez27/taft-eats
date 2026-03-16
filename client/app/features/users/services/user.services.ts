@@ -58,4 +58,41 @@ export const UserService = {
 
     return await response.json()
   },
+
+  /**
+   * Fetches a paginated list of all users (Admin feature).
+   */
+  getAllUsers: async ({
+    limit = 20,
+    lastId,
+  }: { limit?: number; lastId?: number } = {}) => {
+    let url = `${API_BASE_URL}/api/users?limit=${limit}`
+    if (lastId !== undefined) url += `&lastId=${lastId}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to fetch users')
+    return data
+  },
+
+  /**
+   * Deletes a user by ID (Admin feature).
+   */
+  deleteUserAsAdmin: async (id: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/users/admin/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to delete user')
+    }
+  },
 }

@@ -199,4 +199,57 @@ export const UserController = {
       res.status(500).json({ error: 'Internal server error' })
     }
   },
+
+  /**
+   * Handles GET requests to fetch all users (Admin).
+   */
+  getAllUsers: async (req: Request, res: Response) => {
+    try {
+      // NOTE: Add your admin role check here!
+      let limitRaw = req.query.limit
+      let lastIdRaw = req.query.lastId
+      if (Array.isArray(limitRaw)) limitRaw = limitRaw[0]
+      if (Array.isArray(lastIdRaw)) lastIdRaw = lastIdRaw[0]
+
+      const limit = typeof limitRaw === 'string' ? parseInt(limitRaw, 10) : 20
+      const lastId =
+        typeof lastIdRaw === 'string' ? parseInt(lastIdRaw, 10) : undefined
+
+      const users = await UserModel.getAllUsers(limit, lastId)
+
+      res.status(200).json({
+        success: true,
+        data: users,
+        count: users.length,
+      })
+    } catch (error) {
+      console.error('Error fetching all users:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  },
+
+  /**
+   * Handles DELETE requests to remove a user (Admin).
+   */
+  deleteUserAsAdmin: async (req: Request, res: Response) => {
+    try {
+      // NOTE: Add your admin role check here!
+      const userId = parseInt(req.params.id as string, 10)
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' })
+      }
+
+      const success = await UserModel.adminDeleteUser(userId)
+      if (!success) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: 'User deleted successfully' })
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  },
 }

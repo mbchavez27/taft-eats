@@ -1,190 +1,179 @@
-import { Building, Star, User } from 'lucide-react'
-import type { ComponentType } from 'react'
+import { useState, useEffect } from 'react'
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
-import { Link } from 'react-router'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { ChartContainer, ChartTooltipContent } from '~/components/ui/chart'
-import { establishments } from '~/features/admin/data/establishments'
-import { reviews } from '~/features/admin/data/reviews'
-import { users } from '~/features/admin/data/users'
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~/components/ui/table'
+import { Button } from '~/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { User, Loader2, Shield, Store } from 'lucide-react'
+import type { Route } from './+types/admin/index'
+import { UserService } from '~/features/users/services/user.services'
 
-export function meta() {
+export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'Taft Eats: Admin Dashboard' },
-    { name: 'description', content: 'Admin dashboard for Taft Eats' },
+    { title: 'Taft Eats: Admin - Users' },
+    { name: 'description', content: 'Manage Users' },
   ]
 }
 
-const dailyReviewData = [
-  { day: 'Mon', reviews: 24 },
-  { day: 'Tue', reviews: 18 },
-  { day: 'Wed', reviews: 13 },
-  { day: 'Thu', reviews: 22 },
-  { day: 'Fri', reviews: 26 },
-  { day: 'Sat', reviews: 21 },
-  { day: 'Sun', reviews: 29 },
-]
+export default function UsersPage() {
+  const [usersData, setUsersData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-const getTopEstablishments = () => {
-  return [...establishments].sort((a, b) => b.rating - a.rating).slice(0, 3)
-}
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLoading(true)
+        const response = await UserService.getAllUsers({ limit: 50 })
+        setUsersData(response.data || [])
+      } catch (err: any) {
+        setError(err.message || 'Failed to load users')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchUsers()
+  }, [])
 
-export default function AdminDashboardPage() {
-  const totalUsers = users.length
-  const totalEstablishments = establishments.length
-  const totalReviews = reviews.length
+  const handleDelete = async (id: number) => {
+    if (
+      window.confirm(
+        'Are you sure you want to permanently delete this user? This may delete their associated reviews and establishments.',
+      )
+    ) {
+      try {
+        await UserService.deleteUserAsAdmin(id)
+        setUsersData((prev) => prev.filter((user) => user.user_id !== id))
+      } catch (err: any) {
+        alert(err.message || 'Failed to delete user')
+      }
+    }
+  }
 
-  const topEstablishments = getTopEstablishments()
+  const getRoleIcon = (role: string) => {
+    if (role === 'admin') return <Shield className="h-4 w-4 text-purple-500" />
+    if (role === 'owner') return <Store className="h-4 w-4 text-blue-500" />
+    return <User className="h-4 w-4 text-slate-500" />
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 w-full items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div className="p-8 text-red-500 font-medium">Error: {error}</div>
+  }
 
   return (
     <div className="p-8 w-full">
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Link
-          to="/admin/reviews"
-          className="block rounded-xl hover:shadow-lg transition-shadow"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Daily Reviews</CardTitle>
-            </CardHeader>
-            <CardContent className="h-60">
-              <ChartContainer
-                className="h-full aspect-auto"
-                config={{ reviews: { color: '#22c55e' } }}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={dailyReviewData}
-                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                    barCategoryGap="20%"
+      <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+        <Table>
+          <TableHeader className="bg-slate-50/50">
+            <TableRow>
+              <TableHead className="w-[50px] text-center">
+                <User className="h-4 w-4 mx-auto" />
+              </TableHead>
+              <TableHead className="w-[40px] font-bold text-black text-center">
+                #
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                NAME & USERNAME
+              </TableHead>
+              <TableHead className="font-bold text-black">EMAIL</TableHead>
+              <TableHead className="font-bold text-black text-center">
+                ROLE
+              </TableHead>
+              <TableHead className="font-bold text-black text-center">
+                JOINED
+              </TableHead>
+              <TableHead className="font-bold text-black text-center">
+                ACTIONS
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {usersData.map((user) => (
+              <TableRow key={user.user_id} className="align-middle">
+                <TableCell className="text-center py-4">
+                  <div className="flex justify-center items-center h-full">
+                    <Avatar size="sm">
+                      <AvatarImage
+                        src={user.profile_picture_url || ''}
+                        alt={user.name}
+                      />
+                      <AvatarFallback>
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-center py-4 font-medium text-slate-900">
+                  {user.user_id}
+                </TableCell>
+
+                <TableCell className="py-4 min-w-[200px]">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-slate-900 leading-tight">
+                      {user.name}
+                    </span>
+                    <span className="text-xs text-slate-500 mt-0.5">
+                      @{user.username || 'unknown'}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell className="py-4 text-slate-600 text-sm">
+                  {user.email}
+                </TableCell>
+
+                <TableCell className="py-4 text-center">
+                  <div className="flex items-center justify-center gap-1.5">
+                    {getRoleIcon(user.role)}
+                    <span className="capitalize text-sm font-medium text-slate-700">
+                      {user.role}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell className="py-4 text-center text-slate-500 text-sm">
+                  {new Date(user.created_at).toLocaleDateString()}
+                </TableCell>
+
+                <TableCell className="py-4 text-center">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(user.user_id)}
+                    disabled={user.role === 'admin'} // Prevent deleting other admins
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="day" tickLine={false} axisLine={false} />
-                    <YAxis tickLine={false} axisLine={false} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="reviews"
-                      fill="#22c55e"
-                      radius={[8, 8, 0, 0]}
-                      barSize={30}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Link
-              to="/admin/users"
-              className="block rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              <StatCard icon={User} label="Users" value={totalUsers} />
-            </Link>
-            <Link
-              to="/admin/establishments"
-              className="block rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              <StatCard
-                icon={Building}
-                label="Establishments"
-                value={totalEstablishments}
-              />
-            </Link>
-            <Link
-              to="/admin/reviews"
-              className="block rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              <StatCard icon={Star} label="Reviews" value={totalReviews} />
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Link
-          to="/admin/establishments"
-          className="block rounded-xl hover:shadow-lg transition-shadow lg:col-span-2"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Performing Establishments</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {topEstablishments.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 rounded-xl border border-border bg-white px-4 py-4 shadow-sm"
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+            {usersData.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-slate-500"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
-                      <span className="font-semibold text-green-700">
-                        {item.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-slate-900">
-                        {item.name}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {item.cuisine}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <div className="font-semibold text-slate-900">
-                        {Math.round(
-                          (reviews.length / totalEstablishments) * 10,
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-500">Reviews</div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-lg font-bold text-slate-900">
-                        {item.rating.toFixed(1)}
-                      </span>
-                      <span className="text-amber-400">★</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </Link>
+                  No users found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
-    </div>
-  )
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: ComponentType<{ className?: string }>
-  label: string
-  value: number
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-white px-4 py-6 text-center shadow-sm">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-700">
-        <Icon className="h-5 w-5" />
-      </div>
-      <div className="text-3xl font-bold text-slate-900">{value}</div>
-      <div className="text-sm text-slate-500">{label}</div>
     </div>
   )
 }

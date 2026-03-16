@@ -371,4 +371,52 @@ export const EstablishmentModel = {
 
     return result.affectedRows > 0
   },
+
+  adminDeleteRestaurant: async (restaurantId: number): Promise<boolean> => {
+    const [result] = await pool.query<ResultSetHeader>(
+      'DELETE FROM Restaurants WHERE restaurant_id = ?',
+      [restaurantId],
+    )
+    return result.affectedRows > 0
+  },
+
+  adminUpdateRestaurant: async (
+    restaurantId: number,
+    data: {
+      name?: string
+      description?: string
+      price_range?: string
+      location?: string
+    },
+  ): Promise<boolean> => {
+    const updates: string[] = []
+    const values: any[] = []
+
+    if (data.name !== undefined) {
+      updates.push('name = ?')
+      values.push(data.name)
+    }
+    if (data.description !== undefined) {
+      updates.push('description = ?')
+      values.push(data.description)
+    }
+    if (data.price_range !== undefined) {
+      updates.push('price_range = ?')
+      values.push(data.price_range)
+    }
+    if (data.location !== undefined) {
+      updates.push('location = ?')
+      values.push(data.location)
+    }
+
+    if (updates.length === 0) return false
+
+    values.push(restaurantId)
+
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE Restaurants SET ${updates.join(', ')} WHERE restaurant_id = ?`,
+      values,
+    )
+    return result.affectedRows > 0
+  },
 }
