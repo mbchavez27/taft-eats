@@ -317,4 +317,56 @@ export const ReviewModel = {
       throw error
     }
   },
+
+  /**
+   * Fetches all reviews across the platform for the admin panel.
+   */
+  getAllReviews: async (
+    limit: number = 20,
+    lastId?: number,
+  ): Promise<ReviewRecord[]> => {
+    let query = `
+      SELECT 
+        r.*, 
+        u.username, 
+        u.profile_picture_url,
+        rest.name AS restaurant_name,
+        rest.owner_user_id AS owner_id,
+        rr.body AS reply_body,
+        rr.created_at AS reply_date,
+        (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'like') AS like_count,
+        (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'dislike') AS dislike_count
+      FROM Reviews r
+      JOIN Users u ON r.user_id = u.user_id
+      JOIN Restaurants rest ON r.restaurant_id = rest.restaurant_id
+      LEFT JOIN Review_Replies rr ON r.review_id = rr.review_id
+    `
+    const params: (number | string)[] = []
+
+    if (lastId) {
+      query += ` WHERE r.review_id < ?`
+      params.push(lastId)
+    }
+
+    query += ` ORDER BY r.review_id DESC LIMIT ?`
+    params.push(limit)
+
+    const [rows] = await pool.query<ReviewRecord[]>(query, params)
+    return rows
+  },
+
+  /**
+   * Deletes a specific review by ID (Admin override, bypasses user_id check).
+   */
+  adminDeleteReview: async (
+    reviewId: number,
+    connection?: Pool | PoolConnection,
+  ): Promise<boolean> => {
+    const db = (connection || pool) as Pool
+    const [result] = await db.query<ResultSetHeader>(
+      `DELETE FROM Reviews WHERE review_id = ?`,
+      [reviewId],
+    )
+    return result.affectedRows > 0
+  },
 }

@@ -8,6 +8,45 @@ import type {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const ReviewService = {
+  /**
+   * Fetches a paginated list of ALL reviews across the platform (Admin feature).
+   */
+  getAll: async ({
+    pageParam = undefined,
+    limit = 20,
+  }: {
+    pageParam?: number
+    limit?: number
+  } = {}): Promise<PaginatedReviewsResponseDto> => {
+    let url = `${API_BASE_URL}/api/reviews?limit=${limit}`
+
+    if (pageParam !== undefined) {
+      url += `&lastId=${pageParam}`
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch all reviews')
+    }
+
+    if (data.data && data.data.length > 0) {
+      data.nextCursor = data.data[data.data.length - 1].review_id
+    } else {
+      data.nextCursor = undefined
+    }
+
+    return data as PaginatedReviewsResponseDto
+  },
+
   getByRestaurantId: async ({
     restaurantId,
     pageParam = undefined,
@@ -76,10 +115,6 @@ export const ReviewService = {
 
   /**
    * Fetches a paginated list of reviews created by a specific user.
-   * @param {Object} params - The parameters for the request.
-   * @param {number} params.userId - The ID of the user whose reviews are being fetched.
-   * @param {number} [params.pageParam] - Optional. The ID of the last review for cursor pagination.
-   * @returns {Promise<PaginatedReviewsResponseDto>} A promise resolving to the paginated reviews.
    */
   getByUserId: async ({
     userId,
@@ -167,6 +202,25 @@ export const ReviewService = {
 
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || 'Failed to delete review')
+  },
+
+  /**
+   * Admin-specific delete function that hits the override route.
+   */
+  deleteAsAdmin: async (reviewId: number): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/reviews/admin/${reviewId}`,
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to delete review as admin')
+    }
   },
 
   /**

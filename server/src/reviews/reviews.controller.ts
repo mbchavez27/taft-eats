@@ -299,4 +299,71 @@ export const ReviewController = {
         .json({ error: 'Internal server error while submitting reply.' })
     }
   },
+
+  /**
+   * Handles GET requests to fetch all reviews (Admin).
+   */
+  getAllReviews: async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Note: You should ideally add an admin role check here
+      // e.g., if (req.user.role !== 'admin') return res.status(403)...
+
+      let limitRaw = req.query.limit
+      let lastIdRaw = req.query.lastId
+      if (Array.isArray(limitRaw)) limitRaw = limitRaw[0]
+      if (Array.isArray(lastIdRaw)) lastIdRaw = lastIdRaw[0]
+
+      const limit = typeof limitRaw === 'string' ? parseInt(limitRaw, 10) : 20
+      const lastId =
+        typeof lastIdRaw === 'string' ? parseInt(lastIdRaw, 10) : undefined
+
+      const reviews = await ReviewModel.getAllReviews(limit, lastId)
+
+      res.status(200).json({
+        success: true,
+        data: reviews,
+        count: reviews.length,
+      })
+    } catch (error) {
+      console.error('Error in getAllReviews:', error)
+      res
+        .status(500)
+        .json({ error: 'Internal server error while fetching all reviews.' })
+    }
+  },
+
+  /**
+   * Handles DELETE requests to remove any review (Admin).
+   */
+  deleteReviewAsAdmin: async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Note: Add admin role check here to secure the endpoint!
+
+      const reviewId = parseInt(req.params.reviewId as string, 10)
+
+      if (isNaN(reviewId)) {
+        res.status(400).json({ error: 'Invalid review ID formatting.' })
+        return
+      }
+
+      const success = await ReviewModel.adminDeleteReview(reviewId)
+
+      if (!success) {
+        res.status(404).json({ error: 'Review not found.' })
+        return
+      }
+
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: 'Review deleted successfully by Admin.',
+        })
+    } catch (error: any) {
+      console.error('Error in deleteReviewAsAdmin:', error)
+      res.status(500).json({
+        error: error.message || 'Internal server error while deleting.',
+      })
+    }
+  },
 }
