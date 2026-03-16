@@ -5,6 +5,26 @@ import { optionalAuth, requireAuth } from 'shared/middleware/auth.middleware.js'
 const router = Router()
 
 /**
+ * @route   PATCH /api/establishments/admin/:id
+ * @desc    Edit a restaurant as Admin (Bypass ownership)
+ */
+router.patch(
+  '/admin/:id',
+  requireAuth,
+  EstablishmentController.editRestaurantAsAdmin,
+)
+
+/**
+ * @route   DELETE /api/establishments/admin/:id
+ * @desc    Delete a restaurant as Admin (Bypass ownership)
+ */
+router.delete(
+  '/admin/:id',
+  requireAuth,
+  EstablishmentController.deleteRestaurantAsAdmin,
+)
+
+/**
  * @route   GET /api/establishments
  * @desc    Get a paginated list of all restaurants (accepts ?limit=10&lastId=5)
  * @access  Public (or Private, depending on your auth middleware)
