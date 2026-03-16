@@ -1,11 +1,8 @@
-#!/bin/bash
-
 # Set your API endpoint URL
 API_URL="http://localhost:3000/api/users/register"
 
 echo "Starting bulk creation of 20 owners and restaurants with randomized data..."
 
-# FIX: Using single quotes so Bash doesn't interpret $$ as a Process ID
 PRICES=('$' '$$' '$$$' '$$$$')
 TAGS=("Filipino" "Japanese" "Vegan" "Cafe" "Fast Food" "Seafood" "Dessert" "BBQ" "Fine Dining" "Halal" "Street Food" "Italian" "Spicy" "Family-Friendly" "Late Night")
 
@@ -20,9 +17,11 @@ do
   LONG="121.$((0200 + RANDOM % 100))"
 
   RANDOM_PRICE=${PRICES[$RANDOM % ${#PRICES[@]}]}
-
   RANDOM_TAG_1=${TAGS[$RANDOM % ${#TAGS[@]}]}
   RANDOM_TAG_2=${TAGS[$RANDOM % ${#TAGS[@]}]}
+
+  # Add a location field
+  LOCATION="Barangay $((RANDOM % 20 + 1)), Manila"
 
   JSON_PAYLOAD=$(cat <<EOF
 {
@@ -36,6 +35,7 @@ do
   "restaurantDescription": "$REST_DESC",
   "latitude": $LAT,
   "longitude": $LONG,
+  "location": "$LOCATION",
   "price_range": "$RANDOM_PRICE",
   "restaurantBanner": "https://example.com/banner$i.jpg",
   "tags": [
@@ -46,7 +46,7 @@ do
 EOF
 )
 
-  echo "Creating: $REST_NAME | Price: $RANDOM_PRICE | Tags: $RANDOM_TAG_1, $RANDOM_TAG_2"
+  echo "Creating: $REST_NAME | Price: $RANDOM_PRICE | Tags: $RANDOM_TAG_1, $RANDOM_TAG_2 | Location: $LOCATION"
 
   HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" $API_URL)
 
@@ -58,9 +58,7 @@ EOF
   fi
 
   sleep 0.2
-
 done
 
 rm -f response.json
-
 echo "Bulk creation script finished."

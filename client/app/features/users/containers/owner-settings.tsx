@@ -8,24 +8,26 @@ import { CiSettings } from 'react-icons/ci'
 import { useAuthStore } from '~/features/auth/context/auth.store'
 import { useQuery } from '@tanstack/react-query'
 import { EstablishmentService } from '~/features/establishments/services/establishments.services'
+import { useToggleClosedStatus } from '~/features/establishments/hook/useToggleClosedStatus' // <-- Import the new hook
 import DeleteConsent from './delete-consent'
 
 export default function OwnerSettings() {
-  // 1. Get the current logged-in user
   const { user } = useAuthStore()
-
-  // Handle both possible ID properties depending on your DTO
   const userId = user?.user_id
 
-  // 2. Fetch their restaurant directly using React Query
   const { data: response } = useQuery({
     queryKey: ['ownerRestaurant', userId],
     queryFn: () => EstablishmentService.getByOwnerId(userId!),
-    enabled: !!userId, // Only run if we actually have a user ID
+    enabled: !!userId,
   })
 
-  // 3. Extract the restaurant data from the API response
   const restaurant = response?.data
+
+  // Bring in the mutation
+  const { mutate: toggleStatus, isPending } = useToggleClosedStatus()
+
+  // Convert the 1/0 from MySQL to a boolean
+  const isClosed = !!restaurant?.is_temporarily_closed
 
   return (
     <>
@@ -43,15 +45,31 @@ export default function OwnerSettings() {
             <button className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100">
               Edit Establishment Banner
             </button>
-            <button className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100">
-              Mark "Temporarily Closed"
+
+            {/* Make the button functional and dynamic */}
+            <button
+              onClick={() => {
+                if (restaurant) {
+                  toggleStatus({
+                    id: restaurant.restaurant_id,
+                    isClosed: !isClosed, // Send the opposite of current status
+                  })
+                }
+              }}
+              disabled={isPending || !restaurant}
+              className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPending
+                ? 'Updating...'
+                : isClosed
+                  ? 'Mark "Open"'
+                  : 'Mark "Temporarily Closed"'}
             </button>
+
             <div className="flex flex-col gap-3 font-semibold items-center text-center">
               <p className="text-xs text-[#ED1C24]">
                 Warning: this action cannot be undone!
               </p>
-
-              {/* 4. Pass the fetched ID safely. Use optional chaining just in case */}
               <DeleteConsent restaurantId={restaurant?.restaurant_id} />
             </div>
           </section>

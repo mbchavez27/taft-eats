@@ -89,4 +89,15 @@ router.delete(
  */
 router.delete('/:id', requireAuth, EstablishmentController.deleteRestaurant)
 
+/**
+ * @route   PATCH /api/establishments/:id/status
+ * @desc    Toggle the temporarily closed status (Owner only)
+ * @access  Private
+ */
+router.patch(
+  '/:id/status',
+  requireAuth,
+  EstablishmentController.toggleTemporarilyClosed,
+)
+
 export default router

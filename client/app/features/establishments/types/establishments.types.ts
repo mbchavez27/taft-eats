@@ -14,6 +14,7 @@ export interface RestaurantDto {
   banner_picture_url: string | null
   created_at: string
   is_bookmarked?: boolean | number
+  is_temporarily_closed: boolean
 }
 
 /**

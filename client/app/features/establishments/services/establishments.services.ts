@@ -212,4 +212,23 @@ export const EstablishmentService = {
 
     return data as PaginatedRestaurantsResponseDto
   },
+
+  toggleClosedStatus: async (id: number, isClosed: boolean): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/${id}/status`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ isClosed }),
+      },
+    )
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to update establishment status')
+    }
+  },
 }
