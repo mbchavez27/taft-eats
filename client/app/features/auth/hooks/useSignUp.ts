@@ -5,13 +5,11 @@ import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { AuthService } from '../services/auth.services'
 import { useAuthStore } from '../context/auth.store'
-import type { CreateUserDTO } from '~/features/users/types/user.types'
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,64}$/
 
 export const signUpSchema = z
   .object({
-    // --- Step 1: Shared Fields ---
     name: z.string().min(1, 'Name is required'),
     email: z.string().email('Please enter a valid email address'),
     password: z
@@ -21,9 +19,6 @@ export const signUpSchema = z
         'Password must contain an uppercase, lowercase, number, and special character.',
       ),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
-
-    // --- User Step 2: Personal Fields ---
-    // Using .or(z.literal('')) prevents validation errors if an Owner leaves this blank
     username: z
       .string()
       .min(3, 'Username must be at least 3 characters')
@@ -31,7 +26,6 @@ export const signUpSchema = z
       .or(z.literal('')),
     bio: z.string().optional(),
     avatar: z.any().optional(),
-    // --- Owner Step 2 & 3: Establishment Fields ---
     role: z.enum(['user', 'owner']).default('user').optional(),
     restaurantName: z
       .string()
@@ -41,35 +35,23 @@ export const signUpSchema = z
     restaurantDescription: z.string().optional(),
     restaurantBanner: z.any().optional(),
     location: z.string().optional().or(z.literal('')),
-    latitude: z
-      .union([z.number(), z.nan()]) // Handles the case where the input is cleared
-      .optional(),
+    latitude: z.union([z.number(), z.nan()]).optional(),
     longitude: z.union([z.number(), z.nan()]).optional(),
     tags: z
-      .array(
-        z.object({
-          id: z.union([z.bigint()]),
-          label: z.string(),
-        }),
-      )
+      .array(z.object({ id: z.union([z.bigint()]), label: z.string() }))
       .optional(),
     price_range: z.enum(['$', '$$', '$$$']).optional(),
-  }) // 1. Password Check
+  })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   })
-  // 2. Owner Requirement: Restaurant Name
   .refine(
     (data) =>
       data.role !== 'owner' ||
       (data.restaurantName && data.restaurantName.trim() !== ''),
-    {
-      message: 'Establishment name is required',
-      path: ['restaurantName'],
-    },
+    { message: 'Establishment name is required', path: ['restaurantName'] },
   )
-  // 3. Owner Requirement: Restaurant Description
   .refine(
     (data) =>
       data.role !== 'owner' ||
@@ -82,22 +64,14 @@ export const signUpSchema = z
   .refine(
     (data) =>
       data.role !== 'owner' || (data.location && data.location.trim() !== ''),
-    {
-      message: 'Establishment address is required',
-      path: ['location'],
-    },
+    { message: 'Establishment address is required', path: ['location'] },
   )
-  // 4. Owner Requirement: Latitude
   .refine(
     (data) =>
       data.role !== 'owner' ||
       (data.latitude !== undefined && !Number.isNaN(data.latitude)),
-    {
-      message: 'Latitude is required for establishments',
-      path: ['latitude'],
-    },
+    { message: 'Latitude is required for establishments', path: ['latitude'] },
   )
-  // 5. Owner Requirement: Longitude
   .refine(
     (data) =>
       data.role !== 'owner' ||
@@ -113,7 +87,6 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>
 export const useSignUp = () => {
   const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)
-
   const setSession = useAuthStore((state) => state.setSession)
 
   const form = useForm<SignUpFormValues>({
@@ -131,6 +104,7 @@ export const useSignUp = () => {
       restaurantName: '',
       restaurantDescription: '',
       restaurantBanner: null,
+      location: '',
       latitude: undefined,
       longitude: undefined,
       tags: [],
@@ -154,15 +128,50 @@ export const useSignUp = () => {
         ...tag,
         id: tag.id.toString(),
       }))
-      const finalPayload: CreateUserDTO = {
-        ...payload,
-        username: generatedUsername,
-        tags: safeTags as any,
+
+      // --- NEW: Convert data to FormData to handle files ---
+      const formData = new FormData()
+      formData.append('name', payload.name)
+      formData.append('email', payload.email)
+      formData.append('password', payload.password)
+      formData.append('username', generatedUsername)
+
+      if (payload.bio) formData.append('bio', payload.bio)
+      if (payload.role) formData.append('role', payload.role)
+
+      // Append Avatar File
+      if (payload.avatar instanceof File)
+        formData.append('avatar', payload.avatar)
+
+      if (payload.role === 'owner') {
+        if (payload.restaurantName)
+          formData.append('restaurantName', payload.restaurantName)
+        if (payload.restaurantDescription)
+          formData.append(
+            'restaurantDescription',
+            payload.restaurantDescription,
+          )
+        if (payload.location) formData.append('location', payload.location)
+        if (payload.latitude !== undefined)
+          formData.append('latitude', payload.latitude.toString())
+        if (payload.longitude !== undefined)
+          formData.append('longitude', payload.longitude.toString())
+        if (payload.price_range)
+          formData.append('price_range', payload.price_range)
+
+        // Tags must be stringified in FormData
+        if (safeTags && safeTags.length > 0)
+          formData.append('tags', JSON.stringify(safeTags))
+
+        // Append Banner File
+        if (payload.restaurantBanner instanceof File) {
+          formData.append('restaurantBanner', payload.restaurantBanner)
+        }
       }
-      const response = await AuthService.register(finalPayload)
+
+      const response = await AuthService.register(formData as any)
 
       setSession(response.user)
-
       navigate('/')
     } catch (error: any) {
       setServerError(error.message || 'Failed to register. Please try again.')
@@ -170,13 +179,7 @@ export const useSignUp = () => {
   }
 
   const validateStep1 = async () => {
-    const isStep1Valid = await form.trigger([
-      'name',
-      'email',
-      'password',
-      'confirmPassword',
-    ])
-    return isStep1Valid
+    return await form.trigger(['name', 'email', 'password', 'confirmPassword'])
   }
 
   return {

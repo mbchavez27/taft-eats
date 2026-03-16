@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Camera, Loader2 } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
@@ -18,8 +17,8 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
     formState: { errors },
   } = form
 
-  const bannerFile = watch('avatar')
-
+  // Watch the banner file
+  const bannerFile = watch('restaurantBanner')
   const bannerPreviewUrl =
     bannerFile instanceof File || bannerFile instanceof Blob
       ? URL.createObjectURL(bannerFile)
@@ -42,21 +41,35 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
         </h1>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-2">
+      {/* Banner Upload UI */}
+      <div className="flex flex-col w-full gap-2">
         <label
-          htmlFor="avatar-upload"
-          className="cursor-pointer group relative"
+          htmlFor="banner-upload"
+          className="cursor-pointer group relative w-full h-32 rounded-xl border-2 border-dashed border-[#326F33] bg-[#f0fdf4] flex flex-col items-center justify-center overflow-hidden transition-colors hover:bg-green-100"
         >
-          <Avatar className="w-24 h-24 border-2 border-[#326F33]">
-            <AvatarImage src={bannerPreviewUrl} alt="Profile" />
-            <AvatarFallback className="bg-[#f0fdf4] text-[#326F33]">
-              <Camera size={32} />
-            </AvatarFallback>
-          </Avatar>
-          <div className="absolute inset-0 bg-black/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <span className="text-xs text-white font-bold">Edit</span>
-          </div>
+          {bannerPreviewUrl ? (
+            <>
+              <img
+                src={bannerPreviewUrl}
+                alt="Banner Preview"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-sm text-white font-bold">
+                  Change Banner
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <Camera size={32} className="text-[#326F33] mb-2" />
+              <span className="text-sm text-[#326F33] font-medium">
+                Upload Establishment Banner
+              </span>
+            </>
+          )}
         </label>
+
         <input
           type="file"
           id="banner-upload"
@@ -71,11 +84,14 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
             }
           }}
         />
-        <span className="text-sm text-[#9CB16F]">
-          Upload Establishment Banner
-        </span>
+        {errors.restaurantBanner && (
+          <span className="text-red-500 text-sm">
+            {errors.restaurantBanner.message as string}
+          </span>
+        )}
       </div>
 
+      {/* Inputs */}
       <div className="flex flex-col w-full">
         <label htmlFor="restaurantName" className="text-black font-medium mb-1">
           Establishment Name*
@@ -85,7 +101,7 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
           id="restaurantName"
           {...register('restaurantName')}
           className={getInputClass('restaurantName')}
-          placeholder="Choose a Establishment Name"
+          placeholder="Choose an Establishment Name"
         />
         {errors.restaurantName && (
           <span className="text-red-500 text-sm mt-1">
@@ -113,11 +129,12 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
           </span>
         )}
       </div>
-      <div className="flex flex-col">
-        <p className="text-black font-medium mb-2 text-lg">Location Detaills</p>
 
-        <div className="flex flex-col w-full mb-4">
-          <label htmlFor="location" className="text-black font-regular mb-3">
+      <div className="flex flex-col gap-3">
+        <p className="text-black font-medium text-lg">Location Details</p>
+
+        <div className="flex flex-col w-full">
+          <label htmlFor="location" className="text-black font-regular mb-1">
             Address *
           </label>
           <input
@@ -134,7 +151,7 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
           )}
         </div>
 
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-2 w-full mt-2">
           <div className="flex flex-col w-full">
             <label htmlFor="latitude" className="text-black font-regular mb-1">
               Latitude *
@@ -175,12 +192,12 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
         </div>
       </div>
 
-      <div className="flex justify-center gap-3 mt-1">
+      <div className="flex justify-center gap-3 mt-4">
         <button
           type="button"
           onClick={onBack}
           disabled={isLoading}
-          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 cursor-pointer hover:bg-[#285a29] transition-colors"
+          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 hover:bg-[#285a29] transition-colors"
         >
           Back
         </button>
@@ -188,7 +205,7 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
           type="button"
           disabled={isLoading}
           onClick={onNext}
-          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 cursor-pointer hover:bg-[#285a29] transition-colors"
+          className="bg-[#326F33] text-white font-bold rounded-full py-2 px-10 hover:bg-[#285a29] transition-colors"
         >
           Next
         </button>

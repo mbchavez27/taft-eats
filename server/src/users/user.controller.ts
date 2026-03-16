@@ -36,9 +36,35 @@ export const UserController = {
    */
   register: async (req: Request, res: Response) => {
     try {
-      const userData: CreateUserDTO = req.body
+      // Data comes in via req.body (parsed by multer from FormData)
+      const userData: any = req.body
 
-      const newUser = await UserService.register(userData)
+      // FormData sends everything as strings, so we must parse tags back to an array
+      if (userData.tags && typeof userData.tags === 'string') {
+        try {
+          userData.tags = JSON.parse(userData.tags)
+        } catch (e) {
+          userData.tags = []
+        }
+      }
+
+      // Multer puts files inside req.files when using upload.fields()
+      const files = req.files as
+        | { [fieldname: string]: Express.Multer.File[] }
+        | undefined
+
+      // If an avatar was uploaded, create a URL path to it
+      if (files?.avatar?.[0]) {
+        // Assuming your backend serves the uploads folder statically
+        userData.profile_picture_url = `/uploads/${files.avatar[0].filename}`
+      }
+
+      // If a banner was uploaded, create a URL path to it
+      if (files?.restaurantBanner?.[0]) {
+        userData.restaurantBanner = `/uploads/${files.restaurantBanner[0].filename}`
+      }
+
+      const newUser = await UserService.register(userData as CreateUserDTO)
 
       const token = jwt.sign(
         { user_id: newUser.user_id, role: newUser.role },

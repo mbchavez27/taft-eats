@@ -6,12 +6,10 @@ import { Link } from 'react-router'
 import UserPopover from './user-popover'
 import OwnerSettings from '~/features/users/containers/owner-settings'
 import { useAuthStore } from '~/features/auth/context/auth.store'
-import { useLogout } from '~/features/auth/hooks/useLogout'
 
 export default function NavBar() {
   const { isAuthenticated, user, isLoading } = useAuthStore()
   const isOwner = user?.role === 'owner'
-  const { handleLogout } = useLogout()
 
   return (
     <>

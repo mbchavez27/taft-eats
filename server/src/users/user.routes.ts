@@ -6,8 +6,25 @@
 import { Router } from 'express'
 import { UserController } from './user.controller.js'
 import { requireAuth } from 'shared/middleware/auth.middleware.js'
+import path from 'path'
+import multer from 'multer'
 
 const router = Router()
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/') // Make sure you create an 'uploads' folder in your backend root!
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+    cb(
+      null,
+      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname),
+    )
+  },
+})
+
+const upload = multer({ storage })
 
 /**
  * Route serving user registration.
@@ -18,7 +35,14 @@ const router = Router()
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware.
  */
-router.post('/register', UserController.register)
+router.post(
+  '/register',
+  upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'restaurantBanner', maxCount: 1 },
+  ]),
+  UserController.register,
+)
 
 /**
  * Route serving user login.

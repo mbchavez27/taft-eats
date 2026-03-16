@@ -20,6 +20,7 @@ const app = express()
 
 app.use(cookieParser())
 app.use(express.json())
+app.use('/uploads', express.static('uploads'))
 
 app.use(
   cors({
