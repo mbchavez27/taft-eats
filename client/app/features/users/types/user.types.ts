@@ -52,3 +52,9 @@ export interface AuthResponse {
   user: UserResponseDTO
   error?: string
 }
+
+export interface UpdateProfileResponse {
+  message: string
+  user: UserResponseDTO
+  error?: string
+}

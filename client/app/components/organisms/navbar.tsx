@@ -11,7 +11,6 @@ export default function NavBar() {
   const { isAuthenticated, user, isLoading } = useAuthStore()
   const isOwner = user?.role === 'owner'
 
-  console.log(isAuthenticated)
   return (
     <>
       <nav className="bg-[#FFFFFF] flex items-center justify-between px-8 lg:px-16 md:py-2">

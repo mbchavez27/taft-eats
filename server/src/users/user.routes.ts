@@ -55,4 +55,18 @@ router.post('/logout', UserController.logout)
  */
 router.get('/verify', requireAuth, UserController.verify)
 
+/**
+ * @route   PATCH /api/users/profile
+ * @desc    Update the authenticated user's profile information (name, username, bio, etc.)
+ * @access  Private
+ */
+router.patch('/profile', requireAuth, UserController.updateProfile)
+
+/**
+ * @route   GET /api/users/check-username
+ * @desc    Check if a username is available
+ * @access  Public
+ */
+router.get('/check-username', UserController.checkUsername)
+
 export default router
