@@ -92,7 +92,7 @@ export const EstablishmentModel = {
     }
 
     if (rating !== undefined && rating > 0) {
-      query += ` AND r.rating = ?` 
+      query += ` AND r.rating = ?`
       queryParams.push(rating)
     }
 
@@ -303,7 +303,6 @@ export const EstablishmentModel = {
     const [rows] = await pool.query<Restaurant[]>(query, params)
     return rows
   },
-}
 
   deleteRestaurant: async (
     restaurantId: number,
