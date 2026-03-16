@@ -82,4 +82,11 @@ router.delete(
   EstablishmentController.unbookmarkRestaurant,
 )
 
+/**
+ * @route   DELETE /api/establishments/:id
+ * @desc    Delete a specific restaurant (Owner only)
+ * @access  Private
+ */
+router.delete('/:id', requireAuth, EstablishmentController.deleteRestaurant)
+
 export default router

@@ -287,4 +287,41 @@ export const EstablishmentController = {
       res.status(500).json({ error: 'Internal server error.' })
     }
   },
+
+  /**
+   * Handles DELETE requests to remove a restaurant.
+   * Only the owner can perform this action.
+   */
+  deleteRestaurant: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = parseInt(req.params.id as string, 10)
+      const userId = (req as any).user?.userId
+
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized. Please log in.' })
+        return
+      }
+
+      if (isNaN(id)) {
+        res.status(400).json({ error: 'Invalid restaurant ID.' })
+        return
+      }
+
+      const success = await EstablishmentModel.deleteRestaurant(id, userId)
+
+      if (!success) {
+        res
+          .status(403)
+          .json({ error: 'Not authorized or restaurant not found.' })
+        return
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: 'Restaurant deleted successfully.' })
+    } catch (error) {
+      console.error('Error deleting restaurant:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
 }
