@@ -36,11 +36,11 @@ export default function SingleReview({
         </div>
 
         {/* MIDDLE SECTION: Content */}
-        <div className="flex-1 flex flex-col justify-center items-center text-center gap-1">
+        <div className="flex-1 flex flex-col justify-center items-center text-center gap-2.5">
           <ReviewContent review={review} reply={review.reply_body} />
           {hasReply && (
-            <span className="text-sm font-lexend text-gray-500 italic">
-              (Restaurant Owner has responded to the review:)
+            <span className="text-sm font-lexend text-gray-500">
+              (Click view full to see owner's reply)
             </span>
           )}
           {!!review.is_edited && (
