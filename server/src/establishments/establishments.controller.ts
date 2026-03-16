@@ -144,6 +144,41 @@ export const EstablishmentController = {
   },
 
   /**
+   * Handles GET requests to search restaurants by name.
+   */
+  searchRestaurants: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const searchQuery = req.query.q as string
+
+      if (!searchQuery) {
+        res.status(400).json({ error: 'Search query (q) is required.' })
+        return
+      }
+
+      let limitRaw = req.query.limit
+      if (Array.isArray(limitRaw)) limitRaw = limitRaw[0]
+      const limit = typeof limitRaw === 'string' ? parseInt(limitRaw, 10) : 5
+
+      const currentUserId = (req as any).user?.userId
+
+      const restaurants = await EstablishmentModel.searchRestaurantsByName(
+        searchQuery,
+        limit,
+        currentUserId,
+      )
+
+      res.status(200).json({
+        success: true,
+        data: restaurants,
+        count: restaurants.length,
+      })
+    } catch (error) {
+      console.error('Error in searchRestaurants:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
+  /**
    * Handles GET requests to fetch all tags for a specific restaurant.
    */
   getTagsByRestaurantId: async (req: Request, res: Response): Promise<void> => {
