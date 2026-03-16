@@ -158,4 +158,37 @@ export const UserModel = {
 
     return result.affectedRows > 0
   },
+
+  /**
+   * Retrieves a paginated list of all users for the admin dashboard.
+   */
+  getAllUsers: async (limit: number = 20, lastId?: number): Promise<User[]> => {
+    let query = `
+      SELECT user_id, username, name, email, bio, role, profile_picture_url, created_at 
+      FROM Users
+    `
+    const params: any[] = []
+
+    if (lastId) {
+      query += ` WHERE user_id < ?`
+      params.push(lastId)
+    }
+
+    query += ` ORDER BY user_id DESC LIMIT ?`
+    params.push(limit)
+
+    const [rows] = await pool.query<User[]>(query, params)
+    return rows
+  },
+
+  /**
+   * Hard deletes a user from the database.
+   */
+  adminDeleteUser: async (userId: number): Promise<boolean> => {
+    const [result] = await pool.query<ResultSetHeader>(
+      'DELETE FROM Users WHERE user_id = ?',
+      [userId],
+    )
+    return result.affectedRows > 0
+  },
 }

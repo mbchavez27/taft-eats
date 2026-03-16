@@ -43,6 +43,20 @@ router.post('/login', UserController.login)
 router.post('/logout', UserController.logout)
 
 /**
+ * @route   GET /api/users
+ * @desc    Get a paginated list of all users
+ * @access  Private (Admin only)
+ */
+router.get('/', requireAuth, UserController.getAllUsers)
+
+/**
+ * @route   DELETE /api/users/admin/:id
+ * @desc    Delete a user
+ * @access  Private (Admin only)
+ */
+router.delete('/admin/:id', requireAuth, UserController.deleteUserAsAdmin)
+
+/**
  * Route to verify current user authentication status.
  * Requires a valid authentication token.
  * @name get/verify
