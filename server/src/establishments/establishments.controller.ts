@@ -11,7 +11,7 @@ export const EstablishmentController = {
    */
   getAllRestaurants: async (req: Request, res: Response): Promise<void> => {
     try {
-      // 1. Strict Type Narrowing for Query Parameters
+
       let limitRaw = req.query.limit
       let lastIdRaw = req.query.lastId
 
@@ -32,7 +32,6 @@ export const EstablishmentController = {
         return
       }
 
-      // 2. Helper to parse tags and priceRanges
       const parseArrayParam = (param: any): string[] => {
         if (!param) return []
         if (Array.isArray(param)) return param as string[]
@@ -41,18 +40,20 @@ export const EstablishmentController = {
 
       const tags = parseArrayParam(req.query.tags)
       const priceRanges = parseArrayParam(req.query.priceRanges)
+      
+      const ratingRaw = req.query.rating
+      const rating = typeof ratingRaw === 'string' ? parseInt(ratingRaw, 10) : undefined
 
-      // NEW: Extract userId from optionalAuth middleware
       const currentUserId = (req as any).user?.userId
       let restaurants
 
-      // 3. Pass currentUserId to Model methods to fetch bookmark status
-      if (tags.length > 0 || priceRanges.length > 0) {
+      if (tags.length > 0 || priceRanges.length > 0 || (rating && rating > 0)) {
         const filterParams: GetRestaurantsFilterParams = {
           tags,
           priceRanges,
           limit,
           lastId,
+          rating,
         }
         restaurants = await EstablishmentModel.getAllRestaurantsByTags(
           filterParams,

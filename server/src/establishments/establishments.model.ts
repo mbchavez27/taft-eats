@@ -29,6 +29,7 @@ export interface GetRestaurantsFilterParams {
   priceRanges?: string[]
   limit?: number
   lastId?: number
+  rating?: number
 }
 
 export interface Tag extends RowDataPacket {
@@ -68,7 +69,7 @@ export const EstablishmentModel = {
     params: GetRestaurantsFilterParams,
     currentUserId?: number,
   ): Promise<Restaurant[]> => {
-    const { tags = [], priceRanges = [], limit = 10, lastId } = params
+    const { tags = [], priceRanges = [], limit = 10, lastId, rating } = params
 
     let query = `
       SELECT r.*,
@@ -88,6 +89,11 @@ export const EstablishmentModel = {
       const placeholders = priceRanges.map(() => '?').join(', ')
       query += ` AND r.price_range IN (${placeholders})`
       queryParams.push(...priceRanges)
+    }
+
+    if (rating !== undefined && rating > 0) {
+      query += ` AND r.rating = ?` 
+      queryParams.push(rating)
     }
 
     if (tags.length > 0) {
