@@ -1,28 +1,32 @@
-import { FaStar } from "react-icons/fa";
-import { useQuery } from "@tanstack/react-query";
-import { EstablishmentService } from "~/features/establishments/services/establishments.services";
+import { FaStar } from 'react-icons/fa'
+import { useQuery } from '@tanstack/react-query'
+import { EstablishmentService } from '~/features/establishments/services/establishments.services'
 
 export default function EstablishmentTags({
   id,
   stars,
   numberOfReviews,
   tags: initialTags,
+  price_range,
 }: {
-  id?: number;
-  stars?: number;
-  numberOfReviews?: number;
-  tags?: string[];
+  id?: number
+  stars?: number
+  numberOfReviews?: number
+  tags?: string[]
+  price_range?: string
 }) {
   // Fetch tags dynamically using the restaurant ID
   const { data: tagsData, isLoading } = useQuery({
-    queryKey: ["establishment-tags", id],
+    queryKey: ['establishment-tags', id],
     queryFn: () => EstablishmentService.getTagsByRestaurantId(id!),
     enabled: !!id,
-  });
+  })
 
-  console.log(tagsData);
+  console.log(tagsData)
   const displayTags = tagsData?.data.map((tag) => tag.name) ??
-    initialTags ?? ["Mexican", "Fast Food", "Affordable"];
+    initialTags ?? ['Mexican', 'Fast Food', 'Affordable']
+
+  const finalTags = price_range ? [price_range, ...displayTags] : displayTags
 
   return (
     <>
@@ -45,7 +49,7 @@ export default function EstablishmentTags({
               Loading tags...
             </span>
           ) : (
-            displayTags.map((tag, index) => (
+            finalTags.map((tag, index) => (
               <div
                 key={index}
                 className="bg-[#416CAE] text-white rounded-full px-4 py-1 text-md font-semibold flex grow justify-center text-center"
@@ -57,5 +61,5 @@ export default function EstablishmentTags({
         </div>
       </main>
     </>
-  );
+  )
 }

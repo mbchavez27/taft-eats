@@ -78,7 +78,7 @@ export default function ReviewTags() {
               control={control}
               render={({ field }) => (
                 <Prices
-                  value={field.value}
+                  values={field.value ? [field.value] : []}
                   onChange={field.onChange}
                   textSize="text-md"
                   unselectedColor="bg-white text-[#416CAE] border-[#416CAE] border-2"

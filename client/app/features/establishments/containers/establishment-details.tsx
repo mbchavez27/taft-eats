@@ -25,7 +25,11 @@ export default function EstablishmentDetails({
       ) : (
         <>
           <EstablishmentDesription description={data?.description} />
-          <EstablishmentTags id={data?.restaurant_id} stars={data?.rating} />
+          <EstablishmentTags
+            id={data?.restaurant_id}
+            stars={data?.rating}
+            price_range={data?.price_range}
+          />
         </>
       )}
     </main>
