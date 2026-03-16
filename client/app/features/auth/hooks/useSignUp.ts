@@ -40,6 +40,7 @@ export const signUpSchema = z
       .or(z.literal('')),
     restaurantDescription: z.string().optional(),
     restaurantBanner: z.any().optional(),
+    location: z.string().optional().or(z.literal('')),
     latitude: z
       .union([z.number(), z.nan()]) // Handles the case where the input is cleared
       .optional(),
@@ -76,6 +77,14 @@ export const signUpSchema = z
     {
       message: 'Establishment description is required',
       path: ['restaurantDescription'],
+    },
+  )
+  .refine(
+    (data) =>
+      data.role !== 'owner' || (data.location && data.location.trim() !== ''),
+    {
+      message: 'Establishment address is required',
+      path: ['location'],
     },
   )
   // 4. Owner Requirement: Latitude
