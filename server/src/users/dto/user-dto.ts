@@ -15,6 +15,7 @@ export type CreateUserDTO = {
   restaurantBanner?: any
   latitude?: number
   longitude?: number
+  location?: string
   tags?: { id: bigint; label: string }[]
   price_range?: '$' | '$$' | '$$$'
 }

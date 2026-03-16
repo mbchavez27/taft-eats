@@ -167,14 +167,15 @@ export const EstablishmentModel = {
       | 'longitude'
       | 'price_range'
       | 'banner_picture_url'
+      | 'location'
     >,
     connection?: Pool | PoolConnection,
   ): Promise<number> => {
     const db = (connection || pool) as Pool
     const [result] = await db.query<ResultSetHeader>(
       `INSERT INTO Restaurants 
-        (owner_user_id, name, description, latitude, longitude, price_range, banner_picture_url) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        (owner_user_id, name, description, latitude, longitude, price_range, banner_picture_url, location) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         restaurant.owner_user_id,
         restaurant.name,
@@ -183,6 +184,7 @@ export const EstablishmentModel = {
         restaurant.longitude || null,
         restaurant.price_range || '$',
         restaurant.banner_picture_url || null,
+        restaurant.location || null,
       ],
     )
     return result.insertId
