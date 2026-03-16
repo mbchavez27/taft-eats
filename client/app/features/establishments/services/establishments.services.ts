@@ -173,7 +173,6 @@ export const EstablishmentService = {
     }
   },
 
-    
   delete: async (id: number): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
       method: 'DELETE',
@@ -186,8 +185,9 @@ export const EstablishmentService = {
     if (!response.ok) {
       const data = await response.json()
       throw new Error(data.error || 'Failed to delete establishment')
-    },
-      
+    }
+  },
+
   searchByName: async (
     query: string,
     limit: number = 5,
