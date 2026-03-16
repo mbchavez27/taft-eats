@@ -114,7 +114,26 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
         )}
       </div>
       <div className="flex flex-col">
-        <p className="text-black font-medium mb-2 text-lg">Location/Address</p>
+        <p className="text-black font-medium mb-2 text-lg">Location Detaills</p>
+
+        <div className="flex flex-col w-full mb-4">
+          <label htmlFor="location" className="text-black font-regular mb-3">
+            Address *
+          </label>
+          <input
+            type="text"
+            id="location"
+            {...register('location')}
+            className={getInputClass('location')}
+            placeholder="e.g. 2401 Taft Ave, Malate, Manila"
+          />
+          {errors.location && (
+            <span className="text-red-500 text-sm mt-1">
+              {errors.location.message}
+            </span>
+          )}
+        </div>
+
         <div className="flex gap-2 w-full">
           <div className="flex flex-col w-full">
             <label htmlFor="latitude" className="text-black font-regular mb-1">
