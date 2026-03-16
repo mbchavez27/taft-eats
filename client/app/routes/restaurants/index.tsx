@@ -59,7 +59,7 @@ export default function Restaurant() {
       handleCloseReview()
     },
   )
-
+  console.log(data)
   return (
     <FormProvider {...form}>
       <main className="flex flex-col lg:flex-row py-12 px-10 lg:gap-8 gap-16">
@@ -72,8 +72,7 @@ export default function Restaurant() {
         <div className="w-full lg:w-3/4 flex flex-col gap-6 md:gap-8">
           <EstablishmentHeader
             name={data?.data.name}
-            lat={data?.data.latitude}
-            lng={data?.data.longitude}
+            location={data?.data.location}
           />
 
           {isReviewOpen ? (

@@ -22,7 +22,6 @@ export default function EstablishmentTags({
     enabled: !!id,
   })
 
-  console.log(tagsData)
   const displayTags = tagsData?.data.map((tag) => tag.name) ??
     initialTags ?? ['Mexican', 'Fast Food', 'Affordable']
 
