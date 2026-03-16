@@ -5,7 +5,11 @@ import {
   PoolConnection,
 } from 'mysql2/promise'
 import { pool } from 'shared/config/database.js'
-import { CreatedReviewsDTO, SavedEstablishmentsDTO } from './dto/user-dto.js'
+import {
+  CreatedReviewsDTO,
+  SavedEstablishmentsDTO,
+  UpdateUserDTO,
+} from './dto/user-dto.js'
 
 /**
  * Represents a User record retrieved from the database.
@@ -119,4 +123,39 @@ export const UserModel = {
   },
 
   // === UPDATE ===
+  /**
+   * Updates a user's profile information dynamically.
+   */
+  updateUser: async (id: number, data: UpdateUserDTO): Promise<boolean> => {
+    const updates: string[] = []
+    const values: any[] = []
+
+    if (data.name !== undefined) {
+      updates.push('name = ?')
+      values.push(data.name)
+    }
+    if (data.username !== undefined) {
+      updates.push('username = ?')
+      values.push(data.username || null) // Allow clearing username if needed
+    }
+    if (data.bio !== undefined) {
+      updates.push('bio = ?')
+      values.push(data.bio || null)
+    }
+    if (data.profile_picture_url !== undefined) {
+      updates.push('profile_picture_url = ?')
+      values.push(data.profile_picture_url || null)
+    }
+
+    if (updates.length === 0) return false // Nothing to update
+
+    values.push(id)
+
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE Users SET ${updates.join(', ')} WHERE user_id = ?`,
+      values,
+    )
+
+    return result.affectedRows > 0
+  },
 }

@@ -48,4 +48,18 @@ router.get('/user/:userId', ReviewController.getReviewsByUserId)
  */
 router.post('/:reviewId/vote', requireAuth, ReviewController.voteReview)
 
+/**
+ * @route   PATCH /api/reviews/:reviewId
+ * @desc    Edit the body of an existing review
+ * @access  Private
+ */
+router.patch('/:reviewId', requireAuth, ReviewController.editReview)
+
+/**
+ * @route   DELETE /api/reviews/:reviewId
+ * @desc    Delete a review
+ * @access  Private
+ */
+router.delete('/:reviewId', requireAuth, ReviewController.deleteReview)
+
 export default router

@@ -145,5 +145,58 @@ export const UserController = {
     }
   },
 
-  //TODO: Add update user controller
+  /**
+   * Handles updating the authenticated user's profile.
+   * @route PATCH /api/users/profile
+   */
+  updateProfile: async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user?.userId
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' })
+      }
+
+      const updateData: UpdateUserDTO = req.body
+      const updatedUser = await UserService.updateProfile(userId, updateData)
+
+      res.status(200).json({
+        message: 'Profile updated successfully',
+        user: updatedUser,
+      })
+    } catch (error: any) {
+      if (error.message === 'Username already taken') {
+        res.status(409).json({ error: error.message })
+      } else {
+        console.error('Update Profile Error:', error)
+        res
+          .status(500)
+          .json({ error: 'Internal server error while updating profile' })
+      }
+    }
+  },
+
+  /**
+   * Checks if a username is available.
+   * @route GET /api/users/check-username
+   */
+  checkUsername: async (req: Request, res: Response) => {
+    try {
+      const { username } = req.query
+
+      if (!username || typeof username !== 'string') {
+        return res
+          .status(400)
+          .json({ error: 'Username query parameter is required' })
+      }
+
+      // Check the database
+      const existingUser = await UserModel.findByUsername(username)
+
+      // If no user is found, the username is available (true)
+      res.status(200).json({ available: !existingUser })
+    } catch (error) {
+      console.error('Check Username Error:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  },
 }

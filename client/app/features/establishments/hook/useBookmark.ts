@@ -23,9 +23,6 @@ export const useBookmark = (
     // Explicitly check for truthy values to handle SQL TinyInt (1) or Boolean (true)
     const bookmarkedStatus = !!initialBookmarked
     setIsBookmarked(bookmarkedStatus)
-
-    // Debugging log - check your browser console on refresh to see what the API sent
-    console.log(`Bookmark Sync [ID: ${restaurantId}]:`, bookmarkedStatus)
   }, [initialBookmarked, restaurantId])
 
   const toggleBookmark = async () => {

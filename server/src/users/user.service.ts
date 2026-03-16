@@ -160,4 +160,38 @@ export const UserService = {
 
     //TODO: Add Update Profile Service
   },
+
+  /**
+   * Updates the user profile and ensures username uniqueness.
+   */
+  updateProfile: async (
+    userId: number,
+    data: UpdateUserDTO,
+  ): Promise<UserResponseDTO> => {
+    // 1. Check if the new username is already taken by another user
+    if (data.username) {
+      const existingUser = await UserModel.findByUsername(data.username)
+      if (existingUser && existingUser.user_id !== userId) {
+        throw new Error('Username already taken')
+      }
+    }
+
+    // 2. Perform the update
+    await UserModel.updateUser(userId, data)
+
+    // 3. Fetch and return the updated user
+    const updatedUser = await UserModel.findByID(userId)
+    if (!updatedUser) throw new Error('User not found after update')
+
+    return {
+      user_id: updatedUser.user_id,
+      username: updatedUser.username,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      bio: updatedUser.bio || null,
+      role: updatedUser.role,
+      profile_picture_url: updatedUser.profile_picture_url || null,
+      created_at: new Date(updatedUser.created_at),
+    }
+  },
 }
