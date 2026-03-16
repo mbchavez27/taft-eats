@@ -10,24 +10,29 @@ import { useQuery } from '@tanstack/react-query'
 import { EstablishmentService } from '~/features/establishments/services/establishments.services'
 import { useToggleClosedStatus } from '~/features/establishments/hook/useToggleClosedStatus' // <-- Import the new hook
 import DeleteConsent from './delete-consent'
+import EditRestaurantDialog from '../components/organisms/edit-restaurant'
 
 export default function OwnerSettings() {
   const { user } = useAuthStore()
   const userId = user?.user_id
 
-  const { data: response } = useQuery({
+  const { data: response, isLoading } = useQuery({
     queryKey: ['ownerRestaurant', userId],
     queryFn: () => EstablishmentService.getByOwnerId(userId!),
     enabled: !!userId,
   })
 
-  const restaurant = response?.data
+  // Safely get the restaurant, defaulting to null if not loaded or not found
+  const restaurant = response?.data || null
 
   // Bring in the mutation
   const { mutate: toggleStatus, isPending } = useToggleClosedStatus()
 
-  // Convert the 1/0 from MySQL to a boolean
+  // Convert the 1/0 from MySQL to a boolean (safe access with ?.)
   const isClosed = !!restaurant?.is_temporarily_closed
+
+  // Optional: Handle loading state
+  if (isLoading) return <div>Loading...</div>
 
   return (
     <>
@@ -41,38 +46,43 @@ export default function OwnerSettings() {
           <PopoverHeader className="flex flex-col justify-center items-center gap-2">
             <h1 className="text-3xl font-lexend font-bold">Settings</h1>
           </PopoverHeader>
-          <section className="font-inter font-semibold text-md flex flex-col gap-4">
-            <button className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100">
-              Edit Establishment Banner
-            </button>
 
-            {/* Make the button functional and dynamic */}
-            <button
-              onClick={() => {
-                if (restaurant) {
+          {/* Only render the settings if the restaurant actually exists */}
+          {restaurant ? (
+            <section className="font-inter font-semibold text-md flex flex-col gap-4">
+              <EditRestaurantDialog
+                restaurantId={restaurant.restaurant_id}
+                currentName={restaurant.name}
+                currentBio={restaurant.description || ''}
+              />
+
+              <button
+                onClick={() => {
                   toggleStatus({
                     id: restaurant.restaurant_id,
-                    isClosed: !isClosed, // Send the opposite of current status
+                    isClosed: !isClosed,
                   })
-                }
-              }}
-              disabled={isPending || !restaurant}
-              className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending
-                ? 'Updating...'
-                : isClosed
-                  ? 'Mark "Open"'
-                  : 'Mark "Temporarily Closed"'}
-            </button>
+                }}
+                disabled={isPending}
+                className="px-4 py-2 text-black border-black border rounded-2xl hover:opacity-50 transition duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isPending
+                  ? 'Updating...'
+                  : isClosed
+                    ? 'Mark "Open"'
+                    : 'Mark "Temporarily Closed"'}
+              </button>
 
-            <div className="flex flex-col gap-3 font-semibold items-center text-center">
-              <p className="text-xs text-[#ED1C24]">
-                Warning: this action cannot be undone!
-              </p>
-              <DeleteConsent restaurantId={restaurant?.restaurant_id} />
-            </div>
-          </section>
+              <div className="flex flex-col gap-3 font-semibold items-center text-center">
+                <p className="text-xs text-[#ED1C24]">
+                  Warning: this action cannot be undone!
+                </p>
+                <DeleteConsent restaurantId={restaurant.restaurant_id} />
+              </div>
+            </section>
+          ) : (
+            <p>No restaurant found.</p>
+          )}
         </PopoverContent>
       </Popover>
     </>

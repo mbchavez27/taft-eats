@@ -332,4 +332,43 @@ export const EstablishmentModel = {
     )
     return result.affectedRows > 0
   },
+
+  /**
+   * Updates a restaurant's name, description (bio), and banner picture.
+   * Ensures only the owner can perform the update.
+   */
+  updateRestaurant: async (
+    restaurantId: number,
+    ownerId: number,
+    data: { name?: string; description?: string; banner_picture_url?: string },
+  ): Promise<boolean> => {
+    const updates: string[] = []
+    const values: any[] = []
+
+    if (data.name !== undefined) {
+      updates.push('name = ?')
+      values.push(data.name)
+    }
+    if (data.description !== undefined) {
+      updates.push('description = ?')
+      values.push(data.description)
+    }
+    if (data.banner_picture_url !== undefined) {
+      updates.push('banner_picture_url = ?')
+      values.push(data.banner_picture_url)
+    }
+
+    if (updates.length === 0) return false // Nothing to update
+
+    // Add restaurantId and ownerId for the WHERE clause
+    values.push(restaurantId, ownerId)
+
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE Restaurants SET ${updates.join(', ')} 
+       WHERE restaurant_id = ? AND owner_user_id = ?`,
+      values,
+    )
+
+    return result.affectedRows > 0
+  },
 }

@@ -3,6 +3,7 @@ import {
   EstablishmentModel,
   GetRestaurantsFilterParams,
 } from './establishments.model.js'
+import { UpdateRestaurantDTO } from './dto/establishments-dto.js'
 
 export const EstablishmentController = {
   /**
@@ -67,10 +68,16 @@ export const EstablishmentController = {
         )
       }
 
+      let nextCursor = undefined
+      if (restaurants.length === limit && restaurants.length > 0) {
+        nextCursor = restaurants[restaurants.length - 1].restaurant_id
+      }
+
       res.status(200).json({
         success: true,
         data: restaurants,
         count: restaurants.length,
+        nextCursor,
       })
     } catch (error) {
       console.error('Error in getAllRestaurants:', error)
@@ -373,6 +380,37 @@ export const EstablishmentController = {
       })
     } catch (error) {
       console.error('Error toggling temporarily closed status:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
+  editRestaurant: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const ownerId = (req as any).user?.userId
+      const restaurantId = parseInt(req.params.id as string, 10)
+
+      if (isNaN(restaurantId)) {
+        res.status(400).json({ error: 'Invalid restaurant ID' })
+        return
+      }
+
+      const data = req.body
+      const success = await EstablishmentModel.updateRestaurant(
+        restaurantId,
+        ownerId,
+        data,
+      )
+
+      if (!success) {
+        res.status(404).json({ error: 'Restaurant not found or unauthorized.' })
+        return
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: 'Restaurant updated successfully.' })
+    } catch (error) {
+      console.error('Error in editRestaurant:', error)
       res.status(500).json({ error: 'Internal server error.' })
     }
   },
