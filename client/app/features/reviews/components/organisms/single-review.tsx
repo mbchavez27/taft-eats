@@ -9,7 +9,7 @@ import UserDetails from './user-details'
 interface SingleReviewProps {
   is_owner?: boolean
   is_user?: boolean
-  onOpenForms?: () => void
+  onOpenForms?: (reviewId: number) => void
   review: ReviewDto
 }
 
@@ -19,6 +19,7 @@ export default function SingleReview({
   onOpenForms,
   review,
 }: SingleReviewProps) {
+  const hasReply = !!review.reply_body
   return (
     <main
       className="
@@ -36,7 +37,12 @@ export default function SingleReview({
 
         {/* MIDDLE SECTION: Content */}
         <div className="flex-1 flex flex-col justify-center items-center text-center gap-1">
-          <ReviewContent review={review} />
+          <ReviewContent review={review} reply={review.reply_body} />
+          {hasReply && (
+            <span className="text-sm font-lexend text-gray-500 italic">
+              (Restaurant Owner has responded to the review:)
+            </span>
+          )}
           {!!review.is_edited && (
             <span className="text-sm font-lexend text-gray-500 italic">
               (Edited)
@@ -57,12 +63,16 @@ export default function SingleReview({
             />
           </div>
         ) : is_owner ? (
-          <button
-            onClick={onOpenForms}
-            className="font-inter font-bold text-white bg-[#416CAE] text-2xl px-3 py-1 rounded-2xl hover:bg-[#345a96] transition-colors"
-          >
-            Reply
-          </button>
+          !hasReply ? (
+            <button
+              onClick={() => onOpenForms?.(review.review_id)}
+              className="font-inter font-bold text-white bg-[#416CAE] text-2xl px-3 py-1 rounded-2xl hover:bg-[#345a96] transition-colors"
+            >
+              Reply
+            </button>
+          ) : (
+            <span className="text-sm text-gray-400 italic">Replied</span>
+          )
         ) : (
           <ReactionCounter
             reviewId={review.review_id}

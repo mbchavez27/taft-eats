@@ -149,4 +149,28 @@ export const ReviewService = {
       connection.release()
     }
   },
+
+  /**
+   * Submits an owner's reply to a review.
+   */
+  createReply: async (
+    reviewId: number,
+    ownerId: number,
+    body: string,
+  ): Promise<number> => {
+    // 1. Verify ownership
+    const isOwner = await ReviewModel.checkRestaurantOwnership(
+      reviewId,
+      ownerId,
+    )
+
+    if (!isOwner) {
+      throw new Error(
+        'Unauthorized: You do not own the restaurant for this review.',
+      )
+    }
+
+    // 2. Insert reply
+    return await ReviewModel.createReply(reviewId, ownerId, body)
+  },
 }

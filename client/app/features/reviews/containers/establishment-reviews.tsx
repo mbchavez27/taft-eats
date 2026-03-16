@@ -9,7 +9,7 @@ export default function EstablishmentReviews({
   restaurantId,
   restaurantName,
 }: {
-  onReply: () => void
+  onReply: (reviewId: number) => void
   restaurantId?: number
   restaurantName?: string
 }) {
