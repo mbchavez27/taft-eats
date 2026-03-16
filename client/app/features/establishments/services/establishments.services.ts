@@ -231,4 +231,21 @@ export const EstablishmentService = {
       throw new Error(data.error || 'Failed to update establishment status')
     }
   },
+
+  update: async (
+    id: number,
+    data: { name?: string; description?: string; banner_picture_url?: string },
+  ): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Failed to update establishment')
+    }
+  },
 }

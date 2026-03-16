@@ -34,3 +34,9 @@ export interface SingleRestaurantResponseDto {
   success: boolean
   data: RestaurantDto
 }
+
+export interface UpdateRestaurantDTO {
+  name?: string
+  description?: string
+  banner_picture_url?: string
+}

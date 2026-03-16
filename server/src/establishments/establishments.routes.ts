@@ -83,6 +83,13 @@ router.delete(
 )
 
 /**
+ * @route   PATCH /api/establishments/:id
+ * @desc    Edit a restaurant's name, description, or banner (Owner only)
+ * @access  Private
+ */
+router.patch('/:id', requireAuth, EstablishmentController.editRestaurant)
+
+/**
  * @route   DELETE /api/establishments/:id
  * @desc    Delete a specific restaurant (Owner only)
  * @access  Private
