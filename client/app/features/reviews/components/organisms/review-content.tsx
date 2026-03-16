@@ -72,7 +72,7 @@ export default function ReviewContent({ review }: { review: ReviewDto }) {
               </div>
             </section>
             <hr className="mt-2" />
-            <section>
+            <section className="border-3 border-black rounded-2xl px-2 py-3">
               <p className="font-lexend text-lg sm:text-2xl lg:text-3xl text-left px-6 py-4">
                 {review.body}
               </p>
