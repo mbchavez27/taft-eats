@@ -17,7 +17,7 @@ export default function EstablishmentsLists() {
 
   const isBookmarksPage = location.pathname.includes('/bookmarks')
 
-  const { selectedCuisines, selectedTags, selectedPriceRanges, selectedFoods } =
+  const { selectedCuisines, selectedTags, selectedPriceRanges, selectedFoods, rating } =
     useFilterStore()
 
   const combinedTags = [...selectedCuisines, ...selectedTags, ...selectedFoods]
@@ -34,6 +34,7 @@ export default function EstablishmentsLists() {
       'establishments',
       combinedTags,
       selectedPriceRanges,
+      rating,
       isAuthenticated,
       isBookmarksPage,
     ],
@@ -42,6 +43,7 @@ export default function EstablishmentsLists() {
         pageParam,
         tags: combinedTags,
         priceRanges: selectedPriceRanges,
+        rating,
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

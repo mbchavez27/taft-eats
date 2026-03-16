@@ -11,10 +11,12 @@ export const EstablishmentService = {
     pageParam = undefined,
     tags = [],
     priceRanges = [],
+    rating, 
   }: {
     pageParam?: number
     tags?: string[]
     priceRanges?: string[]
+    rating?: number 
   }): Promise<PaginatedRestaurantsResponseDto> => {
     const urlParams = new URLSearchParams()
 
@@ -26,21 +28,20 @@ export const EstablishmentService = {
     tags.forEach((tag) => urlParams.append('tags', tag))
     priceRanges.forEach((price) => urlParams.append('priceRanges', price))
 
+    if (rating !== undefined && rating > 0) {
+      urlParams.append('rating', rating.toString())
+    }
+
     const url = `${API_BASE_URL}/api/establishments?${urlParams.toString()}`
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     })
 
     const data: PaginatedRestaurantsResponseDto = await response.json()
-
-    if (!response.ok) {
-      throw new Error((data as any).error || 'Failed to fetch establishments')
-    }
+    if (!response.ok) throw new Error((data as any).error || 'Failed to fetch establishments')
 
     return data
   },
