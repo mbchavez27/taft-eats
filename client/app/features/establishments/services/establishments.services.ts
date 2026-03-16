@@ -172,4 +172,19 @@ export const EstablishmentService = {
       throw new Error(data.error || 'Failed to unbookmark restaurant')
     }
   },
+
+  delete: async (id: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to delete establishment')
+    }
+  },
 }

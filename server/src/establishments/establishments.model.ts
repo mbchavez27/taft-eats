@@ -261,4 +261,17 @@ export const EstablishmentModel = {
     const [rows] = await pool.query<Restaurant[]>(query, params)
     return rows
   },
+
+  deleteRestaurant: async (
+    restaurantId: number,
+    ownerId: number,
+  ): Promise<boolean> => {
+    // We check BOTH restaurant_id and owner_user_id for security
+    const [result] = await pool.query<ResultSetHeader>(
+      'DELETE FROM Restaurants WHERE restaurant_id = ? AND owner_user_id = ?',
+      [restaurantId, ownerId],
+    )
+    // Returns true if a row was actually deleted
+    return result.affectedRows > 0
+  },
 }
