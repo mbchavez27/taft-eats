@@ -248,4 +248,47 @@ export const EstablishmentService = {
       throw new Error(errorData.error || 'Failed to update establishment')
     }
   },
+
+  updateAsAdmin: async (
+    id: number,
+    data: {
+      name?: string
+      description?: string
+      price_range?: string
+      location?: string
+    },
+  ): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/admin/${id}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      },
+    )
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(
+        errorData.error || 'Failed to update establishment as admin',
+      )
+    }
+  },
+
+  deleteAsAdmin: async (id: number): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/admin/${id}`,
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to delete establishment as admin')
+    }
+  },
 }

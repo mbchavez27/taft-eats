@@ -414,4 +414,54 @@ export const EstablishmentController = {
       res.status(500).json({ error: 'Internal server error.' })
     }
   },
+
+  deleteRestaurantAsAdmin: async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const id = parseInt(req.params.id as string, 10)
+      if (isNaN(id)) {
+        res.status(400).json({ error: 'Invalid restaurant ID.' })
+        return
+      }
+
+      const success = await EstablishmentModel.adminDeleteRestaurant(id)
+      if (!success) {
+        res.status(404).json({ error: 'Restaurant not found.' })
+        return
+      }
+
+      res.status(200).json({ success: true, message: 'Deleted by Admin.' })
+    } catch (error) {
+      console.error('Error in deleteRestaurantAsAdmin:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
+  editRestaurantAsAdmin: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = parseInt(req.params.id as string, 10)
+      if (isNaN(id)) {
+        res.status(400).json({ error: 'Invalid restaurant ID' })
+        return
+      }
+
+      const success = await EstablishmentModel.adminUpdateRestaurant(
+        id,
+        req.body,
+      )
+      if (!success) {
+        res
+          .status(404)
+          .json({ error: 'Restaurant not found or no changes made.' })
+        return
+      }
+
+      res.status(200).json({ success: true, message: 'Updated by Admin.' })
+    } catch (error) {
+      console.error('Error in editRestaurantAsAdmin:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
 }

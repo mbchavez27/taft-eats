@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Table,
   TableBody,
@@ -9,9 +9,9 @@ import {
 } from '~/components/ui/table'
 import { Button } from '~/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { Building } from 'lucide-react'
+import { Building, Loader2 } from 'lucide-react'
 import type { Route } from './+types/admin/index'
-import { establishments } from '~/features/admin/data/establishments'
+import { EstablishmentService } from '~/features/establishments/services/establishments.services'
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,21 +21,53 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function EstablishmentsPage() {
-  const [establishmentsData, setEstablishmentsData] = useState(establishments)
+  const [establishmentsData, setEstablishmentsData] = useState<any[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editData, setEditData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchEstablishments = async () => {
+      try {
+        setIsLoading(true)
+        const response = await EstablishmentService.getAll({ limit: 50 })
+        setEstablishmentsData(response.data || [])
+      } catch (err: any) {
+        setError(err.message || 'Failed to load establishments')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchEstablishments()
+  }, [])
 
   const handleEdit = (item: any) => {
-    setEditingId(item.id)
+    setEditingId(item.restaurant_id)
     setEditData({ ...item })
   }
 
-  const handleSave = () => {
-    setEstablishmentsData((prev) =>
-      prev.map((item) => (item.id === editingId ? editData : item)),
-    )
-    setEditingId(null)
-    setEditData(null)
+  const handleSave = async () => {
+    try {
+      // Call the admin update API
+      await EstablishmentService.updateAsAdmin(editingId as number, {
+        name: editData.name,
+        description: editData.description,
+        price_range: editData.price_range,
+        location: editData.location,
+      })
+
+      // Update UI state
+      setEstablishmentsData((prev) =>
+        prev.map((item) =>
+          item.restaurant_id === editingId ? editData : item,
+        ),
+      )
+      setEditingId(null)
+      setEditData(null)
+    } catch (err: any) {
+      alert(err.message || 'Failed to update establishment')
+    }
   }
 
   const handleCancel = () => {
@@ -43,18 +75,41 @@ export default function EstablishmentsPage() {
     setEditData(null)
   }
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this establishment?')) {
-      setEstablishmentsData((prev) => prev.filter((item) => item.id !== id))
-      if (editingId === id) {
-        setEditingId(null)
-        setEditData(null)
+  const handleDelete = async (id: number) => {
+    if (
+      window.confirm(
+        'Are you sure you want to permanently delete this establishment?',
+      )
+    ) {
+      try {
+        await EstablishmentService.deleteAsAdmin(id)
+        setEstablishmentsData((prev) =>
+          prev.filter((item) => item.restaurant_id !== id),
+        )
+        if (editingId === id) {
+          setEditingId(null)
+          setEditData(null)
+        }
+      } catch (err: any) {
+        alert(err.message || 'Failed to delete establishment')
       }
     }
   }
 
   const handleChange = (field: string, value: string) => {
-    setEditData((prev) => ({ ...prev, [field]: value }))
+    setEditData((prev: any) => ({ ...prev, [field]: value }))
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 w-full items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div className="p-8 text-red-500 font-medium">Error: {error}</div>
   }
 
   return (
@@ -73,10 +128,9 @@ export default function EstablishmentsPage() {
               <TableHead className="font-bold text-black max-w-[400px]">
                 DESCRIPTION
               </TableHead>
-              <TableHead className="font-bold text-black text-right whitespace-nowrap">
-                PRICE RANGE
+              <TableHead className="font-bold text-black text-center whitespace-nowrap">
+                PRICE
               </TableHead>
-              <TableHead className="font-bold text-black">TAGS</TableHead>
               <TableHead className="font-bold text-black">LOCATION</TableHead>
               <TableHead className="font-bold text-black text-center">
                 RATING
@@ -88,56 +142,44 @@ export default function EstablishmentsPage() {
           </TableHeader>
           <TableBody>
             {establishmentsData.map((item) => (
-              <TableRow key={item.id} className="align-top group">
+              <TableRow key={item.restaurant_id} className="align-top group">
                 <TableCell className="text-center py-4">
                   <div className="flex justify-center items-center h-full">
                     <Avatar size="sm">
-                      <AvatarImage src="" alt={item.name} />
+                      <AvatarImage
+                        src={item.banner_picture_url || ''}
+                        alt={item.name}
+                      />
                       <AvatarFallback>
-                        {item.name.charAt(0).toUpperCase()}
+                        {item.name ? item.name.charAt(0).toUpperCase() : 'E'}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                 </TableCell>
 
                 <TableCell className="text-center py-4 font-medium text-slate-900">
-                  {item.id}
+                  {item.restaurant_id}
                 </TableCell>
 
                 <TableCell className="py-4 min-w-[160px]">
-                  {editingId === item.id ? (
-                    <div className="flex flex-col">
-                      <input
-                        type="text"
-                        value={editData.name}
-                        onChange={(e) => handleChange('name', e.target.value)}
-                        className="font-bold text-slate-900 leading-tight border rounded px-2 py-1"
-                      />
-                      <input
-                        type="text"
-                        value={editData.cuisine}
-                        onChange={(e) =>
-                          handleChange('cuisine', e.target.value)
-                        }
-                        className="text-xs text-slate-500 mt-0.5 border rounded px-2 py-1"
-                      />
-                    </div>
+                  {editingId === item.restaurant_id ? (
+                    <input
+                      type="text"
+                      value={editData.name}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                      className="font-bold text-slate-900 leading-tight border rounded px-2 py-1 w-full"
+                    />
                   ) : (
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 leading-tight">
-                        {item.name}
-                      </span>
-                      <span className="text-xs text-slate-500 mt-0.5">
-                        {item.cuisine}
-                      </span>
-                    </div>
+                    <span className="font-bold text-slate-900 leading-tight">
+                      {item.name}
+                    </span>
                   )}
                 </TableCell>
 
                 <TableCell className="py-4 text-slate-600 text-sm leading-relaxed max-w-[400px] whitespace-normal break-words">
-                  {editingId === item.id ? (
+                  {editingId === item.restaurant_id ? (
                     <textarea
-                      value={editData.description}
+                      value={editData.description || ''}
                       onChange={(e) =>
                         handleChange('description', e.target.value)
                       }
@@ -145,82 +187,53 @@ export default function EstablishmentsPage() {
                       rows={3}
                     />
                   ) : (
-                    item.description
+                    item.description || (
+                      <span className="text-slate-400 italic">
+                        No description
+                      </span>
+                    )
                   )}
                 </TableCell>
 
-                <TableCell className="py-4 text-right min-w-[120px]">
-                  {editingId === item.id ? (
-                    <div className="flex flex-col items-end">
-                      <input
-                        type="text"
-                        value={editData.priceRange}
-                        onChange={(e) =>
-                          handleChange('priceRange', e.target.value)
-                        }
-                        className="text-slate-700 font-medium text-sm border rounded px-2 py-1 text-right"
-                      />
-                      <input
-                        type="text"
-                        value={editData.priceSymbol}
-                        onChange={(e) =>
-                          handleChange('priceSymbol', e.target.value)
-                        }
-                        className="text-xs text-slate-400 font-bold tracking-widest mt-0.5 border rounded px-2 py-1 text-right"
-                      />
-                    </div>
+                <TableCell className="py-4 text-center min-w-[100px]">
+                  {editingId === item.restaurant_id ? (
+                    <select
+                      value={editData.price_range}
+                      onChange={(e) =>
+                        handleChange('price_range', e.target.value)
+                      }
+                      className="border rounded px-2 py-1"
+                    >
+                      <option value="$">$</option>
+                      <option value="$$">$$</option>
+                      <option value="$$$">$$$</option>
+                    </select>
                   ) : (
-                    <div className="flex flex-col items-end">
-                      <span className="text-slate-700 font-medium text-sm">
-                        {item.priceRange}
-                      </span>
-                      <span className="text-xs text-slate-400 font-bold tracking-widest mt-0.5">
-                        {item.priceSymbol}
-                      </span>
-                    </div>
+                    <span className="text-slate-700 font-medium text-sm">
+                      {item.price_range}
+                    </span>
                   )}
                 </TableCell>
 
-                <TableCell className="py-4 min-w-[140px]">
-                  {editingId === item.id ? (
+                <TableCell className="py-4 text-slate-600 text-sm min-w-[150px]">
+                  {editingId === item.restaurant_id ? (
                     <input
                       type="text"
-                      value={editData.tags}
-                      onChange={(e) => handleChange('tags', e.target.value)}
-                      className="w-full border rounded px-2 py-1"
-                    />
-                  ) : (
-                    <span className="text-slate-600 text-sm">{item.tags}</span>
-                  )}
-                </TableCell>
-
-                <TableCell className="py-4 text-slate-500 text-xs font-mono max-w-[150px] break-all">
-                  {editingId === item.id ? (
-                    <input
-                      type="text"
-                      value={editData.location}
+                      value={editData.location || ''}
                       onChange={(e) => handleChange('location', e.target.value)}
                       className="w-full border rounded px-2 py-1"
                     />
                   ) : (
-                    item.location
+                    item.location || 'N/A'
                   )}
                 </TableCell>
 
                 <TableCell className="py-4 text-center font-medium text-slate-900">
-                  {editingId === item.id ? (
-                    <input
-                      type="number"
-                      value={editData.rating}
-                      onChange={(e) => handleChange('rating', e.target.value)}
-                      className="w-16 border rounded px-2 py-1 text-center"
-                    />
-                  ) : (
-                    item.rating
-                  )}
+                  {item.rating || '0.0'}
                 </TableCell>
+
                 <TableCell className="py-4 text-center">
-                  {editingId === item.id ? (
+                  {editingId === item.restaurant_id ? (
                     <div className="flex gap-2 justify-center">
                       <Button size="sm" onClick={handleSave}>
                         Save
@@ -245,7 +258,7 @@ export default function EstablishmentsPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item.restaurant_id)}
                       >
                         Delete
                       </Button>
@@ -254,6 +267,16 @@ export default function EstablishmentsPage() {
                 </TableCell>
               </TableRow>
             ))}
+            {establishmentsData.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-slate-500"
+                >
+                  No establishments found.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
