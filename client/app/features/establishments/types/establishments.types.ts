@@ -11,6 +11,7 @@ export interface RestaurantDto {
   rating: number
   latitude: number | null
   longitude: number | null
+  location: string
   banner_picture_url: string | null
   created_at: string
   is_bookmarked?: boolean | number

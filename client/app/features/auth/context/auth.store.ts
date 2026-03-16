@@ -36,29 +36,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true })
     try {
       const data = await AuthService.verifySession()
-      let ownerRestaurant = null
-
-      // If the user is an owner, fetch their restaurant details immediately
-      // Adjust 'owner' check based on exactly how your UserResponseDTO handles roles
-      if (
-        data.user &&
-        (data.user.role === 'owner' || data.user.role === 'OWNER')
-      ) {
-        try {
-          const res = await EstablishmentService.getByOwnerId(
-            data.user.userId || data.user.id,
-          )
-          ownerRestaurant = res.data
-        } catch (err) {
-          console.warn(
-            'Owner does not have a restaurant setup yet or fetch failed.',
-          )
-        }
-      }
 
       set({
         user: data.user,
-        restaurant: ownerRestaurant, // <-- Save it to state
         isAuthenticated: true,
         isLoading: false,
       })
