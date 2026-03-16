@@ -3,51 +3,48 @@
 # Set your API endpoint URL
 API_URL="http://localhost:3000/api/users/register"
 
-echo "Starting bulk creation of 20 Taft Avenue restaurants..."
+echo "Starting bulk creation of 20 Taft Avenue restaurants with ACCURATE tags and cuisines..."
 
-# Array of 20 legit establishments around Taft Ave
-RESTAURANTS=(
-  "La Toca"
-  "El Poco Cantina"
-  "Jollibee"
-  "McDonald's"
-  "The Barn"
-  "Ersao"
-  "Piccolino"
-  "Top Side"
-  "24 Chicken"
-  "Ate Rica's Bacsilog"
-  "Dixie's"
-  "Zark's Burgers"
-  "Kanto Freestyle Breakfast"
-  "Angrydobo"
-  "Tinuhog ni Benny"
-  "Chomp Chomp"
-  "Tori Box"
-  "Arabic House"
-  "Crepeman"
-  "Auro Chocolate Cafe"
+# Array mapping: 'Restaurant Name | Price | Tag 1 | Tag/Cuisine 2'
+RESTAURANTS_DATA=(
+  'La Toca|$$|Italian|Pasta'
+  'El Poco Cantina|$$|Spicy|Tacos'
+  'Jollibee|$|Fast Food|Chicken'
+  'McDonalds|$|Fast Food|Burgers'
+  'The Barn|$$|Late Night|Burgers'
+  'Ersao|$$|Fast Food|Spicy'
+  'Piccolino|$$|Italian|Pizza'
+  'Top Side|$$|Filipino|Fries'
+  '24 Chicken|$$|Late Night|Chicken'
+  'Ate Ricas Bacsilog|$|Street Food|Fast Food'
+  'Dixies|$$|Filipino|Chicken'
+  'Zarks Burger|$$|Fast Food|Burgers'
+  'Kanto Freestyle Breakfast|$$|Filipino|Late Night'
+  'Angrydobo|$$|Filipino|Fast Food'
+  'Tinuhog ni Benny|$|BBQ|Street Food'
+  'Chomp Chomp|$$|Spicy|Fast Food'
+  'Tori Box|$|Japanese|Chicken'
+  'Arabic House|$$|Halal|Spicy'
+  'Crepeman|$$|Dessert|Cake'
+  'Auro Chocolate Cafe|$$$|Cafe|Cake'
 )
 
-PRICES=('$' '$$' '$$$' '$$$$')
-TAGS=("Filipino" "Japanese" "Vegan" "Cafe" "Fast Food" "Seafood" "Dessert" "BBQ" "Fine Dining" "Halal" "Street Food" "Italian" "Spicy" "Family-Friendly" "Late Night")
-
-# Loop from 0 to 19 to match the array indices
-for i in {0..19}
+# Loop through the array
+for i in "${!RESTAURANTS_DATA[@]}"
 do
   INDEX=$((i + 1))
-  REST_NAME="${RESTAURANTS[$i]}"
-  USERNAME="taft_owner_$INDEX"
-  EMAIL="taft_owner$INDEX@example.com"
+  
+  # Split the string by the pipe | character to get exact values
+  IFS='|' read -r REST_NAME EXACT_PRICE EXACT_TAG_1 EXACT_TAG_2 <<< "${RESTAURANTS_DATA[$i]}"
+  
+  # Changed email prefix to 'taft_v4' to avoid 409 duplicates from the ones that succeeded
+  USERNAME="taft_v4_owner_$INDEX"
+  EMAIL="taft_v4_owner$INDEX@example.com"
   REST_DESC="This is $REST_NAME, a popular spot around Taft Avenue for students and locals."
   
   # Adjusted coordinates to be roughly around Taft Ave / Malate area
   LAT="14.56$((RANDOM % 90))"
   LONG="120.99$((RANDOM % 90))"
-
-  RANDOM_PRICE=${PRICES[$RANDOM % ${#PRICES[@]}]}
-  RANDOM_TAG_1=${TAGS[$RANDOM % ${#TAGS[@]}]}
-  RANDOM_TAG_2=${TAGS[$RANDOM % ${#TAGS[@]}]}
 
   # Set location to Taft
   LOCATION="Taft Avenue, Manila"
@@ -65,17 +62,17 @@ do
   "latitude": $LAT,
   "longitude": $LONG,
   "location": "$LOCATION",
-  "price_range": "$RANDOM_PRICE",
+  "price_range": "$EXACT_PRICE",
   "restaurantBanner": "https://example.com/banner$INDEX.jpg",
   "tags": [
-    { "id": 0, "label": "$RANDOM_TAG_1" },
-    { "id": 0, "label": "$RANDOM_TAG_2" }
+    { "id": 0, "label": "$EXACT_TAG_1" },
+    { "id": 0, "label": "$EXACT_TAG_2" }
   ]
 }
 EOF
 )
 
-  echo "Creating: $REST_NAME | Price: $RANDOM_PRICE | Tags: $RANDOM_TAG_1, $RANDOM_TAG_2"
+  echo "Creating: $REST_NAME | Price: $EXACT_PRICE | Tags: $EXACT_TAG_1, $EXACT_TAG_2"
 
   HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" $API_URL)
 
