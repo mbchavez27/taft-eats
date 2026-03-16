@@ -70,6 +70,7 @@ export const UserService = {
             longitude: data.longitude!,
             price_range: data.price_range as any,
             banner_picture_url: data.restaurantBanner!,
+            location: data.location!,
           },
           connection,
         )
