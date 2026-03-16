@@ -23,7 +23,10 @@ export const ReviewService = {
       url += `&lastId=${pageParam}`
     }
 
-    if (typeof sort === 'number' || (typeof sort === 'string' && /^[1-5]$/.test(sort))) {
+    if (
+      typeof sort === 'number' ||
+      (typeof sort === 'string' && /^[1-5]$/.test(sort))
+    ) {
       url += `&rating=${sort}`
     } else if (typeof sort === 'string') {
       url += `&sort=${sort}`
@@ -164,5 +167,25 @@ export const ReviewService = {
 
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || 'Failed to delete review')
+  },
+
+  /**
+   * Submits an owner's reply to a specific review.
+   */
+  createReply: async (reviewId: number, body: string): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/reviews/${reviewId}/reply`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ body }),
+      },
+    )
+
+    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to submit reply')
+    }
   },
 }

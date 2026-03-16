@@ -62,4 +62,11 @@ router.patch('/:reviewId', requireAuth, ReviewController.editReview)
  */
 router.delete('/:reviewId', requireAuth, ReviewController.deleteReview)
 
+/**
+ * @route   POST /api/reviews/:reviewId/reply
+ * @desc    Submit an owner reply to a specific review
+ * @access  Private (Owner only)
+ */
+router.post('/:reviewId/reply', requireAuth, ReviewController.replyToReview)
+
 export default router

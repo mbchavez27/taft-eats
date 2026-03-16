@@ -246,11 +246,57 @@ export const ReviewController = {
         .json({ success: true, message: 'Review deleted successfully.' })
     } catch (error: any) {
       console.error('Error in deleteReview:', error)
+      res.status(500).json({
+        error: error.message || 'Internal server error while deleting.',
+      })
+    }
+  },
+
+  /**
+   * Handles POST requests to submit an owner reply to a review.
+   */
+  replyToReview: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const ownerId = (req as any).user?.userId
+      const reviewId = parseInt(req.params.reviewId as string, 10)
+      const { body } = req.body
+
+      if (!ownerId) {
+        res.status(401).json({ error: 'Unauthorized. Please log in.' })
+        return
+      }
+
+      // Update minimum length to 20
+      if (isNaN(reviewId) || !body || body.trim().length < 20) {
+        res.status(400).json({
+          error:
+            'Invalid review ID or reply body too short (minimum 20 characters).',
+        })
+        return
+      }
+
+      await ReviewService.createReply(reviewId, ownerId, body)
+
+      res
+        .status(201)
+        .json({ success: true, message: 'Reply submitted successfully.' })
+    } catch (error: any) {
+      console.error('Error in replyToReview:', error)
+
+      // Distinguish between Ownership errors and other errors
+      if (error.message.includes('Unauthorized')) {
+        res.status(403).json({ error: error.message })
+        return
+      }
+
+      if (error.message.includes('already exists')) {
+        res.status(409).json({ error: error.message })
+        return
+      }
+
       res
         .status(500)
-        .json({
-          error: error.message || 'Internal server error while deleting.',
-        })
+        .json({ error: 'Internal server error while submitting reply.' })
     }
   },
 }

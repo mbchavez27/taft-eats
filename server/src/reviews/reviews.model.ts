@@ -77,20 +77,24 @@ export const ReviewModel = {
     lastId?: number,
     currentUserId?: number,
     sort?: string,
-    rating?: number
+    rating?: number,
   ): Promise<ReviewRecord[]> => {
     let query = `
       SELECT 
         r.*, 
         u.username, 
         u.profile_picture_url,
+        rr.body AS reply_body,
+        rr.created_at AS reply_date,
         (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'like') AS like_count,
         (SELECT COUNT(*) FROM Review_Votes WHERE review_id = r.review_id AND vote_type = 'dislike') AS dislike_count,
         IFNULL((SELECT vote_type FROM Review_Votes WHERE review_id = r.review_id AND user_id = ?), 'none') AS user_vote
       FROM Reviews r
       JOIN Users u ON r.user_id = u.user_id
+      LEFT JOIN Review_Replies rr ON r.review_id = rr.review_id
       WHERE r.restaurant_id = ?
     `
+
     const params: (number | string | null)[] = [
       currentUserId || null,
       restaurantId,
@@ -105,9 +109,9 @@ export const ReviewModel = {
     // 2. Handle Pagination Cursor
     if (lastId) {
       if (sort === 'oldest') {
-        query += ` AND r.review_id > ?` 
+        query += ` AND r.review_id > ?`
       } else {
-        query += ` AND r.review_id < ?` 
+        query += ` AND r.review_id < ?`
       }
       params.push(lastId)
     }
@@ -116,7 +120,7 @@ export const ReviewModel = {
     if (sort === 'oldest') {
       query += ` ORDER BY r.review_id ASC LIMIT ?`
     } else {
-      query += ` ORDER BY r.review_id DESC LIMIT ?` 
+      query += ` ORDER BY r.review_id DESC LIMIT ?`
     }
     params.push(limit)
 
@@ -272,5 +276,45 @@ export const ReviewModel = {
       [reviewId, userId],
     )
     return result.affectedRows > 0
+  },
+
+  /**
+   * Checks if a user is the owner of the restaurant that received the review.
+   */
+  checkRestaurantOwnership: async (
+    reviewId: number,
+    ownerId: number,
+  ): Promise<boolean> => {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT r.restaurant_id 
+       FROM Reviews rev
+       JOIN Restaurants r ON rev.restaurant_id = r.restaurant_id
+       WHERE rev.review_id = ? AND r.owner_user_id = ?`,
+      [reviewId, ownerId],
+    )
+    return rows.length > 0
+  },
+
+  /**
+   * Inserts a reply into the Review_Replies table.
+   */
+  createReply: async (
+    reviewId: number,
+    ownerId: number,
+    body: string,
+  ): Promise<number> => {
+    try {
+      const [result] = await pool.query<ResultSetHeader>(
+        `INSERT INTO Review_Replies (review_id, owner_user_id, body) 
+         VALUES (?, ?, ?)`,
+        [reviewId, ownerId, body],
+      )
+      return result.insertId
+    } catch (error: any) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new Error('A reply already exists for this review.')
+      }
+      throw error
+    }
   },
 }

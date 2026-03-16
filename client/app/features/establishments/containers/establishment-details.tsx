@@ -7,11 +7,13 @@ import type { RestaurantDto } from '../types/establishments.types'
 type EstablishmentDetailsProps = {
   isReviewOpen?: boolean
   data?: RestaurantDto
+  restaurant_id?: number
 }
 
 export default function EstablishmentDetails({
   isReviewOpen,
   data,
+  restaurant_id,
 }: EstablishmentDetailsProps) {
   return (
     <main className="w-xs font-lexend text-[#BFD392] px-4 flex flex-col gap-5">
@@ -20,7 +22,7 @@ export default function EstablishmentDetails({
         initialIsBookmarked={!!data?.is_bookmarked}
       />
 
-      {isReviewOpen ? (
+      {isReviewOpen && !restaurant_id ? (
         <ReviewTags />
       ) : (
         <>

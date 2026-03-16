@@ -28,6 +28,9 @@ export interface ReviewDto {
   like_count: number
   dislike_count: number
   user_vote: ReactionType
+
+  reply_body?: string | null
+  reply_date?: string | null
 }
 
 export interface PaginatedReviewsResponseDto {
