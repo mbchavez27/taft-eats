@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     
     name VARCHAR(100) NOT NULL,
     description TEXT,
+    location TEXT,
     price_range ENUM('$', '$$', '$$$', '$$$$') DEFAULT '$',
     
     -- Calculated average (0.00 to 5.00)
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS Restaurants (
     longitude DECIMAL(11, 8),
     
     banner_picture_url VARCHAR(2048) DEFAULT NULL,
+    is_temporarily_closed BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- If owner account is deleted, set this field to NULL

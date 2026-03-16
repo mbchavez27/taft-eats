@@ -11,7 +11,6 @@ export const EstablishmentController = {
    */
   getAllRestaurants: async (req: Request, res: Response): Promise<void> => {
     try {
-
       let limitRaw = req.query.limit
       let lastIdRaw = req.query.lastId
 
@@ -40,9 +39,10 @@ export const EstablishmentController = {
 
       const tags = parseArrayParam(req.query.tags)
       const priceRanges = parseArrayParam(req.query.priceRanges)
-      
+
       const ratingRaw = req.query.rating
-      const rating = typeof ratingRaw === 'string' ? parseInt(ratingRaw, 10) : undefined
+      const rating =
+        typeof ratingRaw === 'string' ? parseInt(ratingRaw, 10) : undefined
 
       const currentUserId = (req as any).user?.userId
       let restaurants
@@ -322,6 +322,57 @@ export const EstablishmentController = {
         .json({ success: true, message: 'Restaurant deleted successfully.' })
     } catch (error) {
       console.error('Error deleting restaurant:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
+  /**
+   * Handles PATCH requests to toggle the temporarily closed status of a restaurant.
+   * Only the owner can perform this action.
+   */
+  toggleTemporarilyClosed: async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const id = parseInt(req.params.id as string, 10)
+      const userId = (req as any).user?.userId
+      const { isClosed } = req.body
+
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized. Please log in.' })
+        return
+      }
+
+      if (isNaN(id)) {
+        res.status(400).json({ error: 'Invalid restaurant ID.' })
+        return
+      }
+
+      if (typeof isClosed !== 'boolean') {
+        res.status(400).json({ error: 'isClosed boolean value is required.' })
+        return
+      }
+
+      const success = await EstablishmentModel.toggleTemporarilyClosed(
+        id,
+        userId,
+        isClosed,
+      )
+
+      if (!success) {
+        res
+          .status(403)
+          .json({ error: 'Not authorized or restaurant not found.' })
+        return
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Restaurant marked as ${isClosed ? 'Temporarily Closed' : 'Open'}.`,
+      })
+    } catch (error) {
+      console.error('Error toggling temporarily closed status:', error)
       res.status(500).json({ error: 'Internal server error.' })
     }
   },

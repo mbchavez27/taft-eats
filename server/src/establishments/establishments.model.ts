@@ -22,6 +22,7 @@ export interface Restaurant extends RowDataPacket {
   banner_picture_url: string | null
   created_at: string
   is_bookmarked?: number
+  is_temporarily_closed: number
 }
 
 export interface GetRestaurantsFilterParams {
@@ -314,6 +315,19 @@ export const EstablishmentModel = {
       [restaurantId, ownerId],
     )
     // Returns true if a row was actually deleted
+    return result.affectedRows > 0
+  },
+
+  toggleTemporarilyClosed: async (
+    restaurantId: number,
+    ownerId: number,
+    isClosed: boolean,
+  ): Promise<boolean> => {
+    // We check owner_user_id to ensure only the real owner can update the status
+    const [result] = await pool.query<ResultSetHeader>(
+      'UPDATE Restaurants SET is_temporarily_closed = ? WHERE restaurant_id = ? AND owner_user_id = ?',
+      [isClosed, restaurantId, ownerId],
+    )
     return result.affectedRows > 0
   },
 }

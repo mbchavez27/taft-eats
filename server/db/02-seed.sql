@@ -23,4 +23,8 @@ INSERT INTO Tags (tag_id, name, category) VALUES
 (13, 'Pasta', 'food'),
 (14, 'Buns', 'food'),
 (15, 'Sushi', 'food'),
-(16, 'Tacos', 'food');
+(16, 'Tacos', 'food'),
+(17, 'Cake', 'food'),
+(18, 'Fries', 'food'),
+(19, 'Salad', 'food'),
+(20, 'Chicken', 'food');
