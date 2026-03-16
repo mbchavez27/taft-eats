@@ -1,5 +1,6 @@
 /**
- * @fileoverview Updated EstablishmentModel with robust is_bookmarked checks.
+ * @fileoverview Updated EstablishmentModel with robust is_bookmarked checks
+ * and filtering out temporarily closed establishments.
  */
 
 import {
@@ -45,17 +46,17 @@ export const EstablishmentModel = {
     lastId?: number,
     currentUserId?: number,
   ): Promise<Restaurant[]> => {
-    // Note the user_id = ? check in the JOIN
     let query = `
       SELECT r.*, 
       IF(ub.user_id IS NOT NULL, 1, 0) AS is_bookmarked
       FROM Restaurants r
       LEFT JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id AND ub.user_id = ?
+      WHERE (r.is_temporarily_closed IS NULL OR r.is_temporarily_closed = 0)
     `
-    const params: any[] = [currentUserId || 0] // Use 0 instead of null to avoid ambiguity
+    const params: any[] = [currentUserId || 0]
 
     if (lastId) {
-      query += ` WHERE r.restaurant_id < ?`
+      query += ` AND r.restaurant_id < ?`
       params.push(lastId)
     }
 
@@ -77,7 +78,7 @@ export const EstablishmentModel = {
       IF(ub.user_id IS NOT NULL, 1, 0) AS is_bookmarked
       FROM Restaurants r
       LEFT JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id AND ub.user_id = ?
-      WHERE 1=1
+      WHERE (r.is_temporarily_closed IS NULL OR r.is_temporarily_closed = 0)
     `
     const queryParams: any[] = [currentUserId || 0]
 
@@ -127,7 +128,6 @@ export const EstablishmentModel = {
       WHERE r.restaurant_id = ? 
       LIMIT 1
     `
-    // Ensure currentUserId is passed as the first parameter
     const [rows] = await pool.query<Restaurant[]>(query, [
       currentUserId || 0,
       id,
@@ -204,17 +204,6 @@ export const EstablishmentModel = {
     )
   },
 
-  // src/models/establishments.model.ts
-
-  /**
-   * Searches for restaurants by name using a partial match.
-   * Includes logic to check if the current user has bookmarked the results.
-   *
-   * @param {string} searchQuery - The text to search for in restaurant names.
-   * @param {number} [limit=5] - The maximum number of results to return.
-   * @param {number} [currentUserId] - Optional user ID to check bookmark status.
-   * @returns {Promise<Restaurant[]>} A promise that resolves to an array of matching restaurants.
-   */
   searchRestaurantsByName: async (
     searchQuery: string,
     limit: number = 5,
@@ -225,11 +214,10 @@ export const EstablishmentModel = {
       IF(ub.user_id IS NOT NULL, 1, 0) AS is_bookmarked
       FROM Restaurants r
       LEFT JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id AND ub.user_id = ?
-      WHERE r.name LIKE ?
+      WHERE r.name LIKE ? AND (r.is_temporarily_closed IS NULL OR r.is_temporarily_closed = 0)
       ORDER BY r.name ASC
       LIMIT ?
     `
-    // Use % around the search query for partial matching
     const params: (string | number)[] = [
       currentUserId || 0,
       `%${searchQuery}%`,
@@ -293,7 +281,7 @@ export const EstablishmentModel = {
       SELECT r.*, 1 AS is_bookmarked 
       FROM Restaurants r
       JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id
-      WHERE ub.user_id = ?
+      WHERE ub.user_id = ? AND (r.is_temporarily_closed IS NULL OR r.is_temporarily_closed = 0)
     `
     const params: (number | string)[] = [userId]
     if (lastId) {
@@ -311,12 +299,10 @@ export const EstablishmentModel = {
     restaurantId: number,
     ownerId: number,
   ): Promise<boolean> => {
-    // We check BOTH restaurant_id and owner_user_id for security
     const [result] = await pool.query<ResultSetHeader>(
       'DELETE FROM Restaurants WHERE restaurant_id = ? AND owner_user_id = ?',
       [restaurantId, ownerId],
     )
-    // Returns true if a row was actually deleted
     return result.affectedRows > 0
   },
 
@@ -325,7 +311,6 @@ export const EstablishmentModel = {
     ownerId: number,
     isClosed: boolean,
   ): Promise<boolean> => {
-    // We check owner_user_id to ensure only the real owner can update the status
     const [result] = await pool.query<ResultSetHeader>(
       'UPDATE Restaurants SET is_temporarily_closed = ? WHERE restaurant_id = ? AND owner_user_id = ?',
       [isClosed, restaurantId, ownerId],
@@ -333,10 +318,6 @@ export const EstablishmentModel = {
     return result.affectedRows > 0
   },
 
-  /**
-   * Updates a restaurant's name, description (bio), and banner picture.
-   * Ensures only the owner can perform the update.
-   */
   updateRestaurant: async (
     restaurantId: number,
     ownerId: number,
@@ -358,9 +339,8 @@ export const EstablishmentModel = {
       values.push(data.banner_picture_url)
     }
 
-    if (updates.length === 0) return false // Nothing to update
+    if (updates.length === 0) return false
 
-    // Add restaurantId and ownerId for the WHERE clause
     values.push(restaurantId, ownerId)
 
     const [result] = await pool.query<ResultSetHeader>(
