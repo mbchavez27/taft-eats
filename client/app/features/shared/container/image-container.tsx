@@ -98,7 +98,6 @@ export default function ImageContainer({
     try {
       setIsUploading(true)
 
-      // ---> 4. ADD THIS: Instantly display the image on the screen! <---
       setPreviewUrl(URL.createObjectURL(file))
 
       const formData = new FormData()

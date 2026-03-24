@@ -3,7 +3,6 @@ import {
   EstablishmentModel,
   GetRestaurantsFilterParams,
 } from './establishments.model.js'
-import { UpdateRestaurantDTO } from './dto/establishments-dto.js'
 
 export const EstablishmentController = {
   /**
@@ -81,6 +80,41 @@ export const EstablishmentController = {
       })
     } catch (error) {
       console.error('Error in getAllRestaurants:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
+  /**
+   * Handles GET requests to fetch nearby restaurants based on lat, lng, and optional radius.
+   * Passes currentUserId to personalize results (e.g., bookmarked restaurants).
+   */
+  getNearbyRestaurants: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const lat = parseFloat(req.query.lat as string)
+      const lng = parseFloat(req.query.lng as string)
+      const radius = parseFloat(req.query.radius as string) || 0.05
+
+      if (isNaN(lat) || isNaN(lng)) {
+        res
+          .status(400)
+          .json({ error: 'Valid lat and lng query parameters are required.' })
+        return
+      }
+
+      const currentUserId = (req as any).user?.userId
+      const restaurants = await EstablishmentModel.getNearbyRestaurants(
+        lat,
+        lng,
+        radius,
+        20,
+        currentUserId,
+      )
+
+      res
+        .status(200)
+        .json({ success: true, data: restaurants, count: restaurants.length })
+    } catch (error) {
+      console.error('Nearby Controller Error:', error)
       res.status(500).json({ error: 'Internal server error.' })
     }
   },

@@ -24,6 +24,7 @@ export interface Restaurant extends RowDataPacket {
   created_at: string
   is_bookmarked?: number
   is_temporarily_closed: number
+  distance?: number
 }
 
 export interface GetRestaurantsFilterParams {
@@ -113,6 +114,36 @@ export const EstablishmentModel = {
     queryParams.push(limit)
 
     const [rows] = await pool.query<Restaurant[]>(query, queryParams)
+    return rows
+  },
+
+  getNearbyRestaurants: async (
+    lat: number,
+    lng: number,
+    radius: number = 0.05, // 0.5km = 500m
+    limit: number = 20,
+    currentUserId?: number,
+  ): Promise<Restaurant[]> => {
+    const query = `
+      SELECT r.*,
+      IF(ub.user_id IS NOT NULL, 1, 0) AS is_bookmarked,
+      (
+        6371 * acos(
+          cos(radians(?)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(?)) + 
+          sin(radians(?)) * sin(radians(r.latitude))
+        )
+      ) AS distance 
+      FROM Restaurants r
+      LEFT JOIN User_Bookmarks ub ON r.restaurant_id = ub.restaurant_id AND ub.user_id = ?
+      WHERE (r.is_temporarily_closed IS NULL OR r.is_temporarily_closed = 0)
+      AND r.latitude IS NOT NULL 
+      AND r.longitude IS NOT NULL
+      HAVING distance <= ?
+      ORDER BY distance ASC
+      LIMIT ?
+    `
+    const params: any[] = [lat, lng, lat, currentUserId || 0, radius, limit]
+    const [rows] = await pool.query<Restaurant[]>(query, params)
     return rows
   },
 

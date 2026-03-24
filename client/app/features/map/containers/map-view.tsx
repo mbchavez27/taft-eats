@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { landmarks } from '../data/landmarks'
+import { useMapStore } from '../store/map.store' // Import store
 
 const greenIcon = new L.Icon({
   iconUrl:
@@ -15,17 +16,18 @@ const greenIcon = new L.Icon({
 
 export default function DLSUMap() {
   const DLSU_COORDS: [number, number] = [14.5648, 120.9932]
+  const setSelectedLocation = useMapStore((state) => state.setSelectedLocation)
 
   return (
     <MapContainer
       center={DLSU_COORDS}
       zoom={17}
       scrollWheelZoom={true}
-      style={{ height: '750px', width: '100%' }}
+      style={{ height: '750px', width: '100%', zIndex: -10 }}
     >
       <TileLayer
         url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.carto.com/">CARTO</a>'
+        attribution="&copy; CARTO"
       />
 
       {landmarks.map((landmark, index) => (
@@ -33,6 +35,15 @@ export default function DLSUMap() {
           key={`${landmark.name}-${index}`}
           position={landmark.coords as [number, number]}
           icon={greenIcon}
+          eventHandlers={{
+            click: () => {
+              // Trigger the global state update
+              setSelectedLocation(
+                landmark.coords as [number, number],
+                landmark.name,
+              )
+            },
+          }}
         >
           <Popup>{landmark.name}</Popup>
         </Marker>
