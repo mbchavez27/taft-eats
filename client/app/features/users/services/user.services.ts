@@ -9,15 +9,20 @@ export const UserService = {
    * @returns The updated user profile and success message
    */
   updateUserProfile: async (
-    payload: UpdateUserDTO,
+    payload: UpdateUserDTO | FormData,
   ): Promise<UpdateProfileResponse> => {
+    const isFormData = payload instanceof FormData
+
+    const headers: HeadersInit = {}
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json'
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       credentials: 'include',
-      body: JSON.stringify(payload),
+      body: isFormData ? payload : JSON.stringify(payload),
     })
 
     // Safety check: ensure response is JSON to prevent character at line 1 column 1 error

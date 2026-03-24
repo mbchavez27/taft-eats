@@ -7,6 +7,8 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import fs from 'fs'
+import path from 'path'
 
 import userRoutes from './users/user.routes.js'
 import establishmentRoutes from './establishments/establishments.routes.js'
@@ -20,6 +22,11 @@ const app = express()
 
 app.use(cookieParser())
 app.use(express.json())
+
+// Ensure uploads folder exists
+const uploadsDir = path.join(process.cwd(), 'uploads')
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true })
+
 app.use('/uploads', express.static('uploads'))
 
 app.use(

@@ -11,12 +11,12 @@ export const EstablishmentService = {
     pageParam = undefined,
     tags = [],
     priceRanges = [],
-    rating, 
+    rating,
   }: {
     pageParam?: number
     tags?: string[]
     priceRanges?: string[]
-    rating?: number 
+    rating?: number
   }): Promise<PaginatedRestaurantsResponseDto> => {
     const urlParams = new URLSearchParams()
 
@@ -41,7 +41,8 @@ export const EstablishmentService = {
     })
 
     const data: PaginatedRestaurantsResponseDto = await response.json()
-    if (!response.ok) throw new Error((data as any).error || 'Failed to fetch establishments')
+    if (!response.ok)
+      throw new Error((data as any).error || 'Failed to fetch establishments')
 
     return data
   },
@@ -235,19 +236,29 @@ export const EstablishmentService = {
 
   update: async (
     id: number,
-    data: { name?: string; description?: string; banner_picture_url?: string },
-  ): Promise<void> => {
+    payload:
+      | { name?: string; description?: string; banner_picture_url?: string }
+      | FormData,
+  ): Promise<any> => {
+    const isFormData = payload instanceof FormData
+
+    const headers: HeadersInit = {}
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json'
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: isFormData ? payload : JSON.stringify(payload),
     })
 
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.error || 'Failed to update establishment')
     }
+    return await response.json()
   },
 
   updateAsAdmin: async (

@@ -30,23 +30,8 @@ export default function NavBar() {
         </section>
         <SideBar />
 
-        {isOwner ? (
-          <>
-            <div className="hidden lg:flex items-center flex-1 justify-center max-w-xl mx-4">
-              <SearchField placeholder="Search for restaurants, cuisines, and dishes" />
-            </div>
-          </>
-        ) : null}
-
         <section className="hidden lg:flex font-inter text-lg items-center gap-12">
           <div className="flex gap-12 items-center">
-            {isOwner ? null : (
-              <>
-                <div className="hidden lg:flex items-center w-md">
-                  <SearchField placeholder="Search for restaurants, cuisines, and dishes" />
-                </div>
-              </>
-            )}
             {isOwner ? (
               <>
                 <div className="flex gap-3">

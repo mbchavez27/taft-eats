@@ -395,6 +395,11 @@ export const EstablishmentController = {
       }
 
       const data = req.body
+
+      if (req.file) {
+        data.banner_picture_url = `/uploads/${req.file.filename}`
+      }
+
       const success = await EstablishmentModel.updateRestaurant(
         restaurantId,
         ownerId,

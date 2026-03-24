@@ -182,7 +182,14 @@ export const UserController = {
         return res.status(401).json({ error: 'Unauthorized' })
       }
 
+      // req.body will now contain the text fields (name, username, bio) parsed by Multer
       const updateData: UpdateUserDTO = req.body
+
+      // If Multer processed an 'avatar' file, attach the URL to updateData
+      if (req.file) {
+        updateData.profile_picture_url = `/uploads/${req.file.filename}`
+      }
+
       const updatedUser = await UserService.updateProfile(userId, updateData)
 
       res.status(200).json({
