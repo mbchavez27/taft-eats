@@ -352,6 +352,23 @@ export const EstablishmentModel = {
     return result.affectedRows > 0
   },
 
+  getTagsByCategory: async (
+    category?: 'tag' | 'cuisine' | 'food',
+  ): Promise<Tag[]> => {
+    let query = 'SELECT tag_id, name, category FROM Tags'
+    const params: string[] = []
+
+    if (category) {
+      query += ' WHERE category = ?'
+      params.push(category)
+    }
+
+    query += ' ORDER BY name ASC'
+
+    const [rows] = await pool.query<Tag[]>(query, params)
+    return rows
+  },
+
   adminDeleteRestaurant: async (restaurantId: number): Promise<boolean> => {
     const [result] = await pool.query<ResultSetHeader>(
       'DELETE FROM Restaurants WHERE restaurant_id = ?',

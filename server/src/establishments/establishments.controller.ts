@@ -415,6 +415,33 @@ export const EstablishmentController = {
     }
   },
 
+  getTagsByCategory: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const category = req.query.category as string | undefined
+
+      // Validate category if one is provided
+      if (category && !['tag', 'cuisine', 'food'].includes(category)) {
+        res.status(400).json({
+          error: "Invalid category. Must be 'tag', 'cuisine', or 'food'.",
+        })
+        return
+      }
+
+      const tags = await EstablishmentModel.getTagsByCategory(
+        category as 'tag' | 'cuisine' | 'food' | undefined,
+      )
+
+      res.status(200).json({
+        success: true,
+        data: tags,
+        count: tags.length,
+      })
+    } catch (error) {
+      console.error('Error in getTagsByCategory:', error)
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
   deleteRestaurantAsAdmin: async (
     req: Request,
     res: Response,
