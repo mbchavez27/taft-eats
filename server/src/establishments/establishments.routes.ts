@@ -50,6 +50,13 @@ router.get(
 router.get('/search', optionalAuth, EstablishmentController.searchRestaurants)
 
 /**
+ * @route   GET /api/establishments/tags
+ * @desc    Get tags, optionally filtered by category (e.g., ?category=cuisine)
+ * @access  Public
+ */
+router.get('/tags', EstablishmentController.getTagsByCategory)
+
+/**
  * @route   GET /api/establishments/:id
  * @desc    Get a specific restaurant by its ID
  * @access  Public
