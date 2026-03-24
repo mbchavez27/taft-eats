@@ -23,7 +23,7 @@ export default function DLSUMap() {
       center={DLSU_COORDS}
       zoom={17}
       scrollWheelZoom={true}
-      style={{ height: '750px', width: '100%' }}
+      style={{ height: '750px', width: '100%', zIndex: -10 }}
     >
       <TileLayer
         url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"

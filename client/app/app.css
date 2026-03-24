@@ -131,3 +131,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Make the map tiles and overlays sit at z-index 0 */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+/* Optional: make markers behind if needed */
+.leaflet-marker-pane {
+  z-index: 1 !important;
+}
