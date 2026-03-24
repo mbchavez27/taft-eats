@@ -92,7 +92,7 @@ export const EstablishmentController = {
     try {
       const lat = parseFloat(req.query.lat as string)
       const lng = parseFloat(req.query.lng as string)
-      const radius = parseFloat(req.query.radius as string) || 0.5
+      const radius = parseFloat(req.query.radius as string) || 0.05
 
       if (isNaN(lat) || isNaN(lng)) {
         res
