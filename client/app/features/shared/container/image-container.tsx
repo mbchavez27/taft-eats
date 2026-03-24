@@ -28,16 +28,15 @@ export default function ImageContainer({
   const { isAuthenticated, user, setSession } = useAuthStore()
   const [isUploading, setIsUploading] = useState(false)
 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
   // --- IMAGE URL RESOLUTION ---
-  // We get the API URL from your env or default to localhost:3000
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
   const getFullImageUrl = (path?: string | null) => {
     if (!path) return null
-    // If it's already a full URL (Google, S3, etc.), return as is
     if (path.startsWith('http')) return path
-    // If it's a relative path from our Express server, prepend the Base URL
     return `${API_BASE_URL}${path}`
   }
 
@@ -63,8 +62,8 @@ export default function ImageContainer({
   const rawImageUrl =
     bannerUrl || (isUserProfilePage ? user?.profile_picture_url : null)
 
-  // Final URL that points to the correct server
-  const displayImageUrl = getFullImageUrl(rawImageUrl)
+  const serverImageUrl = getFullImageUrl(rawImageUrl)
+  const displayImageUrl = previewUrl || serverImageUrl
 
   // 3. Upload Handlers
   const handleOwnerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +72,9 @@ export default function ImageContainer({
 
     try {
       setIsUploading(true)
+
+      setPreviewUrl(URL.createObjectURL(file))
+
       const formData = new FormData()
       formData.append('restaurantBanner', file)
 
@@ -82,6 +84,7 @@ export default function ImageContainer({
     } catch (error: any) {
       console.error('Owner Upload Error:', error)
       alert(error.message || 'Failed to upload restaurant banner.')
+      setPreviewUrl(null) // Revert the preview if the upload fails
     } finally {
       setIsUploading(false)
       e.target.value = ''
@@ -94,6 +97,10 @@ export default function ImageContainer({
 
     try {
       setIsUploading(true)
+
+      // ---> 4. ADD THIS: Instantly display the image on the screen! <---
+      setPreviewUrl(URL.createObjectURL(file))
+
       const formData = new FormData()
       formData.append('avatar', file)
 
@@ -106,6 +113,7 @@ export default function ImageContainer({
     } catch (error: any) {
       console.error('User Upload Error:', error)
       alert(error.message || 'Failed to upload profile picture.')
+      setPreviewUrl(null) // Revert the preview if the upload fails
     } finally {
       setIsUploading(false)
       e.target.value = ''

@@ -236,21 +236,29 @@ export const EstablishmentService = {
 
   update: async (
     id: number,
-    data:
+    payload:
       | { name?: string; description?: string; banner_picture_url?: string }
       | FormData,
-  ): Promise<void> => {
+  ): Promise<any> => {
+    const isFormData = payload instanceof FormData
+
+    const headers: HeadersInit = {}
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json'
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: isFormData ? payload : JSON.stringify(payload),
     })
 
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.error || 'Failed to update establishment')
     }
+    return await response.json()
   },
 
   updateAsAdmin: async (

@@ -9,9 +9,8 @@ import UserReviews from '~/features/reviews/containers/user-reviews'
 
 import { useAuthStore } from '~/features/auth/context/auth.store'
 import { EstablishmentService } from '~/features/establishments/services/establishments.services'
-import type { Route } from '../+types/user-page/index'
 
-export function meta({}: Route.MetaArgs) {
+export function meta({}) {
   return [
     { title: 'Taft Eats - User' },
     { name: 'description', content: 'Taft Eats' },

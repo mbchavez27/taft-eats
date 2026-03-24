@@ -1,8 +1,25 @@
 import { Router } from 'express'
 import { EstablishmentController } from './establishments.controller.js'
 import { optionalAuth, requireAuth } from 'shared/middleware/auth.middleware.js'
+import path from 'path'
+import multer from 'multer'
 
 const router = Router()
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/')
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+    cb(
+      null,
+      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname),
+    )
+  },
+})
+
+const upload = multer({ storage })
 
 /**
  * @route   PATCH /api/establishments/admin/:id
@@ -114,7 +131,12 @@ router.delete(
  * @desc    Edit a restaurant's name, description, or banner (Owner only)
  * @access  Private
  */
-router.patch('/:id', requireAuth, EstablishmentController.editRestaurant)
+router.patch(
+  '/:id',
+  requireAuth,
+  upload.single('restaurantBanner'),
+  EstablishmentController.editRestaurant,
+)
 
 /**
  * @route   DELETE /api/establishments/:id
