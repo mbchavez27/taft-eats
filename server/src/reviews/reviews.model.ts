@@ -9,7 +9,7 @@ import {
   PoolConnection,
   RowDataPacket,
 } from 'mysql2/promise'
-import { pool } from 'shared/config/database.js'
+import { pool } from '#shared/config/database.js'
 
 /**
  * Represents a Review database record joined with basic User info.

@@ -5,7 +5,7 @@
 
 import { Router } from 'express'
 import { ReviewController } from './reviews.controller.js'
-import { requireAuth } from 'shared/middleware/auth.middleware.js'
+import { requireAuth } from '#shared/middleware/auth.middleware.js'
 // import { authenticateToken } from '../middlewares/auth.js';
 
 const router = Router()

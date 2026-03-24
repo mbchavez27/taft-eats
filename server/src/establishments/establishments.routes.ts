@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import { EstablishmentController } from './establishments.controller.js'
-import { optionalAuth, requireAuth } from 'shared/middleware/auth.middleware.js'
+import {
+  optionalAuth,
+  requireAuth,
+} from '#shared/middleware/auth.middleware.js'
 import path from 'path'
 import multer from 'multer'
 
