@@ -48,6 +48,12 @@ router.delete(
  */
 router.get('/', optionalAuth, EstablishmentController.getAllRestaurants)
 
+router.get(
+  '/nearby',
+  optionalAuth,
+  EstablishmentController.getNearbyRestaurants,
+)
+
 /**
  * @route   GET /api/establishments/owner/:ownerId
  * @desc    Get a specific restaurant by the owner's user ID
