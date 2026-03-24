@@ -16,6 +16,15 @@ export default function SearchField({ placeholder }: { placeholder?: string }) {
 
   const { results, isLoading } = useSearchRestaurants(query)
 
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+
+  const getFullImageUrl = (path?: string | null) => {
+    if (!path) return undefined
+    if (path.startsWith('http')) return path
+    return `${API_BASE_URL}${path}`
+  }
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -83,6 +92,10 @@ export default function SearchField({ placeholder }: { placeholder?: string }) {
                   ? restaurant.name.charAt(0).toUpperCase()
                   : 'R'
 
+                const banner_picture_url = getFullImageUrl(
+                  restaurant.banner_picture_url,
+                )
+
                 return (
                   <Link
                     key={restaurant.restaurant_id}
@@ -97,7 +110,7 @@ export default function SearchField({ placeholder }: { placeholder?: string }) {
                     {/* Replaced <img> with Shadcn Avatar */}
                     <Avatar className="w-10 h-10 border border-gray-200">
                       <AvatarImage
-                        src={restaurant.banner_picture_url || undefined}
+                        src={banner_picture_url || undefined}
                         alt={restaurant.name}
                         className="object-cover"
                       />

@@ -47,6 +47,25 @@ export const EstablishmentService = {
     return data
   },
 
+  getNearby: async (
+    lat: number,
+    lng: number,
+    radius: number = 0.5,
+  ): Promise<PaginatedRestaurantsResponseDto> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/establishments/nearby?lat=${lat}&lng=${lng}&radius=${radius}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      },
+    )
+    const data = await response.json()
+    if (!response.ok)
+      throw new Error(data.error || 'Failed to fetch nearby establishments')
+    return data
+  },
+
   getById: async (id: number): Promise<SingleRestaurantResponseDto> => {
     const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
       method: 'GET',
