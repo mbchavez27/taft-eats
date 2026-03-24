@@ -8,15 +8,24 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover'
 import { useAuthStore } from '~/features/auth/context/auth.store'
-import { useLogout } from '~/features/auth/hooks/useLogout' // <-- Import your new hook
+import { useLogout } from '~/features/auth/hooks/useLogout'
 
 export default function UserPopover() {
-  // 1. Get user state directly from the store
   const user = useAuthStore((state) => state.user)
   const isOwner = user?.role === 'owner'
-
-  // 2. Get the logout function from your dedicated hook
   const { handleLogout } = useLogout()
+
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+
+  const getFullImageUrl = (path?: string | null) => {
+    if (!path) return undefined
+    if (path.startsWith('http')) return path
+    return `${API_BASE_URL}${path}`
+  }
+
+  // Get the full, absolute URL for the image
+  const displayImageUrl = getFullImageUrl(user?.profile_picture_url)
 
   return (
     <Popover>
@@ -29,7 +38,8 @@ export default function UserPopover() {
       <PopoverContent className="bg-white text-[#326F33] border-2 border-[#326F33] font-lexend font-bold px-6 py-8 flex flex-col justify-center items-center gap-6">
         <PopoverHeader className="flex flex-col justify-center items-center gap-2">
           <Avatar className="w-16 h-16">
-            <AvatarImage src={user?.profile_picture_url ?? undefined} />
+            {/* Update the src to use our resolved absolute URL */}
+            <AvatarImage src={displayImageUrl} />
             <AvatarFallback>
               {user?.username?.substring(0, 2).toUpperCase() || 'US'}
             </AvatarFallback>

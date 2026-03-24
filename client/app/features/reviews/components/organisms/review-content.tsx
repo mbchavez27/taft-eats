@@ -22,6 +22,18 @@ export default function ReviewContent({
     }
   }, [review.body])
 
+  // --- IMAGE URL RESOLUTION ---
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+
+  const getFullImageUrl = (path?: string | null) => {
+    if (!path) return undefined
+    if (path.startsWith('http')) return path
+    return `${API_BASE_URL}${path}`
+  }
+
+  const displayImageUrl = getFullImageUrl(review.profile_picture_url)
+
   // Show dialog if review is truncated OR reply exists
   const shouldShowDialog = isTruncated || !!reply
 
@@ -43,7 +55,7 @@ export default function ReviewContent({
         {shouldShowDialog && (
           <Dialog>
             <DialogTrigger>
-              <span className="text-sm sm:text-base lg:text-2xl opacity-50 underline">
+              <span className="text-sm sm:text-base lg:text-2xl opacity-50 underline cursor-pointer">
                 view full
               </span>
             </DialogTrigger>
@@ -53,8 +65,13 @@ export default function ReviewContent({
               <section className="flex gap-4 font-lexend">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Avatar className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage
+                      src={displayImageUrl}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="font-bold">
+                      {review.username.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
 
                   <div>

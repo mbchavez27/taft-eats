@@ -11,12 +11,12 @@ export const EstablishmentService = {
     pageParam = undefined,
     tags = [],
     priceRanges = [],
-    rating, 
+    rating,
   }: {
     pageParam?: number
     tags?: string[]
     priceRanges?: string[]
-    rating?: number 
+    rating?: number
   }): Promise<PaginatedRestaurantsResponseDto> => {
     const urlParams = new URLSearchParams()
 
@@ -41,7 +41,8 @@ export const EstablishmentService = {
     })
 
     const data: PaginatedRestaurantsResponseDto = await response.json()
-    if (!response.ok) throw new Error((data as any).error || 'Failed to fetch establishments')
+    if (!response.ok)
+      throw new Error((data as any).error || 'Failed to fetch establishments')
 
     return data
   },
@@ -235,7 +236,9 @@ export const EstablishmentService = {
 
   update: async (
     id: number,
-    data: { name?: string; description?: string; banner_picture_url?: string },
+    data:
+      | { name?: string; description?: string; banner_picture_url?: string }
+      | FormData,
   ): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/api/establishments/${id}`, {
       method: 'PATCH',

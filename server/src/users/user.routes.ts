@@ -98,7 +98,12 @@ router.get('/verify', requireAuth, UserController.verify)
  * @desc    Update the authenticated user's profile information (name, username, bio, etc.)
  * @access  Private
  */
-router.patch('/profile', requireAuth, UserController.updateProfile)
+router.patch(
+  '/profile',
+  requireAuth,
+  upload.single('avatar'),
+  UserController.updateProfile,
+)
 
 /**
  * @route   GET /api/users/check-username
