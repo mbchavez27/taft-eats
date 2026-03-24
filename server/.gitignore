@@ -42,3 +42,6 @@ temp/
 
 # Database Data (Do not commit!)
 mysql_data/
+
+# Ignore uploaded files
+server/uploads/
