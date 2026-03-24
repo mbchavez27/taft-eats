@@ -27,4 +27,4 @@ COPY --from=builder /app/db ./db
 EXPOSE 3000
 
 # Using node directly is fine for Docker
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/app.js"]
