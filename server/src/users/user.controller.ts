@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { UserService } from './user.service.js'
 import { CreateUserDTO, LoginDTO, UpdateUserDTO } from './dto/user-dto.js'
-import { AuthRequest } from 'shared/middleware/auth.middleware.js'
+import { AuthRequest } from '#shared/middleware/auth.middleware.js'
 import { UserModel } from './user.model.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-this'
