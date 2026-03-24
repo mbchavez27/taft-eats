@@ -1,6 +1,8 @@
-import { Camera, Loader2 } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { SignUpFormValues } from '../../hooks/useSignUp'
+import { useState, Suspense, lazy } from 'react'
+import { Camera, MapPin, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
+const LocationPickerMap = lazy(() => import('./location-picker-map'))
 
 interface Step2Props {
   onBack: () => void
@@ -16,6 +18,12 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
     watch,
     formState: { errors },
   } = form
+
+  const [showMap, setShowMap] = useState(false)
+
+  // Watch coordinates for the marker and manual inputs
+  const lat = watch('latitude')
+  const lng = watch('longitude')
 
   // Watch the banner file
   const bannerFile = watch('restaurantBanner')
@@ -131,63 +139,71 @@ export function OwnerStep2({ onBack, onNext, form, isLoading }: Step2Props) {
       </div>
 
       <div className="flex flex-col gap-3">
-        <p className="text-black font-medium text-lg">Location Details</p>
-
-        <div className="flex flex-col w-full">
-          <label htmlFor="location" className="text-black font-regular mb-1">
-            Address *
-          </label>
-          <input
-            type="text"
-            id="location"
-            {...register('location')}
-            className={getInputClass('location')}
-            placeholder="e.g. 2401 Taft Ave, Malate, Manila"
-          />
-          {errors.location && (
-            <span className="text-red-500 text-sm mt-1">
-              {errors.location.message}
-            </span>
-          )}
+        <div className="flex items-center justify-between">
+          <p className="text-black font-medium text-lg">Location Details</p>
+          <button
+            type="button"
+            onClick={() => setShowMap(!showMap)}
+            className="flex items-center gap-1 text-xs font-bold text-[#326F33] bg-green-50 px-3 py-1.5 rounded-full"
+          >
+            <MapPin size={14} />
+            {showMap ? 'Hide Map' : 'Pin on Map'}
+          </button>
         </div>
 
-        <div className="flex gap-2 w-full mt-2">
-          <div className="flex flex-col w-full">
-            <label htmlFor="latitude" className="text-black font-regular mb-1">
-              Latitude *
-            </label>
-            <input
-              type="number"
-              id="latitude"
-              step="0.000001"
-              {...register('latitude', { valueAsNumber: true })}
-              className={getInputClass('latitude')}
-              placeholder="e.g. 14.5995"
-            />
-            {errors.latitude && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.latitude.message}
-              </span>
-            )}
+        {showMap && (
+          <div className="w-full h-64 rounded-xl border-2 border-black overflow-hidden relative">
+            <Suspense
+              fallback={
+                <div className="h-full w-full flex items-center justify-center bg-gray-100">
+                  <Loader2 className="animate-spin text-[#326F33]" />
+                </div>
+              }
+            >
+              <LocationPickerMap
+                lat={lat}
+                lng={lng}
+                onLocationSelect={(newLat, newLng) => {
+                  setValue('latitude', newLat, { shouldValidate: true })
+                  setValue('longitude', newLng, { shouldValidate: true })
+                }}
+              />
+            </Suspense>
           </div>
+        )}
 
-          <div className="flex flex-col w-full">
-            <label htmlFor="longitude" className="text-black font-regular mb-1">
-              Longitude *
+        {/* Manual Inputs */}
+        <div className="flex flex-col w-full">
+          <label className="text-black font-medium mb-1">Address *</label>
+          <input
+            type="text"
+            {...register('location')}
+            className={getInputClass('location')}
+          />
+        </div>
+
+        <div className="flex gap-2 w-full">
+          <div className="flex flex-col w-1/2">
+            <label className="text-[10px] uppercase text-gray-400 font-bold">
+              Latitude
             </label>
             <input
               type="number"
-              id="longitude"
-              step="0.000001"
-              {...register('longitude', { valueAsNumber: true })}
-              className={getInputClass('longitude')}
-              placeholder="e.g. 120.9842"
+              step="any"
+              {...register('latitude')}
+              className="border-b text-sm py-1 outline-none"
             />
-            {errors.longitude && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.longitude.message}
-              </span>
-            )}
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label className="text-[10px] uppercase text-gray-400 font-bold">
+              Longitude
+            </label>
+            <input
+              type="number"
+              step="any"
+              {...register('longitude')}
+              className="border-b text-sm py-1 outline-none"
+            />
           </div>
         </div>
       </div>

@@ -44,4 +44,4 @@ temp/
 mysql_data/
 
 # Ignore uploaded files
-server/uploads/
+uploads/
