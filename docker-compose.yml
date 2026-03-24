@@ -22,7 +22,7 @@ services:
   backend:
     build: ./server  # Path to your Express Dockerfile
     restart: always
-    env_file: ./backend/.env
+    env_file: ./server/.env
     ports:
       - "3000:3000"
     depends_on:
