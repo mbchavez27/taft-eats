@@ -3,7 +3,7 @@
  * @module services/ReviewService
  */
 
-import { pool } from '#shared/config/database.js'
+import { pool } from '@shared/config/database.js'
 import { ReviewModel } from './reviews.model.js'
 import { CreateReviewDTO } from './dto/reviews-dto.js'
 import { EstablishmentModel } from '../establishments/establishments.model.js'

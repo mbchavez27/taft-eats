@@ -9,7 +9,7 @@ import {
   Pool,
   PoolConnection,
 } from 'mysql2/promise'
-import { pool } from '#shared/config/database.js'
+import { pool } from '@shared/config/database.js'
 
 export interface Restaurant extends RowDataPacket {
   restaurant_id: number

@@ -11,7 +11,7 @@ import {
   UserResponseDTO,
   UpdateUserDTO,
 } from './dto/user-dto.js'
-import { pool } from '#shared/config/database.js'
+import { pool } from '@shared/config/database.js'
 import { EstablishmentModel } from 'establishments/establishments.model.js'
 
 /**

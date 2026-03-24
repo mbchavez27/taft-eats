@@ -5,7 +5,7 @@
 
 import { Router } from 'express'
 import { UserController } from './user.controller.js'
-import { requireAuth } from '#shared/middleware/auth.middleware.js'
+import { requireAuth } from '@shared/middleware/auth.middleware.js'
 import path from 'path'
 import multer from 'multer'
 
