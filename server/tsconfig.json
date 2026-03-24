@@ -6,6 +6,9 @@
     "moduleResolution": "NodeNext",
     "baseUrl": "./src",
     "outDir": "./dist",
+    "paths": {
+      "#shared/*": ["shared/*"]
+    },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
