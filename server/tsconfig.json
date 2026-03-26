@@ -7,8 +7,9 @@
     "baseUrl": "./src",
     "outDir": "./dist",
     "paths": {
-  "@shared/*": ["shared/*"]
-},
+      "@/*": ["*"],
+      "@shared/*": ["shared/*"]
+    },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
