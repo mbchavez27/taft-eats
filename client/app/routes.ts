@@ -18,6 +18,8 @@ export default [
     ...prefix('user', [route('/', './routes/user-page/index.tsx')]),
     ...prefix('bookmarks', [route('/', './routes/bookmarks/index.tsx')]),
 
+    ...prefix('about', [route('/', './routes/about/index.tsx')]),
+
     ...prefix('maps', [route('/', './routes/map-view/index.tsx')]),
 
     ...prefix('auth', [
