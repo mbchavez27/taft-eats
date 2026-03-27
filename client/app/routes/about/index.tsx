@@ -3,7 +3,7 @@ import type { Route } from './+types/index'
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'Taft Eats: Admin - About Us' },
+    { title: 'Taft Eats- About Us' },
     { name: 'description', content: 'About us' },
   ]
 }
