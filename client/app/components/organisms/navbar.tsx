@@ -1,5 +1,5 @@
 import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
-import { CiBookmark } from 'react-icons/ci'
+import { CiBookmark, CiCircleInfo } from 'react-icons/ci'
 import SearchField from '~/components/molecules/searchfield'
 import SideBar from './sidebar'
 import { Link } from 'react-router'
@@ -60,6 +60,12 @@ export default function NavBar() {
                   className="bg-[#326F33] text-white p-2 rounded-full"
                 >
                   <IoLocationOutline size={24} />
+                </Link>
+                <Link
+                  to="/about/"
+                  className="bg-[#326F33] text-white p-2 rounded-full"
+                >
+                  <CiCircleInfo size={24} />
                 </Link>
               </div>
 

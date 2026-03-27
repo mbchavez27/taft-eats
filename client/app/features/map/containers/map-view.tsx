@@ -7,6 +7,8 @@ import { useMapStore } from '../store/map.store' // Import store
 const greenIcon = new L.Icon({
   iconUrl:
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  iconRetinaUrl:
+    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -23,7 +25,7 @@ export default function DLSUMap() {
       center={DLSU_COORDS}
       zoom={17}
       scrollWheelZoom={true}
-      style={{ height: '750px', width: '100%', zIndex: -10 }}
+      style={{ height: '750px', width: '100%' }}
     >
       <TileLayer
         url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"

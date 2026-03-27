@@ -4,12 +4,12 @@ services:
     image: mysql:8.0
     container_name: taft_eats_db
     restart: always
-    env_file: .env
-    ports: 
+    env_file: ./server/.env
+    ports:
       - "3307:3306"
     volumes:
-      - ./db:/docker-entrypoint-initdb.d
-      - ./mysql_data:/var/lib/mysql
+      - ./server/db:/docker-entrypoint-initdb.d
+      - ./server/mysql_data:/var/lib/mysql
 
   # Adminer (DB Management)
   adminer:
@@ -20,21 +20,21 @@ services:
 
   # Backend (Express API)
   backend:
-    build: ./server  # Path to your Express Dockerfile
+    build: ./server
     restart: always
     env_file: ./server/.env
     ports:
       - "3000:3000"
     volumes:
-      - ./uploads:/app/uploads
+      - ./server/uploads:/app/uploads
     depends_on:
       - db
 
   # Frontend (React Router v7)
   frontend:
-    build: ./client # Path to your React Dockerfile
+    build: ./client
     restart: always
     ports:
-      - "80:3000" # Maps Droplet's HTTP port to React Router's serve port
+      - "80:3000"
     depends_on:
       - backend

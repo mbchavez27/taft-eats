@@ -5,8 +5,8 @@
  */
 
 import dotenv from 'dotenv'
-import app from './src/app.ts'
-import { checkDatabaseConnection } from './src/shared/config/database.ts'
+import app from './app.js';
+import { checkDatabaseConnection } from '@/shared/config/database.js';
 
 dotenv.config()
 

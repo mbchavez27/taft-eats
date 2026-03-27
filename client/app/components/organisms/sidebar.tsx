@@ -1,90 +1,142 @@
-import { useState } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { CiBookmark } from "react-icons/ci";
-import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
-import { AiOutlineUser } from "react-icons/ai";
-import { CiLogout } from "react-icons/ci";
+import { GiHamburgerMenu } from 'react-icons/gi'
+import { CiBookmark, CiLogout, CiCircleInfo } from 'react-icons/ci'
+import { IoLocationOutline, IoHomeOutline } from 'react-icons/io5'
+import { AiOutlineUser } from 'react-icons/ai'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "~/components/ui/sheet";
-import { Link } from "react-router";
+} from '~/components/ui/sheet'
+import { Link } from 'react-router'
+
+import { useAuthStore } from '~/features/auth/context/auth.store'
+import OwnerSettings from '~/features/users/containers/owner-settings'
 
 export default function SideBar() {
-  const [isAuthendicated, setAuthentication] = useState(true);
+  const { isAuthenticated, user, isLoading } = useAuthStore()
+  const isOwner = user?.role === 'owner'
+
   return (
-    <>
-      <section className="flex lg:hidden">
-        <Sheet>
-          <SheetTrigger className="text-[#326F33]">
-            <GiHamburgerMenu size={24} />
-          </SheetTrigger>
-          <SheetContent className="bg-[#326F33] border-none outline-none shadow-none">
-            <SheetHeader>
-              <SheetTitle>
-                <div className="flex items-center gap-1">
-                  <img
-                    src="/logos/tafteats_logo.png"
-                    alt="logo"
-                    width={75}
-                    height={75}
-                  />
-                  <div className="font-climate text-white text-xl">
-                    <h1>TAFT</h1>
-                    <h1>EATS</h1>
-                  </div>
+    <section className="flex lg:hidden">
+      <Sheet>
+        <SheetTrigger className="text-[#326F33]">
+          <GiHamburgerMenu size={24} />
+        </SheetTrigger>
+        <SheetContent className="bg-[#326F33] border-none outline-none shadow-none text-white flex flex-col">
+          <SheetHeader>
+            <SheetTitle>
+              <div className="flex items-center gap-1">
+                <img
+                  src="/logos/tafteats_logo.png"
+                  alt="logo"
+                  width={75}
+                  height={75}
+                />
+                <div className="font-climate text-white text-xl">
+                  <h1>TAFT</h1>
+                  <h1>EATS</h1>
                 </div>
-              </SheetTitle>
-            </SheetHeader>
-            <div className="flex flex-col justify-center gap-6 px-4">
-              {isAuthendicated ? (
-                <>
-                  <div className="flex justify-center gap-3 p-2 text-white ">
+              </div>
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="flex flex-col gap-4 px-2 mt-8 overflow-y-auto">
+            {isLoading ? (
+              // Loading Skeleton
+              <div className="animate-pulse flex flex-col gap-4">
+                <div className="bg-[#285a29] h-10 w-full rounded-full"></div>
+                <div className="bg-[#285a29] h-10 w-full rounded-full"></div>
+                <div className="bg-[#285a29] h-10 w-full rounded-full"></div>
+              </div>
+            ) : isOwner ? (
+              // OWNER VIEW
+              <div className="flex flex-col gap-4">
+                <div className="bg-white/10 p-2 rounded-xl">
+                  <OwnerSettings />
+                </div>
+                <Link
+                  to="/user/"
+                  className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
+                >
+                  <AiOutlineUser size={24} />
+                  User Profile
+                </Link>
+                <button className="border border-red-400 text-red-100 px-4 py-2 rounded-full flex gap-3 items-center hover:bg-red-400/20 transition-colors w-full text-left">
+                  <CiLogout size={24} />
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              // REGULAR USER / GUEST VIEW
+              <div className="flex flex-col gap-4">
+                <Link
+                  to="/"
+                  className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
+                >
+                  <IoHomeOutline size={24} />
+                  Home View
+                </Link>
+                <Link
+                  to="/maps/"
+                  className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
+                >
+                  <IoLocationOutline size={24} />
+                  Map View
+                </Link>
+                <Link
+                  to="/about/"
+                  className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
+                >
+                  <CiCircleInfo size={24} />
+                  About Us
+                </Link>
+
+                {isAuthenticated ? (
+                  // LOGGED IN USER LINKS
+                  <>
                     <Link
-                      to={"/user/"}
-                      className="flex gap-2 items-center border border-white px-3 py-2 rounded-lg"
+                      to="/bookmarks/"
+                      className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
+                    >
+                      <CiBookmark size={24} />
+                      Bookmarks
+                    </Link>
+                    <Link
+                      to="/user/"
+                      className="border border-white px-4 py-2 rounded-full flex gap-3 items-center hover:bg-white/10 transition-colors"
                     >
                       <AiOutlineUser size={24} />
-                      User
+                      User Profile
                     </Link>
-                    <div className="flex gap-2 items-center border border-white px-3 py-2 rounded-lg">
-                      <CiBookmark size={24} />
-                      Bookmark
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="font-medium flex ml-4 gap-5">
-                    <button className="bg-white text-black border border-black px-4 py-1 rounded-lg">
+                    <button className="border border-red-400 text-red-100 px-4 py-2 rounded-full flex gap-3 items-center hover:bg-red-400/20 transition-colors w-full text-left">
+                      <CiLogout size={24} />
+                      Log Out
+                    </button>
+                  </>
+                ) : (
+                  // GUEST LINKS
+                  <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/20">
+                    <Link
+                      to="/auth/login"
+                      className="bg-white text-[#326F33] text-center font-semibold px-4 py-2.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
                       Log In
-                    </button>
-                    <button className="bg-[#326F33] border-white border text-white px-3 py-1 rounded-lg">
+                    </Link>
+                    <Link
+                      to="/auth/sign-up"
+                      className="bg-transparent border-white border text-center text-white font-semibold px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors"
+                    >
                       Sign Up
-                    </button>
+                    </Link>
                   </div>
-                </>
-              )}
-
-              <div className="bg-[#326F33] border-white border text-white px-4 py-2 rounded-full flex gap-2">
-                <IoHomeOutline size={24} />
-                Home View
+                )}
               </div>
-              <div className="bg-[#326F33] border-white border text-white px-4 py-2 rounded-full flex gap-2">
-                <IoLocationOutline size={24} />
-                Map View
-              </div>
-              <div className="bg-[#326F33] border-white border text-white px-4 py-2 rounded-full flex gap-2">
-                <CiLogout size={24} />
-                Log Out
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </section>
-    </>
-  );
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </section>
+  )
 }

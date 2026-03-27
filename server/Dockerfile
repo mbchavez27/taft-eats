@@ -1,13 +1,9 @@
-# Stage 1: Build Stage
+# Stage 1: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
-
-# 1. Copy package files (Cached Layer)
 COPY package*.json ./
-# Install ALL dependencies (including devDeps for the build)
-RUN npm ci
-
-# 2. Copy source and build (Cached Layer unless code changes)
+# Use install if you don't have a lockfile, otherwise ci is fine
+RUN npm install
 COPY . .
 RUN npm run build
 
@@ -16,15 +12,16 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-# 3. Optimization: Only install production dependencies here
+# Copy only what is needed to run
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
-# 4. Copy ONLY the built files and the db folder
+# Copy the build output from the builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/db ./db
+# If you have a db folder for migrations/seeds, copy it too
+COPY --from=builder /app/db ./db 
 
 EXPOSE 3000
 
-# Using node directly is fine for Docker
-CMD ["node", "dist/app.js"]
+# double-check if your main file is index.js or app.js!
+CMD ["node", "dist/server.js"]

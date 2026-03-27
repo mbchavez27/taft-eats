@@ -10,7 +10,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { User, Loader2, Shield, Store } from 'lucide-react'
-import type { Route } from './+types/admin/index'
+import type { Route } from './+types/index'
 import { UserService } from '~/features/users/services/user.services'
 
 export function meta({}: Route.MetaArgs) {
