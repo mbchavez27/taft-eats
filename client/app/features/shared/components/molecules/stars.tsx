@@ -23,14 +23,14 @@ export default function Stars({
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-nowrap items-center gap-2">
       {[0, 1, 2, 3, 4].map((index) => (
         <div
           key={index}
           onClick={() => handleClick(index)}
           onMouseEnter={() => setHover(index + 1)}
           onMouseLeave={() => setHover(0)}
-          className="cursor-pointer"
+          className="cursor-pointer shrink-0 transition-transform hover:scale-110"
         >
           {index < (hover || value) ? (
             <FaStar size={size} color={color} />
