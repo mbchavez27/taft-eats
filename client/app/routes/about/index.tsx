@@ -1,5 +1,12 @@
 import { ScrollArea } from '~/components/ui/scroll-area'
-import type { Route } from './+types/about/index'
+import type { Route } from './+types/index'
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: 'Taft Eats: Admin - About Us' },
+    { name: 'description', content: 'About us' },
+  ]
+}
 
 export default function AboutUs() {
   return (
@@ -34,7 +41,7 @@ export default function AboutUs() {
           </section>
 
           {/* Tech Stack Section */}
-          <section className="pb-12">
+          <section>
             <h2 className="font-climate text-2xl md:text-3xl text-black uppercase mb-6">
               Our Tech Stack
             </h2>
@@ -99,6 +106,45 @@ export default function AboutUs() {
                   </li>
                 </ul>
               </div>
+            </div>
+          </section>
+
+          {/* Contact / Issues Section */}
+          <section className="pb-12">
+            <h2 className="font-climate text-2xl md:text-3xl text-black uppercase mb-6">
+              Report an Issue
+            </h2>
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-gray-700 font-inter mb-4">
+                Encountering bugs or have feedback for Taft Eats? Please reach
+                out to our team:
+              </p>
+              <ul className="space-y-2 font-inter font-medium text-[#326F33]">
+                <li>
+                  <a
+                    href="mailto:alex_gonzales@dlsu.edu.ph"
+                    className="hover:underline hover:text-green-800 transition-colors"
+                  >
+                    alex_gonzales@dlsu.edu.ph
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:max_chavez@dlsu.edu.ph"
+                    className="hover:underline hover:text-green-800 transition-colors"
+                  >
+                    max_chavez@dlsu.edu.ph
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:andronicus_alegre@dlsu.edu.ph"
+                    className="hover:underline hover:text-green-800 transition-colors"
+                  >
+                    andronicus_alegre@dlsu.edu.ph
+                  </a>
+                </li>
+              </ul>
             </div>
           </section>
         </div>
