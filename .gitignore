@@ -45,3 +45,6 @@ mysql_data/
 
 # Ignore uploaded files
 uploads/
+
+# Ignore Docker Image Tarballs
+*.tar
